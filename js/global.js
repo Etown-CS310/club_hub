@@ -1,4 +1,7 @@
-  /*
+"use strict";
+
+(function () {
+    /*
    * Initialize global components through loadComponent function
    */
 async function initGlobal() {
@@ -27,4 +30,7 @@ async function loadComponent(url, elementId) {
     }
 }
 
+// Initialize global components when window is loaded
 window.addEventListener("load", initGlobal);
+
+})();
