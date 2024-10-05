@@ -2,6 +2,9 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh; 
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 main {
@@ -158,21 +161,17 @@ main {
 }
 
 /* Carousel custom edit */
-.custom-carousel {
+.custom-container {
     max-width: 600px;
     margin: 0 auto; 
-}
-
-.custom-carousel .carousel-inner {
     background-color: gray;  
     border-radius: 2%;
 }
-
-.custom-carousel .carousel-item {
-    height: 400px; 
+.custom-container .carousel-item, .col .custom-container {
+    max-height: 400px; 
 }
 
-.custom-carousel .carousel-content {
+.custom-container .carousel-content {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -180,16 +179,41 @@ main {
     background-color: #e9ecef; 
 }
 
-.custom-carousel img {
-    max-height: 100%;
+.custom-container img {
+    height: auto;
+    max-height: 50%;
     width: auto;
-    max-width: 100%;
+    max-width: 50%;
     object-fit: contain;
 }
 
-.custom-carousel .carousel-caption {
+.custom-container .carousel-caption {
     background-color: rgba(0, 0, 0, 0.5); 
     padding: 10px;
     border-radius: 5px;
 }
 
+/* custom col margins */
+.col-margin {
+    margin: 1rem 0 1rem 0;
+}
+
+.custom-container table {
+    margin: 1rem 1rem 1rem 1rem
+}
+
+/* heading on carousel */
+#clubCarousel h2, .custom-container h2 {
+    top: 10px;
+    left: 15px;
+    z-index: 10;
+    color: #000; 
+    background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+
+.inline-display {
+    display: inline !important;
+}
