@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -64,13 +65,15 @@
               <div class="col ">
                 <div class="custom-container col-margin d-flex flex-column">
                   <h2>Upcoming Events</h2>
-                  <div class="d-flex">
+                  <div class=" d-flex table-responsive">
                       <table class="table table-primary table-striped-columns ">
                       <thead>
-                        <th scope="col">Club</th>
-                        <th scope="col">Event</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Time</th>
+                        <tr>
+                          <th scope="col">Club</th>
+                          <th scope="col">Event</th>
+                          <th scope="col">Date</th>
+                          <th scope="col">Time</th>
+                        </tr>
                       </thead>
                       <tbody>
                         <tr>
@@ -174,6 +177,14 @@
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>  
+
+    <!-- Firebase JS SDKs (Compat Versions) -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+
+    <!-- Custom Firebase -->
+    <script src="/js/firebase.js"></script>
 
     <!-- Custom JS -->
     <script src="/js/global.js"></script>
