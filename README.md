@@ -4,7 +4,7 @@ ClubHub - A website to centralize school clubs and allow easy management and acc
 
     - Calendar page to keep up with club activities happening on campus
 
-    - Clubs pages for each club that can be customized through club user login
+    - Clubs pages for each club that can be customized through club user login (acts as a template)
 
 # Layout Design
 

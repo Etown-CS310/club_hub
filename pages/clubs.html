@@ -23,13 +23,184 @@
     </header>
 
     <main>
-
       <div class="container text-center">
         <div class="row row-cols-2">
-          <div class="col">Announcements</div>
-          <div class="col">Events</div>
-          <div class="col">About Us</div>
-          <div class="col">Social Media</div>
+
+          <!-- Announcements -->
+          <div class="col col-margin">
+          <div id="annoucementsCarousel" class="carousel slide custom-container" data-bs-ride="carousel">
+            <h2>CS Club Announcements</h2>
+
+            <div class="carousel-indicators">
+              <button type="button" data-bs-target="#annoucementsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+              <button type="button" data-bs-target="#annoucementsCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            </div>
+
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                <img src="/images/coding_challenges.png" class="d-block w-100 mx-auto" alt="Coding Challenge">
+                <div class="carousel-caption d-none d-md-block">
+                  <h5>Fall 2023 Coding Challenge</h5>
+                </div>
+              </div>
+              
+              <div class="carousel-item active">
+                <img src="/images/hoya_hacks.jpeg" class="d-block w-100 mx-auto" alt="Hoya Hacks">
+                <div class="carousel-caption d-none d-md-block">
+                  <h5>Hoya Hacks 2024 </h5>
+                </div>
+              </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#annoucementsCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#annoucementsCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+          </div>
+
+          <!-- Club Events Section -->
+          <div class="col">
+          <div class="custom-container col-margin d-flex flex-column">
+            <h2>Upcoming Events</h2>
+            <div class="d-flex">
+                <table class="table table-primary table-striped-columns ">
+                <thead>
+                  <th scope="col">Event</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Time</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Weekly Meeting</td>
+                    <td>10/08/2024</td>
+                    <td>7:00-8:00pm</td>
+                  </tr>
+                  <tr>
+                    <td>Weekly Meeting</td>
+                    <td>10/15/2024</td>
+                    <td>7:00-8:00pm</td>
+                  </tr>
+                  <tr>
+                    <td>Weekly Meeting</td>
+                    <td>10/22/2024</td>
+                    <td>7:00-8:00pm</td>
+                  </tr>
+                  <tr>
+                    <td>Weekly Meeting</td>
+                    <td>10/24/2024</td>
+                    <td>5:00-6:00pm</td>
+                  </tr>
+                  <tr>
+                    <td>Weekly Meeting</td>
+                    <td>10/29/2024</td>
+                    <td>7:00-8:00pm</td>
+                  </tr>
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Club News & Announcements Section with Carousel -->
+        <div class="col col-margin">
+          <div class="custom-container">
+            <h2>About Us</h2>
+            <div id="tempCarousel" class="carousel slide" data-bs-ride="carousel">
+              
+              <div class="carousel-indicators">
+                <button type="button" data-bs-target="#tempCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Announce 1"></button>
+                <button type="button" data-bs-target="#tempCarousel" data-bs-slide-to="1" aria-label="Annouce 2"></button>
+
+              </div>
+              <div class="carousel-inner">
+                <!-- First News Item -->
+                <div class="carousel-item active">
+                  <div class="card w-75 mx-auto">
+                    <div class="card-body">
+                      <h5 class="card-title">New Cabinet</h5>
+                      <p class="card-text">We're hoping to build upon a successful year and grow even more!</p>
+                      <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                      Posted on October 6, 2024
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Second News Item -->
+                <div class="carousel-item">
+                  <div class="card w-75 mx-auto">
+                    <div class="card-body">
+                      <h5 class="card-title">Homecoming Fundraiser Completed</h5>
+                      <p class="card-text">We raised a lot of money! Checkout future fundraisers and ideas</p>
+                      <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                      Posted on October 8, 2024
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+              <!-- Carousel controls -->
+              <button class="carousel-control-prev" type="button" data-bs-target="#tempCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#tempCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Media -->
+        <div class="col">
+          <div class="custom-container col-margin d-flex flex-column">
+            <h2>Social Media</h2>
+            <div class="d-flex">
+                <table class="table table-primary table-striped-columns ">
+                <thead>
+                  <th scope="col">Social</th>
+                  <th scope="col">Tag</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Email</td>
+                    <td>csclub@etown.edu</td>
+                  </tr>
+                  <tr>
+                    <td>Website</td>
+                    <td> <a href="https://etowncs.club/">etowncs.club</a> </td>
+                  </tr>
+                  <tr>
+                    <td>Insta</td>
+                    <td><a href="https://www.instagram.com/etowncsclub/">@etowncsclub</a> </td>
+                  </tr>
+                  <tr>
+                    <td>GitHub</td>
+                    <td> <a href="https://github.com/Etown-Computer-Science-Club">Etown-Computer-Science-Club</a> </td>
+                  </tr>
+                  <tr>
+                    <td>Discord</td>
+                    <td> <a href="https://discord.com/invite/2qeFUwWfF8">Etown CS Club</a> </td>
+                  </tr>
+                  <tr>
+                    <td>LinkedIn</td>
+                    <td> <a href="https://www.linkedin.com/company/elizabethtown-college-computer-science-club">Etown College Computer Science Club</a> </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </main>
