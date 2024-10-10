@@ -106,15 +106,23 @@
     }
 
     function resetPassword(email) {
-        auth.sendPasswordResetEmail(email)
-          .then(() => {
-            alert('Password reset email sent.');
-          })
-          .catch((error) => {
-            console.error('Error sending password reset email:', error);
-            alert(error.message);
-          });
-      }
+      return auth.sendPasswordResetEmail(email)
+        .then(() => {
+          alert('Password reset email sent. Please check your inbox.');
+          // Close the reset password modal
+          const resetPassModalEl = document.getElementById('resetPassModal');
+          const resetPassModal = bootstrap.Modal.getInstance(resetPassModalEl);
+          resetPassModal.hide();
+          // Open the login modal
+          const loginModalEl = document.getElementById('loginModal');
+          const loginModal = new bootstrap.Modal(loginModalEl);
+          loginModal.show();
+        })
+        .catch((error) => {
+          console.error('Error sending password reset email:', error);
+          alert(error.message);
+        });
+    }
 
 
 }) ();

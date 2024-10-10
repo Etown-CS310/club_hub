@@ -59,6 +59,7 @@
                         <div class="form-floating mb-4">
                           <input type="password" id="loginPassword" class="form-control form-control-lg bg-dark text-white" placeholder="Password">
                           <label for="loginPassword">Password</label>
+                          <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y pe-3" id="toggleLoginPassword" style="cursor: pointer;"></i>
                         </div>
         
                         <p class="small mb-5 pb-lg-2"><a class="text-white-50" href="#!" id = "forgotPasswordLink">Forgot password?</a></p>
@@ -96,15 +97,25 @@
                             <input type="email" id="signUpEmail" class="form-control form-control-lg bg-dark text-white" placeholder="Email" required>
                             <label for="signUpEmail">Email</label>
                           </div>
-
-                          <div class="form-floating mb-4">
+                        
+                          <div class="form-floating mb-4 position-relative">
                             <input type="password" id="signUpPassword" class="form-control form-control-lg bg-dark text-white" placeholder="Password" required>
                             <label for="signUpPassword">Password</label>
+                            <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y pe-3" id="togglePassword" style="cursor: pointer;"></i>
                           </div>
                           
+                          <div class="form-floating mb-4 position-relative">
+                            <input type="password" id="confirmPassword" class="form-control form-control-lg bg-dark text-white" placeholder="Confirm Password" required>
+                            <label for="confirmPassword">Confirm Password</label>
+                            <i class="bi bi-eye-slash position-absolute top-50 end-0 translate-middle-y pe-3" id="toggleConfirmPassword" style="cursor: pointer;"></i>
+                          </div>
+
                           <!-- Password Requirements Message -->
-                          <p id="passwordHelpBlock" class="form-text text-muted mb-4">
-                            Your password must contain at least one uppercase letter, one special character, and one number.
+                          <p id="passwordHelp" class="form-text text-muted mb-4">
+                            Your password must contain at least 6 characters, one uppercase letter, one special character, and one number.
+                          </p>
+                          <p id="passwordHelpNoMatch" class="form-text text-muted mb-4">
+                            Password do not match.
                           </p>
 
                           <button class="btn btn-outline-light btn-lg px-5" type="submit">Sign Up</button>
@@ -113,6 +124,36 @@
 
                       <div>
                         <p class="mb-0">Already have an account? <a href="#" class="text-white-50 fw-bold" id="loginLink">Login</a></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reset Password Modal -->
+        <div class="modal fade" id="resetPassModal" tabindex="-1" aria-labelledby="resetPassModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="container">
+                <div class="row d-flex justify-content-center align-items-center">
+                  <div class="card bg-dark text-white">
+                    <div class="card-body p-5 text-center">
+                      <div class="mb-md-5 mt-md-4 pb-5">
+                        <h2 class="fw-bold mb-2 text-uppercase">Reset Password</h2>
+                        <p class="text-white-50 mb-5">Please enter your email to reset your password!</p>
+                        <form id="resetPasswordForm">
+                          <div class="form-floating mb-4">
+                            <input type="email" id="resetEmail" class="form-control form-control-lg bg-dark text-white" placeholder="Email" required />
+                            <label for="resetEmail">Email</label>
+                          </div>
+                          <button class="btn btn-outline-light btn-lg px-5" type="submit">Reset Password</button>
+                        </form>
+                      </div>
+                      <div>
+                        <p class="mb-0">Remember your password? <a href="#" class="text-white-50 fw-bold" id="backToLoginLink" >Login</a></p>
                       </div>
                     </div>
                   </div>

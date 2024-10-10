@@ -75,17 +75,34 @@
       });
     }
 
-    // Handle "Forgot password" link
+    // Handle "Forgot password" link in login modal
     const forgotPasswordLink = document.getElementById('forgotPasswordLink');
     if (forgotPasswordLink) {
       forgotPasswordLink.addEventListener('click', function(e) {
         e.preventDefault();
-        const email = document.getElementById('loginEmail').value;
-        if (email) {
-          resetPassword(email);
-        } else {
-          alert('Please enter your email address to reset your password.');
-        }
+        // Close the login modal and open the reset password modal
+        const loginModalEl = document.getElementById('loginModal');
+        const resetPassModalEl = document.getElementById('resetPassModal');
+        const loginModal = bootstrap.Modal.getInstance(loginModalEl);
+        const resetPassModal = new bootstrap.Modal(resetPassModalEl);
+        loginModal.hide();
+        resetPassModal.show();
+      });
+    }
+    
+    // Handle reset password form submission
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
+    if (resetPasswordForm) {
+      resetPasswordForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('resetEmail').value;
+        resetPassword(email)
+          .then(() => {
+            console.log('Password reset email sent successfully');
+          })
+          .catch((error) => {
+            console.error('Error in reset password:', error);
+          });
       });
     }
 
@@ -107,13 +124,26 @@
     // Handle sign-up form submission
     const signUpForm = document.getElementById('signUpForm');
     if (signUpForm) {
-    signUpForm.addEventListener('submit', function(e) {
+      signUpForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const email = document.getElementById('signUpEmail').value;
         const password = document.getElementById('signUpPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (password !== confirmPassword) {
+          alert('Passwords do not match. Please try again.');
+          return;
+        }
+
+        // Check password requirements
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{6,}$/;
+        if (!passwordRegex.test(password)) {
+          alert('Password does not meet the requirements. Please ensure your password has at least 6 characters, one uppercase letter, one special character, and one number.');
+          return;
+        }
 
         signUp(email, password)
-        .then(() => {
+          .then(() => {
             console.log('Sign-up successful, updating UI.');
             // Hide the sign-up modal
             const signUpModalEl = document.getElementById('signUpModal');
@@ -130,12 +160,12 @@
 
             // Inform the user to verify their email
             alert('Registration successful! Please verify your email before logging in.');
-        })
-        .catch((error) => {
+          })
+          .catch((error) => {
             // Error is already handled in signUp function
             console.error('Error in sign-up event listener:', error);
-        });
-    });
+          });
+      });
     }
 
     // Handle "Login" link in sign-up modal
@@ -152,8 +182,81 @@
         loginModal.show();
       });
     }
+
+    // Handle "Back to Login" link in reset password modal
+    const backToLoginLink = document.getElementById('backToLoginLink');
+    if (backToLoginLink) {
+      backToLoginLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        // Close the reset password modal and open the login modal
+        const resetPassModalEl = document.getElementById('resetPassModal');
+        const loginModalEl = document.getElementById('loginModal');
+        const resetPassModal = bootstrap.Modal.getInstance(resetPassModalEl);
+        const loginModal = new bootstrap.Modal(loginModalEl);
+        resetPassModal.hide();
+        loginModal.show();
+      });
+    }
+
+    const signUpPassword = document.getElementById('signUpPassword');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const passwordHelp = document.getElementById('passwordHelp');
+    const passwordHelpNoMatch = document.getElementById('passwordHelpNoMatch');
+
+    function validatePassword(password) {
+      const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).{6,}$/;
+      return regex.test(password);
+    }
+  
+    function updatePasswordHelp() {
+      const password = signUpPassword.value;
+      const confirmPwd = confirmPassword.value;
+      
+      // hide if password meets requirements
+      if (validatePassword(signUpPassword.value)) {
+        passwordHelp.style.display = 'none';
+      } else {
+        passwordHelp.style.display = 'block';
+      }
+
+      // hide if confirm password matches
+      if (password !== confirmPwd) {
+        passwordHelpNoMatch.style.display = 'block';
+      } else {
+        passwordHelpNoMatch.style.display = 'none';
+      }
+
+    }
+  
+    // Initial check
+    updatePasswordHelp();
+  
+    // Add event listener for real-time checking
+    signUpPassword.addEventListener('input', updatePasswordHelp);  
+    confirmPassword.addEventListener('input', updatePasswordHelp);
+    
+    // Password visibility toggle
+    function togglePasswordVisibility(inputId, toggleId) {
+      const input = document.getElementById(inputId);
+      const toggle = document.getElementById(toggleId);
+
+      toggle.addEventListener('click', function() {
+        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+        input.setAttribute('type', type);
+        this.classList.toggle('bi-eye');
+        this.classList.toggle('bi-eye-slash');
+      });
+    }
+
+    // Apply toggles
+    togglePasswordVisibility('loginPassword', 'toggleLoginPassword');
+    togglePasswordVisibility('signUpPassword', 'togglePassword');
+    togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
+
   }
 
+  
+  
   // Move displayUserUI and displayGuestUI functions here
   function displayUserUI(user) {
     const authSection = document.getElementById('authSection');
