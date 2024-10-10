@@ -61,7 +61,7 @@
       
         // Determine role based on email
         let role = 'user';
-        if (user.email === 'csclub@etown.edu') {
+        if (user.email === 'islamm@etown.edu' || user.email === 'smithm6@etown.edu'|| user.email === 'csclub@etown.edu') {
           role = 'clubAdmin';
         }
       

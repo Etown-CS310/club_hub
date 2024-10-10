@@ -224,3 +224,20 @@ main {
 .col-md-4.mb-0.text-body-secondary, .nav-link.px-2.text-body-secondary{
     padding: 0px 10px 0px 10px;
 }
+
+/* FullCalendar custom styles */
+.fc .fc-button-primary {
+    cursor: pointer !important;
+}
+
+.fc .fc-button-primary:not(:disabled) {
+opacity: 1 !important;
+}
+
+.fc-event {
+cursor: pointer !important;
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+}
