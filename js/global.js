@@ -266,7 +266,7 @@
           ${user.email}
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-          <li><a class="dropdown-item" href="#">Settings</a></li>
+          <li><a class="dropdown-item" href="/pages/settings.html">Settings</a></li>
           <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
         </ul>
       </div>

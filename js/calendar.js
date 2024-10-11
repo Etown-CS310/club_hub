@@ -36,18 +36,18 @@
         });
     }
     
-    let calendar; // Declare calendar variable in a wider scope
+    let calendar;
 
     function initializeCalendar(showCreateEventButton = false) {
       const calendarEl = document.getElementById('calendar');
-
+      
       calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         events: fetchEventsFromFirestore,
         headerToolbar: {
-          left: showCreateEventButton ? 'prev,next today createEventButton' : 'prev,next today',
+          left: 'dayGridMonth,timeGridWeek,timeGridDay',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          right: showCreateEventButton ? 'createEventButton today prev,next' : 'today prev,next'
         },
         customButtons: showCreateEventButton ? {
           createEventButton: {
@@ -69,10 +69,12 @@
           week: 'Week',
           day: 'Day'
         }
-
       });
 
       calendar.render();
+      
+      // Add custom class to calendar element for CSS targeting
+      calendarEl.classList.add('custom-calendar');
     }
 
     // Initialize calendar without the Create Event button

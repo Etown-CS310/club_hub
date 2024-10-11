@@ -7,7 +7,8 @@ body {
     font-style: normal;
 }
 
-main {
+
+.center-container {
     flex: auto; 
     display: flex;
     align-items: center;
@@ -90,8 +91,7 @@ main {
 #calendar {
     margin: 20px;
     width: 100%;
-    max-width: 1000px; 
-    height: auto;
+    max-width: 1150px; 
     min-height: 600px;
 }
 
@@ -231,13 +231,140 @@ main {
 }
 
 .fc .fc-button-primary:not(:disabled) {
-opacity: 1 !important;
+    opacity: 1 !important;
 }
 
 .fc-event {
-cursor: pointer !important;
+    cursor: pointer !important;
 }
 
 .fc .fc-daygrid-day.fc-day-today {
-background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+    background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+}
+
+/* Custom styles for modal close buttons */
+#createEventModal .btn-close,
+#eventDetailsModal .btn-close {
+  filter: invert(1);
+  opacity: 0.5;
+}
+
+#createEventModal .btn-close:hover,
+#eventDetailsModal .btn-close:hover {
+  opacity: 0.75;
+}
+
+/* Style for date and time input fields */
+#createEventModal input[type="date"],
+#createEventModal input[type="time"] {
+  color-scheme: dark;
+}
+
+/* Adjust the submit button spacing */
+#createEventForm .btn-outline-light {
+  margin-right: 10px;  /* Adjust this value as needed */
+}
+
+/* Ensure text in inputs is visible */
+#createEventModal input.form-control {
+  color: white !important;
+}
+
+/* Placeholder text color */
+#createEventModal input.form-control::placeholder {
+  color: #6c757d;
+}
+
+/* Custom styles for calendar buttons */
+.custom-calendar .fc-button-active {
+    background-color: var(--bs-primary-dark, #0056b3) !important;
+    border-color: var(--bs-primary-dark, #0056b3) !important;
+    color: white !important;
+}
+
+.custom-calendar .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: var(--bs-primary-dark, #0056b3) !important;
+    border-color: var(--bs-primary-dark, #0056b3) !important;
+    color: white !important;
+}
+
+.custom-calendar .fc-button-primary:not(:disabled):active,
+.custom-calendar .fc-button-primary:not(:disabled):focus {
+    background-color: var(--bs-primary-dark, #0056b3) !important;
+    border-color: var(--bs-primary-dark, #0056b3) !important;
+    color: white !important;
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.5) !important;
+}
+
+.custom-calendar .fc-button-primary:hover {
+    background-color: var(--bs-primary-dark, #0056b3) !important;
+    border-color: var(--bs-primary-dark, #0056b3) !important;
+}
+
+.custom-calendar .fc-today-button:not(:disabled) {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+}
+
+/* Settings page css */
+.settings-container {
+    display: flex;
+    margin: 10rem auto;
+}
+
+.settings-menu {
+    flex: 0 0 200px;
+    max-width: 200px;
+    margin-right: 2rem;
+}
+
+.settings-content {
+    width: 300px;
+}
+
+.settings-menu .nav-link {
+    color: #343a40;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.settings-menu .nav-link.active {
+    background-color: #0056b3;
+    color: #ffffff;
+}
+
+.btn-clubhub {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #ffffff;
+}
+.btn-clubhub:hover, .settings-menu .nav-link:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: #ffffff;
+}
+
+/* Ensure forms are full width */
+form, .tab-pane {
+    width: 100%;
+}
+
+form .form-control {
+    width: 100%;
+}
+
+/* Set minimum height for tabs */
+.tab-content {
+    min-height: 300px; /* Adjust as needed */
+}
+
+/* navbar search size fix  */
+.navbar .d-flex.spacing {
+    width: auto;
+    margin-right: 10rem;
+}
+
+.navbar .search-size {
+    width: 200px;  /* Adjust this value as needed */
 }
