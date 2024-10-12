@@ -23,7 +23,8 @@
               location: data.location,
               extendedProps: {
                 location: data.location,
-                createdBy: data.createdBy
+                createdBy: data.createdBy,
+                clubName: data.clubName
               }
             });
 
@@ -145,39 +146,56 @@
           alert('End time must be after start time.');
           return;
         }
-    
-        // Create event object
-        const event = {
-          title: title,
-          date: date,
-          startTime: startTime,
-          endTime: endTime,
-          location: location,
-          createdBy: user.uid,
-        };
-    
-        // Save to Firestore under 'events' collection
-        db.collection('events').add(event)
-          .then(() => {
-            // Close the modal
-            const createEventModalEl = document.getElementById('createEventModal');
-            const createEventModal = bootstrap.Modal.getInstance(createEventModalEl);
-            createEventModal.hide();
-    
-            // Reset the form
-            form.reset();
-            form.classList.remove('was-validated');
-    
-            // Refresh the calendar events
-            calendar.refetchEvents();
-    
-            // Show success message
-            alert('Event created successfully!');
-          })
-          .catch((error) => {
-            console.error('Error adding event: ', error);
-            alert('Error adding event: ' + error.message);
-          });
+        
+        // Get current user
+        const user = auth.currentUser;
+        
+        // Fetch user data to get club affiliation
+        db.collection('users').doc(user.uid).get().then((doc) => {
+          if (doc.exists) {
+            const userData = doc.data();
+            const clubName = userData.displayName || userData.email.split('@')[0];
+
+            // Create event object
+            const event = {
+              title: title,
+              date: date,
+              startTime: startTime,
+              endTime: endTime,
+              location: location,
+              createdBy: user.uid,
+              clubName: clubName 
+            };
+
+            // Save to Firestore under 'events' collection
+            db.collection('events').add(event)
+              .then(() => {
+                // Close the modal
+                const createEventModalEl = document.getElementById('createEventModal');
+                const createEventModal = bootstrap.Modal.getInstance(createEventModalEl);
+                createEventModal.hide();
+
+                // Reset the form
+                form.reset();
+                form.classList.remove('was-validated');
+
+                // Refresh the calendar events
+                calendar.refetchEvents();
+
+                // Show success message
+                alert('Event created successfully!');
+              })
+              .catch((error) => {
+                console.error('Error adding event: ', error);
+                alert('Error adding event: ' + error.message);
+              });
+          } else {
+            alert('User data not found.');
+          }
+        }).catch((error) => {
+          console.error('Error fetching user data:', error);
+          alert('Error fetching user data: ' + error.message);
+        });
       }
     });
 

@@ -368,3 +368,10 @@ form .form-control {
 .navbar .search-size {
     width: 200px;  /* Adjust this value as needed */
 }
+
+#profilePicturePreview {
+    width: 50px;
+    height: 50px;
+    display: block;
+    border-radius: 50%;
+}

@@ -255,15 +255,16 @@
 
   }
 
-  
-  
   // Move displayUserUI and displayGuestUI functions here
   function displayUserUI(user) {
+
+    const DEFAULT_PROFILE_PICTURE = 'https://firebasestorage.googleapis.com/v0/b/etown-clubhub.appspot.com/o/default_bluejay.jpg?alt=media';
     const authSection = document.getElementById('authSection');
     authSection.innerHTML = `
       <div class="dropdown">
-        <button class="btn btn-clubhub dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          ${user.email}
+        <button class="btn btn-clubhub dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="${user.photoURL || DEFAULT_PROFILE_PICTURE}" alt="Profile" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+          ${user.displayName || user.email}
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
           <li><a class="dropdown-item" href="/pages/settings.html">Settings</a></li>

@@ -17,7 +17,7 @@
     // Initialize Firebase services
     const auth = firebase.auth();
     const db = firebase.firestore();
-
+    
     // Expose to global scope
     window.auth = auth;
     window.db = db;

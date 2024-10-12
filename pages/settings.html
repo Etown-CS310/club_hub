@@ -42,6 +42,11 @@
             <div class="tab-pane fade show active" id="userInfo" role="tabpanel" aria-labelledby="v-pills-user-tab">
                 <h3 class="mb-4">User Information</h3>
                 <form id="userInfoForm">
+                  <div class="mb-3">
+                    <img id="profilePicturePreview" src="" alt="Profile Picture">
+                    <label for="profilePictureInput" class="form-label">Profile Picture</label>
+                    <input type="file" class="form-control" id="profilePictureInput" accept="image/*">
+                  </div>
                 <div class="mb-3">
                     <label for="settingsEmail" class="form-label">Email address</label>
                     <input type="email" class="form-control bg-dark text-white" id="settingsEmail" aria-describedby="emailHelp" readonly>
@@ -55,8 +60,8 @@
                     <label for="settingsClub" class="form-label">Club Affiliation</label>
                     <select class="form-select bg-dark text-white" id="settingsClub">
                     <option selected>Choose...</option>
-                    <option value="1">CS Club</option>
-                    <option value="2">Math Club</option>
+                    <option value="CS Club">CS Club</option>
+                    <option value="Math Club">Math Club</option>
                     <option value="3">Other</option>
                     </select>
                 </div>
@@ -132,6 +137,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
 
   <!-- Custom Firebase -->
   <script src="/js/firebase.js"></script>

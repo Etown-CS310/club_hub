@@ -1,10 +1,15 @@
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  "use strict";
+  document.addEventListener('DOMContentLoaded', function() {
     const userInfoForm = document.getElementById('userInfoForm');
     const changePasswordForm = document.getElementById('changePasswordForm');
     const notificationsForm = document.getElementById('notificationsForm');
-  
+    const profilePictureInput = document.getElementById('profilePictureInput');
+    const profilePicturePreview = document.getElementById('profilePicturePreview');
 
-  
+    const MAX_FILE_SIZE = 1 * 512 * 512; // 250kb
+    const DEFAULT_PROFILE_PICTURE = 'https://firebasestorage.googleapis.com/v0/b/etown-clubhub.appspot.com/o/default_bluejay.jpg?alt=media';
+
     // Check if user is authenticated
     auth.onAuthStateChanged(function(user) {
       if (user) {
@@ -26,12 +31,34 @@ document.addEventListener('DOMContentLoaded', function() {
           document.getElementById('settingsDisplayName').value = userData.displayName || '';
           document.getElementById('settingsClub').value = userData.clubAffiliation || '';
           document.getElementById('settingsNotifications').checked = userData.notifications || false;
+
+          // Set profile picture
+          profilePicturePreview.src = userData.profilePicture || DEFAULT_PROFILE_PICTURE;
         }
       }).catch((error) => {
         console.error("Error fetching user data:", error);
       });
     }
-  
+    
+    // Handle profile picture upload
+    profilePictureInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        if (file.size > MAX_FILE_SIZE) {
+          alert('File is too large. Maximum size is 512kB.');
+          profilePictureInput.value = '';
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          profilePicturePreview.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+
     // Handle user info form submission
     userInfoForm.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -39,22 +66,41 @@ document.addEventListener('DOMContentLoaded', function() {
       if (user) {
         const displayName = document.getElementById('settingsDisplayName').value;
         const clubAffiliation = document.getElementById('settingsClub').value;
-  
-        // Update user profile in Firebase Auth
-        user.updateProfile({
-          displayName: displayName
-        }).then(() => {
-          // Update additional user data in Firestore
-          return db.collection('users').doc(user.uid).set({
-            displayName: displayName,
-            clubAffiliation: clubAffiliation
-          }, { merge: true });
-        }).then(() => {
-          alert('User information updated successfully!');
-        }).catch((error) => {
-          console.error('Error updating user information:', error);
-          alert('An error occurred while updating user information.');
-        });
+        const file = profilePictureInput.files[0];
+
+        let updatePromise;
+        if (file) {
+          // Upload new profile picture
+          const storageRef = firebase.storage().ref('profile_pictures/' + user.uid);
+          updatePromise = storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL());
+        } else {
+          updatePromise = Promise.resolve(null);
+        }
+
+        updatePromise
+          .then((downloadURL) => {
+            // Update user profile in Firebase Auth
+            return user.updateProfile({
+              displayName: displayName,
+              photoURL: downloadURL || user.photoURL || DEFAULT_PROFILE_PICTURE
+            });
+          })
+          .then(() => {
+            // Update additional user data in Firestore
+            return db.collection('users').doc(user.uid).set({
+              displayName: displayName,
+              clubAffiliation: clubAffiliation,
+              profilePicture: user.photoURL || DEFAULT_PROFILE_PICTURE
+            }, { merge: true });
+          })
+          .then(() => {
+            alert('User information updated successfully!');
+            profilePictureInput.value = ''; // Clear the file input
+          })
+          .catch((error) => {
+            console.error('Error updating user information:', error);
+            alert('An error occurred while updating user information.');
+          });
       }
     });
   
@@ -168,3 +214,5 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+
+})();

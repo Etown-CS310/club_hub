@@ -79,38 +79,8 @@
                           <th scope="col">Time</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        <tr>
-                          <th scope="row">CS Club</th>
-                          <td>Weekly Meeting</td>
-                          <td>10/08/2024</td>
-                          <td>7:00-8:00pm</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">Math Club</th>
-                          <td>Weekly Meeting</td>
-                          <td>10/10/2024</td>
-                          <td>5:00-6:00pm</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">CS Club</th>
-                          <td>Weekly Meeting</td>
-                          <td>10/15/2024</td>
-                          <td>7:00-8:00pm</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">Math Club</th>
-                          <td>Weekly Meeting</td>
-                          <td>10/17/2024</td>
-                          <td>5:00-6:00pm</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">CS Club</th>
-                          <td>Weekly Meeting</td>
-                          <td>10/22/2024</td>
-                          <td>7:00-8:00pm</td>
-                        </tr>
-                        
+                      <tbody id = "home-events">
+                        <!-- dynamically inserted events -->
                       </tbody>
                     </table>
                   </div>
@@ -186,11 +156,14 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-storage-compat.js"></script>
 
     <!-- Custom Firebase -->
     <script src="/js/firebase.js"></script>
 
     <!-- Custom JS -->
     <script src="/js/global.js"></script>
+    <script src="/js/dynamicUpdates.js"></script>
+
   </body>
 </html>
