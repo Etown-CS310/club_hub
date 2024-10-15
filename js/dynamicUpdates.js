@@ -36,6 +36,7 @@
             <td>${data.title}</td>
             <td>${formattedDate}</td>
             <td>${formattedTime}</td>
+            <td>${data.location}</td>
             `;
     
             eventsTable.appendChild(row);
