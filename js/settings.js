@@ -58,6 +58,18 @@
       }
     });
 
+    function updatePublicClubProfile(userId, userData) {
+      // Only update public profile if the user is a club admin
+      if (userData.role === 'clubAdmin') {
+        return db.collection('publicClubProfiles').doc(userId).set({
+          clubName: userData.displayName,
+          clubAffiliation: userData.clubAffiliation,
+          profilePicture: userData.profilePicture || DEFAULT_PROFILE_PICTURE,
+          lastFeatured: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      }
+      return Promise.resolve(); // If not a club admin, resolve immediately
+    }
 
     // Handle user info form submission
     userInfoForm.addEventListener('submit', function(e) {
@@ -87,11 +99,23 @@
           })
           .then(() => {
             // Update additional user data in Firestore
-            return db.collection('users').doc(user.uid).set({
+            const userData = {
               displayName: displayName,
               clubAffiliation: clubAffiliation,
               profilePicture: user.photoURL || DEFAULT_PROFILE_PICTURE
-            }, { merge: true });
+            };
+            return db.collection('users').doc(user.uid).set(userData, { merge: true });
+          })
+          .then(() => {
+            // Fetch the complete user data including the role
+            return db.collection('users').doc(user.uid).get();
+          })
+          .then((doc) => {
+            if (doc.exists) {
+              const completeUserData = doc.data();
+              // Update public club profile if the user is a club admin
+              return updatePublicClubProfile(user.uid, completeUserData);
+            }
           })
           .then(() => {
             alert('User information updated successfully!');
