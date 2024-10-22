@@ -69,6 +69,7 @@
           uid: user.uid,
           email: user.email,
           role: role,
+          displayName: user.email.split('@')[0],
           // Add other profile info 
         });
     }

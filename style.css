@@ -244,34 +244,41 @@ body {
 
 /* Custom styles for modal close buttons */
 #createEventModal .btn-close,
-#eventDetailsModal .btn-close {
+#eventDetailsModal .btn-close,
+#editEventModal .btn-close {
   filter: invert(1);
   opacity: 0.5;
 }
 
 #createEventModal .btn-close:hover,
-#eventDetailsModal .btn-close:hover {
+#eventDetailsModal .btn-close:hover,
+#editEventModal .btn-close:hover {
   opacity: 0.75;
 }
 
 /* Style for date and time input fields */
 #createEventModal input[type="date"],
-#createEventModal input[type="time"] {
+#createEventModal input[type="time"],
+#editEventModal input[type="date"],
+#editEventModal input[type="time"] {
   color-scheme: dark;
 }
 
 /* Adjust the submit button spacing */
-#createEventForm .btn-outline-light {
+#createEventForm .btn-outline-light,
+#editEventForm .btn-outline-light {
   margin-right: 10px;  /* Adjust this value as needed */
 }
 
 /* Ensure text in inputs is visible */
-#createEventModal input.form-control {
+#createEventModal input.form-control,
+#editEventModal input.form-control {
   color: white !important;
 }
 
 /* Placeholder text color */
-#createEventModal input.form-control::placeholder {
+#createEventModal input.form-control::placeholder,
+#editEventModal input.form-control::placeholder {
   color: #6c757d;
 }
 
@@ -374,4 +381,8 @@ form .form-control {
     height: 50px;
     display: block;
     border-radius: 50%;
+}
+
+.hidden {
+    display: none;
 }

@@ -81,6 +81,50 @@
         </div>
       </div>
 
+      <!-- Edit Event Modal -->
+      <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="editEventForm" novalidate>
+                <div class="mb-3">
+                  <label for="editEventTitle" class="form-label">Event Title</label>
+                  <input type="text" class="form-control bg-dark text-white" id="editEventTitle" required>
+                  <div class="invalid-feedback">Please enter an event title.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editEventDate" class="form-label">Event Date</label>
+                  <input type="date" class="form-control bg-dark text-white" id="editEventDate" required>
+                  <div class="invalid-feedback">Please select a valid date.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editStartTime" class="form-label">Start Time</label>
+                  <input type="time" class="form-control bg-dark text-white" id="editStartTime" required>
+                  <div class="invalid-feedback">Please enter a start time.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editEndTime" class="form-label">End Time</label>
+                  <input type="time" class="form-control bg-dark text-white" id="editEndTime" required>
+                  <div class="invalid-feedback">Please enter an end time.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editLocation" class="form-label">Location</label>
+                  <input type="text" class="form-control bg-dark text-white" id="editLocation" required>
+                  <div class="invalid-feedback">Please enter a location.</div>
+                </div>
+                <input type="hidden" id="editEventId">
+                <button type="submit" class="btn btn-outline-light">Save Changes</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
       <!-- Event Details Modal -->
       <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -90,13 +134,15 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <h5 id="detailEventTitle"></h5>
+              <h5 id="detailEventClub"></h5>
+              <p><strong>Event:</strong> <span id="detailEventTitle"></span></p>
               <p><strong>Date:</strong> <span id="detailEventDate"></span></p>
               <p><strong>Time:</strong> <span id="detailEventTime"></span></p>
               <p><strong>Location:</strong> <span id="detailEventLocation"></span></p>
 
               <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="deleteEventButton" style="display: none;">Delete Event</button>
+                <button type="button" class="btn btn-primary" id="editEventButton" >Edit Event</button>
+                <button type="button" class="btn btn-danger" id="deleteEventButton" >Delete Event</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               </div>
             </div>

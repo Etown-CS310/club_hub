@@ -57,7 +57,7 @@
       try {
         const querySnapshot = await db.collection('publicClubProfiles')
           .orderBy('lastFeatured')
-          .limit(5)  // Increased to 5 to potentially show more clubs
+          .limit(5)  
           .get();
     
         featuredClubsContainer.innerHTML = '';
