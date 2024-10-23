@@ -20,7 +20,44 @@
         window.location.href = '/';
       }
     });
-  
+    
+    const clubSearchInput = document.getElementById('clubSearchInput');
+    const clubOptions = document.querySelectorAll('.club-options .form-check');
+    const selectedClubsText = document.getElementById('selectedClubsText');
+    
+    // Search functionality
+    clubSearchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        clubOptions.forEach(option => {
+            const text = option.querySelector('label').textContent.toLowerCase();
+            if(text.includes(searchTerm)) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    });
+
+    // Update selected clubs text
+    function updateSelectedClubs() {
+        const selectedClubs = Array.from(document.querySelectorAll('.club-options input:checked'))
+            .map(input => input.value);
+        
+        selectedClubsText.textContent = selectedClubs.length > 0 
+            ? selectedClubs.join(', ') 
+            : 'Choose Clubs';
+    }
+
+    // Add change listener to all checkboxes
+    document.querySelectorAll('.club-options input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedClubs);
+    });
+
+    // Stop dropdown from closing when clicking inside
+    document.querySelector('.dropdown-menu').addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
     function populateUserSettings(user) {
       document.getElementById('settingsEmail').value = user.email;
       
@@ -29,7 +66,29 @@
         if (doc.exists) {
           const userData = doc.data();
           document.getElementById('settingsDisplayName').value = userData.displayName || '';
-          document.getElementById('settingsClub').value = userData.clubAffiliation || '';
+            
+          // Populate current affiliations
+          const currentAffiliationsDiv = document.getElementById('currentAffiliations');
+          currentAffiliationsDiv.innerHTML = '';
+
+          if (userData.clubAffiliations && userData.clubAffiliations.length > 0) {
+              userData.clubAffiliations.forEach(club => {
+                  currentAffiliationsDiv.innerHTML += `
+                      <div class="mb-2">
+                          <input type="checkbox" class="form-check-input" 
+                                  id="current_${club.replace(/\s+/g, '')}" 
+                                  name="currentAffiliations" 
+                                  value="${club}" 
+                                  checked>
+                          <label class="form-check-label ms-2" 
+                                  for="current_${club.replace(/\s+/g, '')}">${club}</label>
+                      </div>
+                  `;
+              });
+          } else {
+              currentAffiliationsDiv.innerHTML = '<p class="text-white mb-0">No current club affiliations</p>';
+          }
+            
           document.getElementById('settingsNotifications').checked = userData.notifications || false;
 
           // Set profile picture
@@ -63,7 +122,6 @@
       if (userData.role === 'clubAdmin') {
         return db.collection('publicClubProfiles').doc(userId).set({
           clubName: userData.displayName,
-          clubAffiliation: userData.clubAffiliation,
           profilePicture: userData.profilePicture || DEFAULT_PROFILE_PICTURE,
           lastFeatured: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
@@ -77,9 +135,18 @@
       const user = auth.currentUser;
       if (user) {
         const displayName = document.getElementById('settingsDisplayName').value;
-        const clubAffiliation = document.getElementById('settingsClub').value;
         const file = profilePictureInput.files[0];
 
+        // Get all checked clubs from both current and dropdown selections
+        const currentChecked = Array.from(document.querySelectorAll('#currentAffiliations input:checked'))
+        .map(input => input.value);
+            
+        const dropdownChecked = Array.from(document.querySelectorAll('.club-options input:checked'))
+            .map(input => input.value);
+            
+        // Combine both selections, remove duplicates
+        const allSelectedClubs = [...new Set([...currentChecked, ...dropdownChecked])];
+        
         let updatePromise;
         if (file) {
           // Upload new profile picture
@@ -101,7 +168,7 @@
             // Update additional user data in Firestore
             const userData = {
               displayName: displayName,
-              clubAffiliation: clubAffiliation,
+              clubAffiliations: allSelectedClubs,
               profilePicture: user.photoURL || DEFAULT_PROFILE_PICTURE
             };
             return db.collection('users').doc(user.uid).set(userData, { merge: true });
@@ -118,8 +185,38 @@
             }
           })
           .then(() => {
+              // After successful save, update the UI
+              const currentAffiliationsDiv = document.getElementById('currentAffiliations');
+              currentAffiliationsDiv.innerHTML = '';
+
+              if (allSelectedClubs.length > 0) {
+                  allSelectedClubs.forEach(club => {
+                      currentAffiliationsDiv.innerHTML += `
+                          <div class="mb-2">
+                              <input type="checkbox" class="form-check-input" 
+                                    id="current_${club.replace(/\s+/g, '')}" 
+                                    name="currentAffiliations" 
+                                    value="${club}" 
+                                    checked>
+                              <label class="form-check-label ms-2" 
+                                    for="current_${club.replace(/\s+/g, '')}">${club}</label>
+                          </div>
+                      `;
+                  });
+              } else {
+                  currentAffiliationsDiv.innerHTML = '<p class="text-white mb-0">No current club affiliations</p>';
+              }
+
+              // Clear any checked boxes in the dropdown
+              document.querySelectorAll('.club-options input[type="checkbox"]').forEach(checkbox => {
+                  checkbox.checked = false;
+              });
+              
+              // Update the dropdown text
+              document.getElementById('selectedClubsText').textContent = 'Choose Clubs';
+              
             alert('User information updated successfully!');
-            profilePictureInput.value = ''; // Clear the file input
+            profilePictureInput.value = ''; 
           })
           .catch((error) => {
             console.error('Error updating user information:', error);

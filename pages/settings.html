@@ -56,14 +56,35 @@
                     <label for="settingsDisplayName" class="form-label">Display Name</label>
                     <input type="text" class="form-control bg-dark text-white" id="settingsDisplayName">
                 </div>
+                <!-- Current Affiliations Display -->
                 <div class="mb-3">
-                    <label for="settingsClub" class="form-label">Club Affiliation</label>
-                    <select class="form-select bg-dark text-white" id="settingsClub">
-                    <option selected>Choose...</option>
-                    <option value="CS Club">CS Club</option>
-                    <option value="Math Club">Math Club</option>
-                    <option value="3">Other</option>
-                    </select>
+                  <label class="form-label">Current Club Affiliations</label>
+                  <div id="currentAffiliations" class="club-affiliations-container bg-dark text-white p-3 rounded">
+                      <!-- Will be populated by JavaScript -->
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Add Club Affiliations</label>
+                  <div class="dropdown">
+                      <button class="form-control bg-dark text-white d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          <span id="selectedClubsText">Choose Clubs</span>
+                          <i class="bi bi-chevron-down"></i>
+                      </button>
+                      <div class="dropdown-menu bg-dark w-100 p-2">
+                          <input type="text" class="form-control bg-dark text-white mb-2" id="clubSearchInput" placeholder="Search clubs...">
+                          <div class="club-options" style="max-height: 200px; overflow-y: auto;">
+                              <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" value="CS Club" id="csClub">
+                                  <label class="form-check-label text-white" for="csClub">CS Club</label>
+                              </div>
+                              <div class="form-check">
+                                  <input class="form-check-input" type="checkbox" value="Math Club" id="mathClub">
+                                  <label class="form-check-label text-white" for="mathClub">Math Club</label>
+                              </div>
+                              <!-- Add more clubs here -->
+                          </div>
+                      </div>
+                  </div>
                 </div>
                 <button type="submit" class="btn btn-clubhub">Save Changes</button>
                 </form>
