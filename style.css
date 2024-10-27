@@ -1,3 +1,5 @@
+
+/* ------------------- Implemented in index.html ------------------- */
 body {
     display: flex;
     flex-direction: column;
@@ -6,7 +8,6 @@ body {
     font-weight: 400;
     font-style: normal;
 }
-
 
 .center-container {
     flex: auto; 
@@ -19,7 +20,6 @@ body {
 .navbar, .footer, .text-bg-secondary {
     background-color: #004B98 !important;
 }
-
 
 #cs310 {
     height: 40px;
@@ -52,54 +52,12 @@ body {
     color: rgb(255 255 255 / 75%) !important;
 }
 
-/* Calendar Header */
-.fc-theme-bootstrap5 .fc-toolbar.fc-header-toolbar {
-    background-color: #004B98;
-    color: #fff;
-    padding: 10px;
-}
-
-/* Calendar Buttons */
-.fc .fc-button {
-    background-color: #3DB5E6;
-    border: none;
-    color: #fff;
-}
-
-.fc .fc-button:hover {
-    background-color: #004B98;
-}
-
-.fc .fc-button:focus {
-    box-shadow: none;
-}
-
-/* Today's Date Highlight */
-.fc .fc-day-today {
-    background-color: rgba(61, 181, 230, 0.2);
-}
-
-/* Event Colors */
-.fc-event {
-    background-color: #3DB5E6;
-    border: none;
-    color: #fff;
-    font-weight: bold;
-}
-
-/* Full Height Calendar */
-#calendar {
-    margin: 20px;
-    width: 100%;
-    max-width: 1150px; 
-    min-height: 600px;
-}
-
 .spacing {
     margin: auto;
 }
 
-/* Effects for text in forms */
+
+/* ------------------- Effects for Text in Forms ------------------- */
 .form-floating > .form-control,
 .form-floating > .form-control-plaintext {
     padding: 1rem 0.75rem;
@@ -162,7 +120,8 @@ body {
     --bs-btn-disabled-border-color: #3DB5E6;
 }
 
-/* Carousel custom edit */
+
+/* ------------------- Carousel Custom Edit ------------------- */
 .custom-container {
     max-width: 600px;
     margin: 0 auto; 
@@ -196,6 +155,10 @@ body {
     border-radius: 5px;
 }
 
+.carousel-control-prev, .carousel-control-next {
+    margin-top: 58px;
+}
+
 /* custom col margins */
 .col-margin {
     margin: 1rem 0 1rem 0;
@@ -206,16 +169,16 @@ body {
 }
 
 /* heading on carousel */
+/* Semi-transparent background */
 #clubCarousel h2, .custom-container h2 {
     top: 10px;
     left: 15px;
     z-index: 10;
     color: #000; 
-    background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+    background-color: rgba(255, 255, 255, 0.7);
     padding: 5px 10px;
     border-radius: 5px;
 }
-
 
 .inline-display {
     display: inline !important;
@@ -225,7 +188,48 @@ body {
     padding: 0px 10px 0px 10px;
 }
 
-/* FullCalendar custom styles */
+
+/* ------------------- Full Calendar Custom Styles ------------------- */
+
+/* Calendar Header */
+.fc-theme-bootstrap5 .fc-toolbar.fc-header-toolbar {
+    background-color: #004B98;
+    color: #fff;
+    padding: 10px;
+}
+
+/* Full Height Calendar */
+#calendar {
+    margin: 20px;
+    width: 100%;
+    max-width: 1150px; 
+    min-height: 600px;
+}
+
+/* Today's Date Highlight */
+.fc .fc-day-today {
+    background-color: rgba(61, 181, 230, 0.2);
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+    background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+}
+
+/* Calendar Buttons */
+.fc .fc-button {
+    background-color: #3DB5E6;
+    border: none;
+    color: #fff;
+}
+
+.fc .fc-button:hover {
+    background-color: #004B98;
+}
+
+.fc .fc-button:focus {
+    box-shadow: none;
+}
+
 .fc .fc-button-primary {
     cursor: pointer !important;
 }
@@ -234,55 +238,16 @@ body {
     opacity: 1 !important;
 }
 
+/* Event Colors */
 .fc-event {
+    background-color: #3DB5E6;
+    border: none;
+    color: #fff;
+    font-weight: bold;
     cursor: pointer !important;
 }
 
-.fc .fc-daygrid-day.fc-day-today {
-    background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
-}
-
-/* Custom styles for modal close buttons */
-#createEventModal .btn-close,
-#eventDetailsModal .btn-close,
-#editEventModal .btn-close {
-  filter: invert(1);
-  opacity: 0.5;
-}
-
-#createEventModal .btn-close:hover,
-#eventDetailsModal .btn-close:hover,
-#editEventModal .btn-close:hover {
-  opacity: 0.75;
-}
-
-/* Style for date and time input fields */
-#createEventModal input[type="date"],
-#createEventModal input[type="time"],
-#editEventModal input[type="date"],
-#editEventModal input[type="time"] {
-  color-scheme: dark;
-}
-
-/* Adjust the submit button spacing */
-#createEventForm .btn-outline-light,
-#editEventForm .btn-outline-light {
-  margin-right: 10px;  /* Adjust this value as needed */
-}
-
-/* Ensure text in inputs is visible */
-#createEventModal input.form-control,
-#editEventModal input.form-control {
-  color: white !important;
-}
-
-/* Placeholder text color */
-#createEventModal input.form-control::placeholder,
-#editEventModal input.form-control::placeholder {
-  color: #6c757d;
-}
-
-/* Custom styles for calendar buttons */
+/* ------------------- Custom Styles for Calendar Buttons ------------------- */
 .custom-calendar .fc-button-active {
     background-color: var(--bs-primary-dark, #0056b3) !important;
     border-color: var(--bs-primary-dark, #0056b3) !important;
@@ -313,7 +278,49 @@ body {
     border-color: var(--bs-primary) !important;
 }
 
-/* Settings page css */
+
+/* ------------------- Custom Styles for Modal Close Buttons ------------------- */
+#createEventModal .btn-close,
+#eventDetailsModal .btn-close,
+#editEventModal .btn-close {
+  filter: invert(1);
+  opacity: 0.5;
+}
+
+#createEventModal .btn-close:hover,
+#eventDetailsModal .btn-close:hover,
+#editEventModal .btn-close:hover {
+  opacity: 0.75;
+}
+
+/* Style for date and time input fields */
+#createEventModal input[type="date"],
+#createEventModal input[type="time"],
+#editEventModal input[type="date"],
+#editEventModal input[type="time"] {
+  color-scheme: dark;
+}
+
+/* Adjust the submit button spacing */
+#createEventForm .btn-outline-light,
+#editEventForm .btn-outline-light {
+  margin-right: 10px;
+}
+
+/* Ensure text in inputs is visible */
+#createEventModal input.form-control,
+#editEventModal input.form-control {
+  color: white !important;
+}
+
+/* Placeholder text color */
+#createEventModal input.form-control::placeholder,
+#editEventModal input.form-control::placeholder {
+  color: #6c757d;
+}
+
+
+/* ------------------- Settings Page CSS ------------------- */
 .settings-container {
     display: flex;
     margin: 10rem auto;
@@ -346,6 +353,7 @@ body {
     border-color: #007bff;
     color: #ffffff;
 }
+
 .btn-clubhub:hover, .settings-menu .nav-link:hover {
     background-color: #0056b3;
     border-color: #0056b3;
@@ -361,9 +369,12 @@ form .form-control {
     width: 100%;
 }
 
+
+/* ------------------- Navbar CSS ------------------- */
+
 /* Set minimum height for tabs */
 .tab-content {
-    min-height: 300px; /* Adjust as needed */
+    min-height: 300px;
 }
 
 /* navbar search size fix  */
@@ -373,7 +384,7 @@ form .form-control {
 }
 
 .navbar .search-size {
-    width: 200px;  /* Adjust this value as needed */
+    width: 200px;
 }
 
 #profilePicturePreview {
@@ -386,3 +397,49 @@ form .form-control {
 .hidden {
     display: none;
 }
+
+
+/* ------------------- template.html ------------------- */
+.news_btn{
+    font-size: 16px;
+}
+
+.news_btn:hover {
+    opacity: 0.8;
+    background-color: orange;
+}
+
+/* Popup Form - Hidden by default */
+.form-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 300px;
+  }
+  
+  /* Button styling */
+  .btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .btn.cancel {
+    background-color: red;
+  }
+  
+  .btn:hover {
+    opacity: 0.8;
+  }
