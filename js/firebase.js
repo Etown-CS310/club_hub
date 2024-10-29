@@ -59,26 +59,32 @@
     async function createUserProfile(user) {
         try {
           const userRef = db.collection('users').doc(user.uid);
-          
-          // First check if user's email matches any club email
-          const clubSnapshot = await db.collection('clubs')
-              .where('email', '==', user.email.toLowerCase())
-              .get();
 
           // Determine role based on email
           let role = 'user';
-          if (user.email === 'islamm@etown.edu' || user.email === 'smithm6@etown.edu' || user.email === 'csclub@etown.edu') {
-              role = 'clubAdmin';
-          }
 
-          // If this email matches a club email, set role to clubAdmin and verify the club
-          if (!clubSnapshot.empty) {
+          // Check if it's a special admin (keeping this just in case you need super admins)
+          if (user.email === 'islamm@etown.edu' || user.email === 'smithm6@etown.edu') {
               role = 'clubAdmin';
-              // Update the club's verification status
-              const clubDoc = clubSnapshot.docs[0];
-              await db.collection('clubs').doc(clubDoc.id).update({
-                  isVerified: true
-              });
+          } else {
+              // Check if user's email matches any club email
+              const clubSnapshot = await db.collection('clubs')
+                  .where('email', '==', user.email.toLowerCase())
+                  .get();
+
+              if (!clubSnapshot.empty) {
+                  // This user is associated with a club
+                  role = 'clubAdmin';
+                  
+                  // Update the club's verification status
+                  const clubDoc = clubSnapshot.docs[0];
+                  await db.collection('clubs').doc(clubDoc.id).update({
+                      isVerified: true,
+                      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                  });
+
+                  console.log(`Verified club account for ${user.email}`);
+              }
           }
 
           // Create user profile
