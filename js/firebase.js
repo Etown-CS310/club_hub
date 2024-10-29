@@ -56,22 +56,46 @@
         });
     }
 
-    function createUserProfile(user) {
-        const userRef = db.collection('users').doc(user.uid);
-      
-        // Determine role based on email
-        let role = 'user';
-        if (user.email === 'islamm@etown.edu' || user.email === 'smithm6@etown.edu'|| user.email === 'csclub@etown.edu') {
-          role = 'clubAdmin';
-        }
-      
-        return userRef.set({
-          uid: user.uid,
-          email: user.email,
-          role: role,
-          displayName: user.email.split('@')[0],
-          // Add other profile info 
-        });
+    async function createUserProfile(user) {
+        try {
+          const userRef = db.collection('users').doc(user.uid);
+          
+          // First check if user's email matches any club email
+          const clubSnapshot = await db.collection('clubs')
+              .where('email', '==', user.email.toLowerCase())
+              .get();
+
+          // Determine role based on email
+          let role = 'user';
+          if (user.email === 'islamm@etown.edu' || user.email === 'smithm6@etown.edu' || user.email === 'csclub@etown.edu') {
+              role = 'clubAdmin';
+          }
+
+          // If this email matches a club email, set role to clubAdmin and verify the club
+          if (!clubSnapshot.empty) {
+              role = 'clubAdmin';
+              // Update the club's verification status
+              const clubDoc = clubSnapshot.docs[0];
+              await db.collection('clubs').doc(clubDoc.id).update({
+                  isVerified: true
+              });
+          }
+
+          // Create user profile
+          await userRef.set({
+              uid: user.uid,
+              email: user.email,
+              role: role,
+              displayName: user.email.split('@')[0],
+              // Add other profile info 
+          });
+
+          console.log('User profile created successfully');
+          
+      } catch (error) {
+          console.error('Error creating user profile:', error);
+          throw error;
+      }
     }
 
     function signIn(email, password) {

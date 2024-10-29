@@ -424,7 +424,7 @@ form .form-control {
     width: 300px;
   }
   
-  /* Button styling */
+  /* Button styling
   .btn {
     background-color: #4CAF50;
     color: white;
@@ -442,4 +442,4 @@ form .form-control {
   
   .btn:hover {
     opacity: 0.8;
-  }
+  } */
