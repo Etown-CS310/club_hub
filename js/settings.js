@@ -1,5 +1,64 @@
 (function() {
   "use strict";
+
+  function updateSelectedClubs() {
+    const selectedClubs = Array.from(document.querySelectorAll('.club-options input:checked'))
+        .map(input => input.value);
+    
+    const selectedClubsText = document.getElementById('selectedClubsText');
+    selectedClubsText.textContent = selectedClubs.length > 0 
+        ? selectedClubs.join(', ') 
+        : 'Choose Clubs';
+  }
+
+  function initializeClubDropdown() {
+    const clubOptionsContainer = document.querySelector('.club-options');
+    const clubSearchInput = document.getElementById('clubSearchInput');
+
+    // Initial load of all clubs
+    db.collection('clubs').get().then((snapshot) => {
+        const clubs = [];
+        snapshot.forEach(doc => {
+            const club = doc.data();
+            clubs.push({
+                id: doc.id,
+                name: club.name
+            });
+        });
+
+        // Populate initial list
+        renderClubOptions(clubs);
+
+        // Add search handler
+        clubSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredClubs = clubs.filter(club => 
+                club.name.toLowerCase().includes(searchTerm)
+            );
+            renderClubOptions(filteredClubs);
+        });
+    });
+
+    function renderClubOptions(clubs) {
+        clubOptionsContainer.innerHTML = clubs.map(club => `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" 
+                       value="${club.name}" id="club_${club.id}">
+                <label class="form-check-label text-white" for="club_${club.id}">
+                    ${club.name}
+                </label>
+            </div>
+        `).join('');
+
+        // Reattach event listeners
+        clubOptionsContainer.querySelectorAll('input[type="checkbox"]')
+            .forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedClubs);
+            });
+    }
+
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     const userInfoForm = document.getElementById('userInfoForm');
     const changePasswordForm = document.getElementById('changePasswordForm');
@@ -9,6 +68,8 @@
 
     const MAX_FILE_SIZE = 1 * 512 * 512; // 250kb
     const DEFAULT_PROFILE_PICTURE = 'https://firebasestorage.googleapis.com/v0/b/etown-clubhub.appspot.com/o/default_bluejay.jpg?alt=media';
+
+    initializeClubDropdown();
 
     // Check if user is authenticated
     auth.onAuthStateChanged(function(user) {
@@ -22,36 +83,7 @@
     });
     
     const clubSearchInput = document.getElementById('clubSearchInput');
-    const clubOptions = document.querySelectorAll('.club-options .form-check');
     const selectedClubsText = document.getElementById('selectedClubsText');
-    
-    // Search functionality
-    clubSearchInput.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        clubOptions.forEach(option => {
-            const text = option.querySelector('label').textContent.toLowerCase();
-            if(text.includes(searchTerm)) {
-                option.style.display = '';
-            } else {
-                option.style.display = 'none';
-            }
-        });
-    });
-
-    // Update selected clubs text
-    function updateSelectedClubs() {
-        const selectedClubs = Array.from(document.querySelectorAll('.club-options input:checked'))
-            .map(input => input.value);
-        
-        selectedClubsText.textContent = selectedClubs.length > 0 
-            ? selectedClubs.join(', ') 
-            : 'Choose Clubs';
-    }
-
-    // Add change listener to all checkboxes
-    document.querySelectorAll('.club-options input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', updateSelectedClubs);
-    });
 
     // Stop dropdown from closing when clicking inside
     document.querySelector('.dropdown-menu').addEventListener('click', function(e) {
@@ -65,7 +97,20 @@
       db.collection('users').doc(user.uid).get().then((doc) => {
         if (doc.exists) {
           const userData = doc.data();
-          document.getElementById('settingsDisplayName').value = userData.displayName || '';
+          const displayNameInput = document.getElementById('settingsDisplayName');
+          
+          displayNameInput.value = userData.displayName || '';
+          
+          // Disable display name editing for club admins
+          if (userData.isClubAdmin) {
+              displayNameInput.disabled = true;
+              displayNameInput.title = "Club names cannot be edited here";
+              // Optional: Add a help text
+              const helpText = document.createElement('div');
+              helpText.className = 'form-text';
+              helpText.textContent = 'Club names are managed through the clubs directory';
+              displayNameInput.parentNode.appendChild(helpText);
+          }
             
           // Populate current affiliations
           const currentAffiliationsDiv = document.getElementById('currentAffiliations');

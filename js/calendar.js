@@ -5,16 +5,179 @@
    * Initialize calendar component
    */
   document.addEventListener('DOMContentLoaded', function() {
+    let calendar;
+    let currentFilters = {
+      clubType: '',
+      selectedClubs: [] // Changed to array for multiple selections
+    };
+
+    function initializeFilters() {
+
+      handleClubSearch();
+
+      // Populate club types from Firestore
+      db.collection('clubs').get().then((snapshot) => {
+        const types = new Set(); // Using Set automatically prevents duplicates
+        snapshot.forEach(doc => {
+          const club = doc.data();
+          if (club.type) types.add(club.type);
+        });
+        
+        const typeSelect = document.getElementById('clubTypeFilter');
+        // Clear existing options except "All Types"
+        typeSelect.innerHTML = '<option value="">All Types</option>';
+        
+        // Add unique types
+        Array.from(types).sort().forEach(type => {
+          const option = document.createElement('option');
+          option.value = type;
+          option.textContent = type;
+          typeSelect.appendChild(option);
+        });
+      });
+
+      // Add event listeners
+      document.getElementById('clubTypeFilter').addEventListener('change', handleFilterChange);
+      document.getElementById('clubNameFilter').addEventListener('input', handleClubSearch);
+      document.getElementById('applyFilter').addEventListener('click', applyFilters);
+
+      // Stop dropdown from closing when clicking inside
+      document.querySelector('.dropdown-menu').addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    }
+
+    function updateSelectedClubsText() {
+      const selectedClubsText = document.getElementById('selectedClubsText');
+      if (currentFilters.selectedClubs.length > 0) {
+        selectedClubsText.textContent = `${currentFilters.selectedClubs.length} club(s) selected`;
+      } else {
+        selectedClubsText.textContent = 'Choose Clubs';
+      }
+    }
+
+    function handleFilterChange() {
+      currentFilters.clubType = document.getElementById('clubTypeFilter').value;
+      handleClubSearch();
+    }
+
+    function handleClubSearch() {
+    const searchTerm = document.getElementById('clubNameFilter').value.toLowerCase();
+    const clubListContainer = document.querySelector('.club-list');
+    
+    // Get public club profiles first
+    db.collection('publicClubProfiles').get()
+      .then((profilesSnapshot) => {
+        const clubMappings = {};
+        profilesSnapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.clubName) clubMappings[data.clubName.toLowerCase()] = data.clubName;
+          if (data.clubAffiliation) clubMappings[data.clubAffiliation.toLowerCase()] = data.clubAffiliation;
+        });
+
+        let query = db.collection('clubs');
+        if (currentFilters.clubType) {
+          query = query.where('type', '==', currentFilters.clubType);
+        }
+        
+        return query.get().then((snapshot) => {
+          const clubs = [];
+          snapshot.forEach(doc => {
+            const club = doc.data();
+            if (club.name.toLowerCase().includes(searchTerm)) {
+              // Use the mapping to get the correct stored name
+              const storedName = clubMappings[club.name.toLowerCase()] || club.name;
+              clubs.push({
+                id: doc.id,
+                name: club.name,
+                storedName: storedName
+              });
+            }
+          });
+
+          clubListContainer.innerHTML = clubs.map(club => `
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="clubFilter" 
+                    id="club_${club.id}" value="${club.storedName}"
+                    ${currentFilters.selectedClubs.includes(club.storedName) ? 'checked' : ''}>
+              <label class="form-check-label" for="club_${club.id}">
+                ${club.name}
+              </label>
+            </div>
+          `).join('');
+
+          // Add event listeners for checkboxes
+          clubListContainer.querySelectorAll('input[name="clubFilter"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+              if (e.target.checked) {
+                if (!currentFilters.selectedClubs.includes(e.target.value)) {
+                  currentFilters.selectedClubs.push(e.target.value);
+                }
+              } else {
+                currentFilters.selectedClubs = currentFilters.selectedClubs.filter(
+                  club => club !== e.target.value
+                );
+              }
+              updateSelectedClubsText();
+            });
+          });
+        });
+      });
+    }
+
+    function applyFilters() {
+      calendar.refetchEvents();
+    }
 
     function fetchEventsFromFirestore(info, successCallback, failureCallback) {
-      // Fetch events from Firestore
-      db.collection('events').get()
+      let query = db.collection('events');
+      
+      if (currentFilters.selectedClubs.length > 0) {
+        // Filter events for selected clubs
+        query = query.where('clubName', 'in', currentFilters.selectedClubs);
+      } else if (currentFilters.clubType) {
+        // If no specific clubs selected but type is selected
+        db.collection('clubs')
+          .where('type', '==', currentFilters.clubType)
+          .get()
+          .then((clubsSnapshot) => {
+            const clubNames = [];
+            clubsSnapshot.forEach(doc => {
+              clubNames.push(doc.data().name);
+            });
+            return db.collection('events')
+              .where('clubName', 'in', clubNames)
+              .get();
+          })
+          .then((eventsSnapshot) => {
+            const events = [];
+            eventsSnapshot.forEach((doc) => {
+              const data = doc.data();
+              events.push({
+                id: doc.id,
+                title: data.title,
+                start: data.date + 'T' + data.startTime,
+                end: data.date + 'T' + data.endTime,
+                location: data.location,
+                extendedProps: {
+                  location: data.location,
+                  createdBy: data.createdBy,
+                  clubName: data.clubName
+                }
+              });
+            });
+            successCallback(events);
+          })
+          .catch(failureCallback);
+        return;
+      }
+
+      // Execute query
+      query.get()
         .then((querySnapshot) => {
           const events = [];
           querySnapshot.forEach((doc) => {
             const data = doc.data();
-    
-            // Convert Firestore data to FullCalendar event format
             events.push({
               id: doc.id,
               title: data.title,
@@ -27,17 +190,11 @@
                 clubName: data.clubName
               }
             });
-
           });
           successCallback(events);
         })
-        .catch((error) => {
-          console.error('Error fetching events: ', error);
-          failureCallback(error);
-        });
+        .catch(failureCallback);
     }
-    
-    let calendar;
 
     function initializeCalendar(showCreateEventButton = false) {
       const calendarEl = document.getElementById('calendar');
@@ -61,47 +218,34 @@
         } : {},
         eventContent: function(arg) {
           return {
-            html: `
-              <div class="fc-daygrid-event-dot"></div>
-              <div class="fc-event-time">${arg.timeText}</div>
-              <div class="fc-event-title">${arg.event.extendedProps.clubName}</div>
-            `
+              html: `
+                  <div class="fc-daygrid-event-dot"></div>
+                  <div class="fc-event-time">${arg.timeText}</div>
+                  <div class="fc-event-title text-wrap">${arg.event.extendedProps.clubName}</div>
+              `
           };
-        },
+      },
         eventClick: function(info) {
           showEventDetails(info.event);
-        },
-        themeSystem: 'bootstrap5',
-        buttonIcons: true,
-        buttonText: {
-          today: 'Today',
-          month: 'Month',
-          week: 'Week',
-          day: 'Day'
         }
       });
 
       calendar.render();
-      
-      // Add custom class to calendar element for CSS targeting
+      initializeFilters();
       calendarEl.classList.add('custom-calendar');
     }
 
-    // Initialize calendar without the Create Event button
     initializeCalendar();
 
-    // Check authentication state and update calendar accordingly
     auth.onAuthStateChanged((user) => {
       if (user) {
-        // User is signed in, reinitialize calendar with Create Event button
         if (calendar) {
-          calendar.destroy(); // Destroy existing calendar instance
+          calendar.destroy();
         }
         initializeCalendar(true);
       } else {
-        // User is signed out, reinitialize calendar without Create Event button
         if (calendar) {
-          calendar.destroy(); // Destroy existing calendar instance
+          calendar.destroy();
         }
         initializeCalendar(false);
       }

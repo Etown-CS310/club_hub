@@ -12,9 +12,11 @@ body {
 .center-container {
     flex: auto; 
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    flex-direction: row;
+    align-items: flex-start;  
+    justify-content: flex-start;  
+    gap: 1rem;
+    padding: 0 20px;
 }
 
 .navbar, .footer, .text-bg-secondary {
@@ -200,10 +202,11 @@ body {
 
 /* Full Height Calendar */
 #calendar {
-    margin: 20px;
     width: 100%;
     max-width: 1150px; 
     min-height: 600px;
+    flex-grow: 1;
+    margin: 20px 0;
 }
 
 /* Today's Date Highlight */
@@ -237,6 +240,23 @@ body {
 .fc .fc-button-primary:not(:disabled) {
     opacity: 1 !important;
 }
+
+  /* Make calendar cells expand to fit content */
+  .fc-daygrid-event-harness {
+    height: auto !important;
+}
+
+.fc-daygrid-day-events {
+    min-height: auto !important;
+}
+
+
+.fc-event-title {
+    white-space: normal !important;
+    overflow: visible !important;
+    font-weight: bold;
+}
+
 
 /* Event Colors */
 .fc-event {
@@ -443,3 +463,23 @@ form .form-control {
   .btn:hover {
     opacity: 0.8;
   } */
+
+/* Filter sidebar positioning and styling */
+.filter-sidebar {
+    width: 300px;  
+    flex-shrink: 0;
+    align-self: flex-start;  
+    position: sticky;
+    top: 20px;     
+    margin-top: 20px;
+}
+
+.filter-sidebar .dropdown-menu {
+    width: 100%;
+}
+
+.filter-sidebar .club-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}

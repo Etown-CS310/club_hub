@@ -34,6 +34,39 @@
         <!-- The calendar controls will be here -->
       </div>
 
+      <!-- Filter Sidebar -->
+      <div class="filter-sidebar me-3">
+        <div class="card border">
+          <div class="card-header bg-white">
+            <h5 class="mb-0">Filter Events</h5>
+          </div>
+          <div class="card-body bg-white">
+            <div class="mb-3">
+              <label for="clubTypeFilter" class="form-label">Club Type</label>
+              <select class="form-select" id="clubTypeFilter">
+                <option value="">All Types</option>
+                <!-- Will be populated from Firestore -->
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Club Name</label>
+              <div class="dropdown">
+                <button class="btn border dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" id="clubDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span id="selectedClubsText">Choose Clubs</span>
+                </button>
+                <div class="dropdown-menu w-100 p-2" aria-labelledby="clubDropdown">
+                  <input type="text" class="form-control mb-2" id="clubNameFilter" placeholder="Search clubs...">
+                  <div class="club-list" style="max-height: 200px; overflow-y: auto;">
+                    <!-- Will be populated from Firestore -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button id="applyFilter" class="btn btn-clubhub w-100">Apply Filter</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Calendar Container -->
       <div id='calendar'></div>
 

@@ -57,52 +57,51 @@
     }
 
     async function createUserProfile(user) {
-        try {
+      try {
           const userRef = db.collection('users').doc(user.uid);
-
-          // Determine role based on email
-          let role = 'user';
-
-          // Check if it's a special admin (keeping this just in case you need super admins)
+  
+          let userData = {
+              uid: user.uid,
+              email: user.email,
+              role: 'user'
+          };
+  
+          // Check for superadmin
           if (user.email === 'islamm@etown.edu' || user.email === 'smithm6@etown.edu') {
-              role = 'clubAdmin';
+              userData.role = 'superadmin';
+              userData.displayName = user.email.split('@')[0];
           } else {
-              // Check if user's email matches any club email
+              // Check for club admin
               const clubSnapshot = await db.collection('clubs')
                   .where('email', '==', user.email.toLowerCase())
                   .get();
-
+  
               if (!clubSnapshot.empty) {
-                  // This user is associated with a club
-                  role = 'clubAdmin';
-                  
-                  // Update the club's verification status
                   const clubDoc = clubSnapshot.docs[0];
+                  const clubData = clubDoc.data();
+                  
+                  userData.role = 'clubAdmin';
+                  userData.displayName = clubData.name;
+                  userData.isClubAdmin = true;
+  
+                  // Update club verification
                   await db.collection('clubs').doc(clubDoc.id).update({
                       isVerified: true,
                       lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
                   });
-
-                  console.log(`Verified club account for ${user.email}`);
+              } else {
+                  userData.displayName = user.email.split('@')[0];
               }
           }
-
-          // Create user profile
-          await userRef.set({
-              uid: user.uid,
-              email: user.email,
-              role: role,
-              displayName: user.email.split('@')[0],
-              // Add other profile info 
-          });
-
+  
+          await userRef.set(userData);
           console.log('User profile created successfully');
           
       } catch (error) {
           console.error('Error creating user profile:', error);
           throw error;
       }
-    }
+  }
 
     function signIn(email, password) {
         return auth.signInWithEmailAndPassword(email, password)
