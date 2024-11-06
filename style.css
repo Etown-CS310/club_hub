@@ -1,32 +1,64 @@
 
-/* ------------------- Implemented in index.html ------------------- */
+/* ------------------- General Styles ------------------- */
 body {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; 
+    min-height: 100vh;
     font-family: "Lato", sans-serif;
     font-weight: 400;
     font-style: normal;
 }
 
 .center-container {
-    flex: auto; 
+    flex: auto;
     display: flex;
-    flex-direction: row;
-    align-items: flex-start;  
-    justify-content: flex-start;  
+    align-items: flex-start;
+    justify-content: flex-start;
     gap: 1rem;
     padding: 0 20px;
 }
 
 .navbar, .footer, .text-bg-secondary {
-    background-color: #004B98 !important;
+    background-color: #004B98;
 }
 
+/* CS310 Logo in Footer */
 #cs310 {
     height: 40px;
     width: 40px;
 }
+
+
+/* ------------------- Navbar CSS ------------------- */
+
+/* Set minimum height for tabs */
+.tab-content {
+    min-height: 300px;
+}
+
+/* navbar search size fix  */
+.navbar .d-flex.spacing {
+    width: auto;
+    margin-right: 10rem;
+}
+
+.navbar .search-size {
+    width: 200px;
+}
+
+#profilePicturePreview {
+    width: 50px;
+    height: 50px;
+    display: block;
+    border-radius: 50%;
+}
+
+.hidden {
+    display: none;
+}
+
+
+/* ------------------- Button Styles ------------------- */
 
 .btn-outline-success {
     --bs-btn-color: #3DB5E6;
@@ -45,21 +77,50 @@ body {
     --bs-gradient: none;
 }
 
+.btn-clubhub {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #3DB5E6;
+    --bs-btn-border-color: #3DB5E6;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #004B98;
+    --bs-btn-hover-border-color: #0a58ca;
+    --bs-btn-focus-shadow-rgb: 49,132,253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #0a58ca;
+    --bs-btn-active-border-color: #004B98;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #3DB5E6;
+    --bs-btn-disabled-border-color: #3DB5E6;
+}
+
+
+/* ------------------- Text and Links ------------------- */
+
 .text-body-secondary {
-    --bs-text-opacity: 1;
-    color: rgb(255 255 255 / 55%) !important;
+    color: rgba(255, 255, 255, 0.55) !important;
 }
 
 .text-body-secondary:hover {
-    color: rgb(255 255 255 / 75%) !important;
+    color: rgba(255, 255, 255, 0.75) !important;
 }
+
+.inline-display {
+    display: inline !important;
+}
+
+.col-md-4.mb-0.text-body-secondary, .nav-link.px-2.text-body-secondary {
+    padding: 0 10px;
+}
+
+/* TODO: old (look into) */
 
 .spacing {
     margin: auto;
 }
 
 
-/* ------------------- Effects for Text in Forms ------------------- */
+/* ------------------- Forms ------------------- */
 .form-floating > .form-control,
 .form-floating > .form-control-plaintext {
     padding: 1rem 0.75rem;
@@ -105,32 +166,16 @@ body {
     color: #0d6efd;
 }
 
-.btn-clubhub {
-    --bs-btn-color: #fff;
-    --bs-btn-bg: #3DB5E6;
-    --bs-btn-border-color: #3DB5E6;
-    --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: #004B98;
-    --bs-btn-hover-border-color: #0a58ca;
-    --bs-btn-focus-shadow-rgb: 49,132,253;
-    --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: #0a58ca;
-    --bs-btn-active-border-color: #004B98;
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: #fff;
-    --bs-btn-disabled-bg: #3DB5E6;
-    --bs-btn-disabled-border-color: #3DB5E6;
-}
-
 
 /* ------------------- Carousel Custom Edit ------------------- */
 .custom-container {
     max-width: 600px;
-    margin: 0 auto; 
-    background-color: gray;  
+    margin: 0 auto;
+    background-color: gray;
     border-radius: 2%;
     padding-bottom: 10px;
 }
+
 .custom-container .carousel-item, .col .custom-container {
     max-height: 450px; 
 }
@@ -241,8 +286,8 @@ body {
     opacity: 1 !important;
 }
 
-  /* Make calendar cells expand to fit content */
-  .fc-daygrid-event-harness {
+/* Make calendar cells expand to fit content */
+.fc-daygrid-event-harness {
     height: auto !important;
 }
 
@@ -250,13 +295,11 @@ body {
     min-height: auto !important;
 }
 
-
 .fc-event-title {
     white-space: normal !important;
     overflow: visible !important;
     font-weight: bold;
 }
-
 
 /* Event Colors */
 .fc-event {
@@ -387,35 +430,6 @@ form, .tab-pane {
 
 form .form-control {
     width: 100%;
-}
-
-
-/* ------------------- Navbar CSS ------------------- */
-
-/* Set minimum height for tabs */
-.tab-content {
-    min-height: 300px;
-}
-
-/* navbar search size fix  */
-.navbar .d-flex.spacing {
-    width: auto;
-    margin-right: 10rem;
-}
-
-.navbar .search-size {
-    width: 200px;
-}
-
-#profilePicturePreview {
-    width: 50px;
-    height: 50px;
-    display: block;
-    border-radius: 50%;
-}
-
-.hidden {
-    display: none;
 }
 
 
