@@ -352,28 +352,41 @@
       }
     });
 
+    // Update the showEventDetails function in calendar.js
     function showEventDetails(event) {
       document.getElementById('detailEventTitle').textContent = event.title;
       document.getElementById('detailEventClub').textContent = event.extendedProps.clubName;
       document.getElementById('detailEventDate').textContent = event.start.toLocaleDateString();
       document.getElementById('detailEventTime').textContent = `${event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
       document.getElementById('detailEventLocation').textContent = event.extendedProps.location;
-    
+
+      // Add More Details button
+      const moreDetailsBtn = document.createElement('button');
+      moreDetailsBtn.className = 'btn btn-primary';
+      moreDetailsBtn.textContent = 'More Details';
+      moreDetailsBtn.onclick = () => {
+          window.location.href = `/pages/eventDetails.html?id=${event.id}`;
+      };
+
+      const modalFooter = document.querySelector('#eventDetailsModal .modal-footer');
+
+      // Insert More Details button before the Close button
+      modalFooter.insertBefore(moreDetailsBtn, modalFooter.lastElementChild);
+
       const user = auth.currentUser;
       const deleteButton = document.getElementById('deleteEventButton');
       const editButton = document.getElementById('editEventButton');
       
-      // Always reset button visibility first
       deleteButton.classList.add('hidden');
       editButton.classList.add('hidden');
       
       if (user && user.uid === event.extendedProps.createdBy) {
-        deleteButton.classList.remove('hidden');
-        editButton.classList.remove('hidden');
-        deleteButton.onclick = () => deleteEvent(event.id);
-        editButton.onclick = () => showEditEventModal(event);
+          deleteButton.classList.remove('hidden');
+          editButton.classList.remove('hidden');
+          deleteButton.onclick = () => deleteEvent(event.id);
+          editButton.onclick = () => showEditEventModal(event);
       }
-    
+
       const eventDetailsModal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
       eventDetailsModal.show();
     }

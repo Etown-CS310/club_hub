@@ -1,62 +1,78 @@
-(function() {
-  "use strict";
+"use strict";
 
-  function updateSelectedClubs() {
-    const selectedClubs = Array.from(document.querySelectorAll('.club-options input:checked'))
-        .map(input => input.value);
-    
-    const selectedClubsText = document.getElementById('selectedClubsText');
-    selectedClubsText.textContent = selectedClubs.length > 0 
-        ? selectedClubs.join(', ') 
-        : 'Choose Clubs';
+(function() {
+    // Move the function to higher scope so it can be used everywhere
+    function updateSelectedClubsText(selectedClubs) {
+      const selectedClubsText = document.getElementById('selectedClubsText');
+      if (selectedClubs.size > 0) {
+          selectedClubsText.textContent = `${selectedClubs.size} club${selectedClubs.size !== 1 ? 's' : ''} selected`;
+      } else {
+          selectedClubsText.textContent = 'Choose Clubs';
+      }
   }
 
   function initializeClubDropdown() {
-    const clubOptionsContainer = document.querySelector('.club-options');
-    const clubSearchInput = document.getElementById('clubSearchInput');
+      const clubOptionsContainer = document.querySelector('.club-options');
+      const clubSearchInput = document.getElementById('clubSearchInput');
+      const selectedClubs = new Set(); // Track selected clubs across searches
 
-    // Initial load of all clubs
-    db.collection('clubs').get().then((snapshot) => {
-        const clubs = [];
-        snapshot.forEach(doc => {
-            const club = doc.data();
-            clubs.push({
-                id: doc.id,
-                name: club.name
-            });
-        });
+      // Initial load of all clubs
+      db.collection('clubs').get().then((snapshot) => {
+          const clubs = [];
+          snapshot.forEach(doc => {
+              const club = doc.data();
+              clubs.push({
+                  id: doc.id,
+                  name: club.name
+              });
+          });
 
-        // Populate initial list
-        renderClubOptions(clubs);
+          // Populate initial list
+          renderClubOptions(clubs);
 
-        // Add search handler
-        clubSearchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredClubs = clubs.filter(club => 
-                club.name.toLowerCase().includes(searchTerm)
-            );
-            renderClubOptions(filteredClubs);
-        });
-    });
+          // Add search handler
+          clubSearchInput.addEventListener('input', (e) => {
+              const searchTerm = e.target.value.toLowerCase();
+              const filteredClubs = clubs.filter(club => 
+                  club.name.toLowerCase().includes(searchTerm)
+              );
+              renderClubOptions(filteredClubs);
+          });
+      });
 
-    function renderClubOptions(clubs) {
-        clubOptionsContainer.innerHTML = clubs.map(club => `
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" 
-                       value="${club.name}" id="club_${club.id}">
-                <label class="form-check-label text-white" for="club_${club.id}">
-                    ${club.name}
-                </label>
-            </div>
-        `).join('');
+      function renderClubOptions(clubs) {
+          clubOptionsContainer.innerHTML = clubs.map(club => `
+              <div class="form-check">
+                  <input class="form-check-input" type="checkbox" 
+                         value="${club.name}" 
+                         id="club_${club.id}"
+                         ${selectedClubs.has(club.name) ? 'checked' : ''}>
+                  <label class="form-check-label text-white" for="club_${club.id}">
+                      ${club.name}
+                  </label>
+              </div>
+          `).join('');
 
-        // Reattach event listeners
-        clubOptionsContainer.querySelectorAll('input[type="checkbox"]')
-            .forEach(checkbox => {
-                checkbox.addEventListener('change', updateSelectedClubs);
-            });
-    }
+          // Reattach event listeners
+          clubOptionsContainer.querySelectorAll('input[type="checkbox"]')
+              .forEach(checkbox => {
+                  checkbox.addEventListener('change', (e) => {
+                      if (e.target.checked) {
+                          selectedClubs.add(e.target.value);
+                      } else {
+                          selectedClubs.delete(e.target.value);
+                      }
+                      updateSelectedClubsText(selectedClubs);
+                  });
+              });
+      }
 
+      // Stop dropdown from closing when clicking inside
+      document.querySelector('.dropdown-menu').addEventListener('click', function(e) {
+          e.stopPropagation();
+      });
+
+      return { selectedClubs }; // Return selectedClubs so it can be used in form submission
   }
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -69,7 +85,7 @@
     const MAX_FILE_SIZE = 1 * 512 * 512; // 250kb
     const DEFAULT_PROFILE_PICTURE = 'https://firebasestorage.googleapis.com/v0/b/etown-clubhub.appspot.com/o/default_bluejay.jpg?alt=media';
 
-    initializeClubDropdown();
+    const { selectedClubs } = initializeClubDropdown();
 
     // Check if user is authenticated
     auth.onAuthStateChanged(function(user) {
@@ -190,7 +206,7 @@
             .map(input => input.value);
             
         // Combine both selections, remove duplicates
-        const allSelectedClubs = [...new Set([...currentChecked, ...dropdownChecked])];
+        const allSelectedClubs = [...new Set([...currentChecked, ...selectedClubs])];
         
         let updatePromise;
         if (file) {
@@ -252,14 +268,9 @@
                   currentAffiliationsDiv.innerHTML = '<p class="text-white mb-0">No current club affiliations</p>';
               }
 
-              // Clear any checked boxes in the dropdown
-              document.querySelectorAll('.club-options input[type="checkbox"]').forEach(checkbox => {
-                  checkbox.checked = false;
-              });
-              
-              // Update the dropdown text
-              document.getElementById('selectedClubsText').textContent = 'Choose Clubs';
-              
+              selectedClubs.clear(); // Clear selections after saving
+              updateSelectedClubsText(selectedClubs);
+
             alert('User information updated successfully!');
             profilePictureInput.value = ''; 
           })
