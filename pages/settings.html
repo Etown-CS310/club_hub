@@ -40,54 +40,30 @@
             <div class="tab-content">
             <!-- User Information Section -->
             <div class="tab-pane fade show active" id="userInfo" role="tabpanel" aria-labelledby="v-pills-user-tab">
-                <h3 class="mb-4">User Information</h3>
-                <form id="userInfoForm">
+              <h3 class="mb-4">User Information</h3>
+              <form id="userInfoForm">
+                  <!-- Profile Picture Section -->
                   <div class="mb-3">
-                    <img id="profilePicturePreview" src="" alt="Profile Picture">
-                    <label for="profilePictureInput" class="form-label">Profile Picture</label>
-                    <input type="file" class="form-control" id="profilePictureInput" accept="image/*">
+                      <img id="profilePicturePreview" src="" alt="Profile Picture">
+                      <label for="profilePictureInput" class="form-label">Profile Picture</label>
+                      <input type="file" class="form-control" id="profilePictureInput" accept="image/*">
                   </div>
-                <div class="mb-3">
-                    <label for="settingsEmail" class="form-label">Email address</label>
-                    <input type="email" class="form-control bg-dark text-white" id="settingsEmail" aria-describedby="emailHelp" readonly>
-                    <div id="emailHelp" class="form-text">Your email address is used for login and cannot be changed.</div>
-                </div>
-                <div class="mb-3">
-                    <label for="settingsDisplayName" class="form-label">Display Name</label>
-                    <input type="text" class="form-control bg-dark text-white" id="settingsDisplayName">
-                </div>
-                <!-- Current Affiliations Display -->
-                <div class="mb-3">
-                  <label class="form-label">Current Club Affiliations</label>
-                  <div id="currentAffiliations" class="club-affiliations-container bg-dark text-white p-3 rounded">
-                      <!-- Will be populated by JavaScript -->
+                  <!-- Email Section -->
+                  <div class="mb-3">
+                      <label for="settingsEmail" class="form-label">Email address</label>
+                      <input type="email" class="form-control bg-dark text-white" id="settingsEmail" aria-describedby="emailHelp" readonly>
+                      <div id="emailHelp" class="form-text">Your email address is used for login and cannot be changed.</div>
                   </div>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Add Club Affiliations</label>
-                  <div class="dropdown">
-                      <button class="form-control bg-dark text-white d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          <span id="selectedClubsText">Choose Clubs</span>
-                          <i class="bi bi-chevron-down"></i>
-                      </button>
-                      <div class="dropdown-menu bg-dark w-100 p-2">
-                          <input type="text" class="form-control bg-dark text-white mb-2" id="clubSearchInput" placeholder="Search clubs...">
-                          <div class="club-options" style="max-height: 200px; overflow-y: auto;">
-                              <div class="form-check">
-                                  <input class="form-check-input" type="checkbox" value="CS Club" id="csClub">
-                                  <label class="form-check-label text-white" for="csClub">CS Club</label>
-                              </div>
-                              <div class="form-check">
-                                  <input class="form-check-input" type="checkbox" value="Math Club" id="mathClub">
-                                  <label class="form-check-label text-white" for="mathClub">Math Club</label>
-                              </div>
-                              <!-- Add more clubs here -->
-                          </div>
-                      </div>
+                  <!-- Display Name Section -->
+                  <div class="mb-3">
+                      <label for="settingsDisplayName" class="form-label">Display Name</label>
+                      <input type="text" class="form-control bg-dark text-white" id="settingsDisplayName">
                   </div>
-                </div>
-                <button type="submit" class="btn btn-clubhub">Save Changes</button>
-                </form>
+                  <!-- Club Affiliations will be inserted here -->
+                  <div id="clubAffiliationsContainer"></div>
+                  <!-- Submit Button -->
+                  <button type="submit" class="btn btn-clubhub">Save Changes</button>
+              </form>
             </div>
             
             <!-- Security Section -->

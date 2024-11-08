@@ -4,19 +4,45 @@
     // Move the function to higher scope so it can be used everywhere
     function updateSelectedClubsText(selectedClubs) {
       const selectedClubsText = document.getElementById('selectedClubsText');
-      if (selectedClubs.size > 0) {
+      if (selectedClubs && selectedClubs.size > 0) {
           selectedClubsText.textContent = `${selectedClubs.size} club${selectedClubs.size !== 1 ? 's' : ''} selected`;
       } else {
           selectedClubsText.textContent = 'Choose Clubs';
       }
   }
 
+  function createClubAffiliationsHTML() {
+      return `
+          <div class="mb-3">
+              <label class="form-label">Current Club Affiliations</label>
+              <div id="currentAffiliations" class="club-affiliations-container bg-dark text-white p-3 rounded">
+                  <!-- Will be populated by JavaScript -->
+              </div>
+          </div>
+          <div class="mb-3">
+              <label class="form-label">Add Club Affiliations</label>
+              <div class="dropdown">
+                  <button class="form-control bg-dark text-white d-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <span id="selectedClubsText">Choose Clubs</span>
+                      <i class="bi bi-chevron-down"></i>
+                  </button>
+                  <div class="dropdown-menu bg-dark w-100 p-2">
+                      <input type="text" class="form-control bg-dark text-white mb-2" id="clubSearchInput" placeholder="Search clubs...">
+                      <div class="club-options" style="max-height: 200px; overflow-y: auto;">
+                          <!-- Will be populated by JavaScript -->
+                      </div>
+                  </div>
+              </div>
+          </div>`;
+  }
+
   function initializeClubDropdown() {
       const clubOptionsContainer = document.querySelector('.club-options');
-      const clubSearchInput = document.getElementById('clubSearchInput');
-      const selectedClubs = new Set(); // Track selected clubs across searches
+      if (!clubOptionsContainer) return { selectedClubs: new Set() }; // Return empty set if container doesn't exist
 
-      // Initial load of all clubs
+      const clubSearchInput = document.getElementById('clubSearchInput');
+      const selectedClubs = new Set();
+
       db.collection('clubs').get().then((snapshot) => {
           const clubs = [];
           snapshot.forEach(doc => {
@@ -27,20 +53,22 @@
               });
           });
 
-          // Populate initial list
           renderClubOptions(clubs);
 
-          // Add search handler
-          clubSearchInput.addEventListener('input', (e) => {
-              const searchTerm = e.target.value.toLowerCase();
-              const filteredClubs = clubs.filter(club => 
-                  club.name.toLowerCase().includes(searchTerm)
-              );
-              renderClubOptions(filteredClubs);
-          });
+          if (clubSearchInput) {
+              clubSearchInput.addEventListener('input', (e) => {
+                  const searchTerm = e.target.value.toLowerCase();
+                  const filteredClubs = clubs.filter(club => 
+                      club.name.toLowerCase().includes(searchTerm)
+                  );
+                  renderClubOptions(filteredClubs);
+              });
+          }
       });
 
       function renderClubOptions(clubs) {
+          if (!clubOptionsContainer) return;
+          
           clubOptionsContainer.innerHTML = clubs.map(club => `
               <div class="form-check">
                   <input class="form-check-input" type="checkbox" 
@@ -53,7 +81,6 @@
               </div>
           `).join('');
 
-          // Reattach event listeners
           clubOptionsContainer.querySelectorAll('input[type="checkbox"]')
               .forEach(checkbox => {
                   checkbox.addEventListener('change', (e) => {
@@ -67,98 +94,81 @@
               });
       }
 
-      // Stop dropdown from closing when clicking inside
-      document.querySelector('.dropdown-menu').addEventListener('click', function(e) {
-          e.stopPropagation();
-      });
-
-      return { selectedClubs }; // Return selectedClubs so it can be used in form submission
+      return { selectedClubs };
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    const userInfoForm = document.getElementById('userInfoForm');
-    const changePasswordForm = document.getElementById('changePasswordForm');
-    const notificationsForm = document.getElementById('notificationsForm');
-    const profilePictureInput = document.getElementById('profilePictureInput');
-    const profilePicturePreview = document.getElementById('profilePicturePreview');
+      const userInfoForm = document.getElementById('userInfoForm');
+      const displayNameContainer = document.querySelector('.mb-3:has(#settingsDisplayName)');
+      const MAX_FILE_SIZE = 1 * 512 * 512;
+      const DEFAULT_PROFILE_PICTURE = 'https://firebasestorage.googleapis.com/v0/b/etown-clubhub.appspot.com/o/default_bluejay.jpg?alt=media';
+      let selectedClubs;
 
-    const MAX_FILE_SIZE = 1 * 512 * 512; // 250kb
-    const DEFAULT_PROFILE_PICTURE = 'https://firebasestorage.googleapis.com/v0/b/etown-clubhub.appspot.com/o/default_bluejay.jpg?alt=media';
-
-    const { selectedClubs } = initializeClubDropdown();
-
-    // Check if user is authenticated
-    auth.onAuthStateChanged(function(user) {
-      if (user) {
-        // User is signed in, populate the form
-        populateUserSettings(user);
-      } else {
-        // No user is signed in, redirect to home page
-        window.location.href = '/';
-      }
-    });
-    
-    const clubSearchInput = document.getElementById('clubSearchInput');
-    const selectedClubsText = document.getElementById('selectedClubsText');
-
-    // Stop dropdown from closing when clicking inside
-    document.querySelector('.dropdown-menu').addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
+      auth.onAuthStateChanged(function(user) {
+          if (user) {
+              populateUserSettings(user);
+          } else {
+              window.location.href = '/';
+          }
+      });
 
     function populateUserSettings(user) {
       document.getElementById('settingsEmail').value = user.email;
       
-      // Fetch additional user data from Firestore
       db.collection('users').doc(user.uid).get().then((doc) => {
-        if (doc.exists) {
-          const userData = doc.data();
-          const displayNameInput = document.getElementById('settingsDisplayName');
-          
-          displayNameInput.value = userData.displayName || '';
-          
-          // Disable display name editing for club admins
-          if (userData.isClubAdmin) {
-              displayNameInput.disabled = true;
-              displayNameInput.title = "Club names cannot be edited here";
-              // Optional: Add a help text
-              const helpText = document.createElement('div');
-              helpText.className = 'form-text';
-              helpText.textContent = 'Club names are managed through the clubs directory';
-              displayNameInput.parentNode.appendChild(helpText);
+          if (doc.exists) {
+              const userData = doc.data();
+              const displayNameInput = document.getElementById('settingsDisplayName');
+              const clubAffiliationsContainer = document.getElementById('clubAffiliationsContainer');
+              
+              displayNameInput.value = userData.displayName || '';
+              
+              // Handle club admin specific UI
+              if (userData.role === 'clubAdmin') {
+                  // Modify display name field
+                  displayNameInput.disabled = true;
+                  displayNameInput.title = "Club names cannot be edited here";
+                  const helpText = document.createElement('div');
+                  helpText.className = 'form-text';
+                  helpText.textContent = 'Club names are managed by administrators';
+                  displayNameInput.parentNode.appendChild(helpText);
+              } else {
+                  // Add club affiliations sections for regular users
+                  displayNameInput.disabled = false;
+                  clubAffiliationsContainer.innerHTML = createClubAffiliationsHTML();
+                  
+                  // Initialize club dropdown and populate affiliations
+                  const dropdownInit = initializeClubDropdown();
+                  selectedClubs = dropdownInit.selectedClubs;
+                  
+                  const currentAffiliationsDiv = document.getElementById('currentAffiliations');
+                  if (currentAffiliationsDiv) {
+                      if (userData.clubAffiliations && userData.clubAffiliations.length > 0) {
+                          currentAffiliationsDiv.innerHTML = userData.clubAffiliations.map(club => `
+                              <div class="mb-2">
+                                  <input type="checkbox" class="form-check-input" 
+                                        id="current_${club.replace(/\s+/g, '')}" 
+                                        name="currentAffiliations" 
+                                        value="${club}" 
+                                        checked>
+                                  <label class="form-check-label ms-2" 
+                                        for="current_${club.replace(/\s+/g, '')}">${club}</label>
+                              </div>
+                          `).join('');
+                      } else {
+                          currentAffiliationsDiv.innerHTML = '<p class="text-white mb-0">No current club affiliations</p>';
+                      }
+                  }
+              }
+              
+              document.getElementById('settingsNotifications').checked = userData.notifications || false;
+              profilePicturePreview.src = userData.profilePicture || DEFAULT_PROFILE_PICTURE;
           }
-            
-          // Populate current affiliations
-          const currentAffiliationsDiv = document.getElementById('currentAffiliations');
-          currentAffiliationsDiv.innerHTML = '';
-
-          if (userData.clubAffiliations && userData.clubAffiliations.length > 0) {
-              userData.clubAffiliations.forEach(club => {
-                  currentAffiliationsDiv.innerHTML += `
-                      <div class="mb-2">
-                          <input type="checkbox" class="form-check-input" 
-                                  id="current_${club.replace(/\s+/g, '')}" 
-                                  name="currentAffiliations" 
-                                  value="${club}" 
-                                  checked>
-                          <label class="form-check-label ms-2" 
-                                  for="current_${club.replace(/\s+/g, '')}">${club}</label>
-                      </div>
-                  `;
-              });
-          } else {
-              currentAffiliationsDiv.innerHTML = '<p class="text-white mb-0">No current club affiliations</p>';
-          }
-            
-          document.getElementById('settingsNotifications').checked = userData.notifications || false;
-
-          // Set profile picture
-          profilePicturePreview.src = userData.profilePicture || DEFAULT_PROFILE_PICTURE;
-        }
       }).catch((error) => {
-        console.error("Error fetching user data:", error);
+          console.error("Error fetching user data:", error);
       });
     }
+
     
     // Handle profile picture upload
     profilePictureInput.addEventListener('change', function(e) {
