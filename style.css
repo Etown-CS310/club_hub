@@ -433,15 +433,7 @@ form .form-control {
 }
 
 
-/* ------------------- template.html ------------------- */
-.news_btn{
-    font-size: 16px;
-}
-
-.news_btn:hover {
-    opacity: 0.8;
-    background-color: orange;
-}
+/* ------------------- editMyClub.html ------------------- */
 
 /* Popup Form - Hidden by default */
 .form-popup {
@@ -458,8 +450,17 @@ form .form-control {
     width: 300px;
   }
   
-  /* Button styling
-  .btn {
+/*  Button styling */
+.news_btn{
+    font-size: 16px;
+}
+
+.news_btn:hover {
+    opacity: 0.8;
+    background-color: orange;
+}  
+
+.btn.save {
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -468,17 +469,97 @@ form .form-control {
     margin-top: 10px;
     cursor: pointer;
     border-radius: 5px;
-  }
+}
   
-  .btn.cancel {
+.btn.cancel {
     background-color: red;
+}
+  
+.btn.cancel:hover,
+.btn.save:hover{
+    opacity: 0.8;
+}
+
+/* ------------------- myClub.html Edit Page Button ------------------- */
+
+.edit-button-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1000;
+}
+  
+#editButton {
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #ff5733;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+  
+#editButton:hover {
+    background-color: #c43e1f;
+    transform: scale(1.1);
+}
+
+/* ------------------- editMyClub.html Publish Page Button ------------------- */
+
+.clubpage-button-container {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: 1000;
+}
+  
+#myClubPageButton {
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #12d800;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+  
+#myClubPageButton:hover {
+    background-color: #69e84d;
+    transform: scale(1.1);
+}
+
+  /* ------------------- Contact Us (My Club Pages) Button ------------------- */
+
+  .contact-button-container {
+    position: fixed;
+    bottom: 80px;
+    left: 20px;
+    z-index: 1000;
   }
   
-  .btn:hover {
-    opacity: 0.8;
-  } */
+  #contactButton {
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #ee33ff;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  #contactButton:hover {
+    background-color: #aa00ff;
+    transform: scale(1.1);
+  }
 
-/* Filter sidebar positioning and styling */
+
+
+
+
+/* ------------------- Filter sidebar positioning and styling ------------------- */
 .filter-sidebar {
     width: 300px;  
     flex-shrink: 0;

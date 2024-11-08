@@ -37,38 +37,7 @@
                     <h2 id="news_header">
                         <span id="club_name">[Club Name]</span> News 
                         <!-- TO DO 1: Pull Club Name Dynamically? -->
-                        <button id="openNameForm" class = "news_btn">Edit Name</button>
-                        <button id="openNewsForm" class = "news_btn">Edit News</button>
                     </h2>
-                
-                    <!-- Edit Name Form -->
-                    <div id="popupNameForm" class="form-popup">
-                        <form class="form-container" id="nameForm">
-                        <h2>Edit Name</h2>
-                
-                        <input type="text" id="clubNameInput" placeholder="Enter new name" name="name" required>
-                
-                        <button type="submit" class="btn">Save</button>
-                        <button type="button" class="btn cancel" id="closeNameForm">Close</button>
-                        </form>
-                    </div>
-
-                    <!-- Edit News Form -->
-                    <div id="popupNewsForm" class="form-popup">
-                        <form class="form-container" id="newsForm">
-                        <h2>Edit News</h2>
-                
-                        <input type="text" id="newsTitleInput" placeholder="Enter News Title" name="newsTitleInput">
-                        <input type="file" id="newsImageInput" name="newsImageInput" accept="image/*">
-
-                        <div id="imagePreview" style="margin-top: 10px;">
-                            <img id="previewImg" src="#" alt="Image Preview" style="max-width: 100%; display: none;">
-                          </div>
-                
-                        <button type="submit" class="btn">Save</button>
-                        <button type="button" class="btn cancel" id="closeNewsForm">Close</button>
-                        </form>
-                    </div>
 
             <div class="carousel-indicators">
               <button type="button" data-bs-target="#annoucementsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -245,6 +214,12 @@
         </div>
       </div>
     </div>
+
+    <!-- Goes to the Edit Page -->
+    <div class="edit-button-container">
+        <a href="editMyClub.html" class="btn btn-secondary" id="editButton">Edit Page</a>
+    </div>
+
     </main>
 
     <footer id="footer"></footer>

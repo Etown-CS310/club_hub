@@ -14,13 +14,17 @@
         if (user && user.emailVerified) {
             // User is signed in and email is verified
             // Show authenticated UI
+            // Show My Club page if user is a club admin
             console.log('User is signed in:', user);
             displayUserUI(user);
+            displayMyClubPage(user);
         } else {
             // User is signed out or email not verified
             // Show guest UI
+            // Hide My Club page
             console.log('No user is signed in or email not verified');
             displayGuestUI();
+            displayMyClubPage(null);
         }
         });
     } catch (error) {
@@ -291,6 +295,26 @@
         Login
       </button>
     `;
+  }
+
+  function displayMyClubPage(user){
+    if (user) {
+      // Fetch user role from Firestore
+      db.collection('users').doc(user.uid).get().then((doc) => {
+        if (doc.exists) {
+          const userData = doc.data();
+          if (userData.role === 'clubAdmin') {
+            myClubNav.classList.remove('hidden');
+          } else {
+            myClubNav.classList.add('hidden');
+          }
+        } else {
+          alert('User data not found.');
+        }
+      });
+    } else {
+      myClubNav.classList.add('hidden');
+    }
   }
 
   // Expose functions to global scope if necessary
