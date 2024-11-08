@@ -359,37 +359,34 @@
       document.getElementById('detailEventDate').textContent = event.start.toLocaleDateString();
       document.getElementById('detailEventTime').textContent = `${event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
       document.getElementById('detailEventLocation').textContent = event.extendedProps.location;
-
-      // Add More Details button
-      const moreDetailsBtn = document.createElement('button');
-      moreDetailsBtn.className = 'btn btn-primary';
-      moreDetailsBtn.textContent = 'More Details';
-      moreDetailsBtn.onclick = () => {
-          window.location.href = `/pages/eventDetails.html?id=${event.id}`;
-      };
-
-      const modalFooter = document.querySelector('#eventDetailsModal .modal-footer');
-
-      // Insert More Details button before the Close button
-      modalFooter.insertBefore(moreDetailsBtn, modalFooter.lastElementChild);
-
+  
       const user = auth.currentUser;
       const deleteButton = document.getElementById('deleteEventButton');
       const editButton = document.getElementById('editEventButton');
+      const moreDetailsButton = document.getElementById('moreDetailsButton');
       
+      // Hide all action buttons by default
       deleteButton.classList.add('hidden');
       editButton.classList.add('hidden');
+      moreDetailsButton.classList.add('hidden');
       
+      // Show edit/delete buttons if user is the creator
       if (user && user.uid === event.extendedProps.createdBy) {
           deleteButton.classList.remove('hidden');
           editButton.classList.remove('hidden');
           deleteButton.onclick = () => deleteEvent(event.id);
           editButton.onclick = () => showEditEventModal(event);
       }
-
+  
+      // Always show More Details button and set its click handler
+      moreDetailsButton.classList.remove('hidden');
+      moreDetailsButton.onclick = () => {
+          window.location.href = `/pages/eventDetails.html?id=${event.id}`;
+      };
+  
       const eventDetailsModal = new bootstrap.Modal(document.getElementById('eventDetailsModal'));
       eventDetailsModal.show();
-    }
+  }
 
     function showEditEventModal(event) {
       // Close the details modal

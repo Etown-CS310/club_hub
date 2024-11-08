@@ -161,26 +161,28 @@
       <!-- Event Details Modal -->
       <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-          <div class="modal-content bg-dark text-white">
-            <div class="modal-header">
-              <h5 class="modal-title" id="eventDetailsModalLabel">Event Details</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <h5 id="detailEventClub"></h5>
-              <p><strong>Event:</strong> <span id="detailEventTitle"></span></p>
-              <p><strong>Date:</strong> <span id="detailEventDate"></span></p>
-              <p><strong>Time:</strong> <span id="detailEventTime"></span></p>
-              <p><strong>Location:</strong> <span id="detailEventLocation"></span></p>
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventDetailsModalLabel">Event Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5 id="detailEventClub"></h5>
+                    <p><strong>Event:</strong> <span id="detailEventTitle"></span></p>
+                    <p><strong>Date:</strong> <span id="detailEventDate"></span></p>
+                    <p><strong>Time:</strong> <span id="detailEventTime"></span></p>
+                    <p><strong>Location:</strong> <span id="detailEventLocation"></span></p>
 
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="editEventButton" >Edit Event</button>
-                <button type="button" class="btn btn-danger" id="deleteEventButton" >Delete Event</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary hidden" id="moreDetailsButton">More Details</button>
+                        <button type="button" class="btn btn-primary hidden" id="editEventButton">Edit Event</button>
+                        <button type="button" class="btn btn-danger hidden" id="deleteEventButton">Delete Event</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
+      </div>
 
       </div>
       </div>
