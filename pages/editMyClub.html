@@ -38,7 +38,7 @@
                         <span id="club_name">[Club Name]</span> News 
                         <!-- TO DO 1: Pull Club Name Dynamically? -->
                         <button id="openNameForm" class = "news_btn">Edit Name</button>
-                        <button id="openNewsForm" class = "news_btn">Edit News</button>
+                        <button id="addNewsForm" class = "news_btn">Add News</button>
                     </h2>
                 
                     <!-- Edit Name Form -->
@@ -53,23 +53,6 @@
                         </form>
                     </div>
 
-                    <!-- Edit News Form -->
-                    <div id="popupNewsForm" class="form-popup">
-                        <form class="form-container" id="newsForm">
-                        <h2>Edit News</h2>
-                
-                        <input type="text" id="newsTitleInput" placeholder="Enter News Title" name="newsTitleInput">
-                        <input type="file" id="newsImageInput" name="newsImageInput" accept="image/*">
-
-                        <div id="imagePreview" style="margin-top: 10px;">
-                            <img id="previewImg" src="#" alt="Image Preview" style="max-width: 100%; display: none;">
-                          </div>
-                
-                        <button type="submit" class="btn save">Save</button>
-                        <button type="button" class="btn cancel" id="closeNewsForm">Close</button>
-                        </form>
-                    </div>
-
             <div class="carousel-indicators">
               <button type="button" data-bs-target="#annoucementsCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
               <button type="button" data-bs-target="#annoucementsCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -79,9 +62,28 @@
               <div class="carousel-item active">
                 <img id="newsImage1" src="/images/img_logo.png" class="d-block w-100 mx-auto" alt="Image">
                 <div class="carousel-caption d-none d-md-block">
-                    <h5 id="newsTitle1">
-                    [News Title 1]
-                    </h5>
+                  <h5>
+                      <span id="newsTitle1">[News Title 1]</span> 
+                      <button id="openNewsForm" class = "news_btn">Edit News</button>
+                  </h5>
+
+                    <!-- Edit News Form -->
+                    <div id="popupNewsForm" class="form-popup">
+                      <form class="form-container" id="newsForm">
+                      <h2>Edit News</h2>
+              
+                      <input type="text" id="newsTitleInput" placeholder="Enter News Title" name="newsTitleInput">
+                      <input type="file" id="newsImageInput" name="newsImageInput" accept="image/*">
+
+                      <div id="imagePreview" style="margin-top: 10px;">
+                          <img id="previewImg" src="#" alt="Image Preview" style="max-width: 100%; display: none;">
+                        </div>
+              
+                      <button type="submit" class="btn save">Save</button>
+                      <button type="button" class="btn cancel" id="closeNewsForm">Close</button>
+                      </form>
+                  </div>
+
                 </div>
               </div>
               
@@ -107,7 +109,13 @@
           <!-- Club Events Section -->
           <div class="col">
           <div class="custom-container col-margin d-flex flex-column">
-            <h2>Upcoming Events</h2>
+            <h2 id="upcoming_events">
+              <span>Upcoming Events</span>
+              <button id="editEventsForm" class = "news_btn">Edit</button>
+              <button id="addEventsForm" class = "news_btn">Add</button>
+              <button id="removeEventsForm" class = "news_btn">Remove</button>
+            </h2>
+
             <div class="d-flex">
                 <table class="table table-primary table-striped-columns ">
                 <thead>
@@ -117,29 +125,29 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Weekly Meeting</td>
-                    <td>10/08/2024</td>
-                    <td>7:00-8:00pm</td>
+                    <td>[Event 1]</td>
+                    <td>[MM/DD/YYYY]</td>
+                    <td>[XX:YY-XX:YY PM/AM]</td>
                   </tr>
                   <tr>
-                    <td>Weekly Meeting</td>
-                    <td>10/15/2024</td>
-                    <td>7:00-8:00pm</td>
+                    <td>[Event 2]</td>
+                    <td>[MM/DD/YYYY]</td>
+                    <td>[XX:YY-XX:YY PM/AM]</td>
                   </tr>
                   <tr>
-                    <td>Weekly Meeting</td>
-                    <td>10/22/2024</td>
-                    <td>7:00-8:00pm</td>
+                    <td>[Event 3]</td>
+                    <td>[MM/DD/YYYY]</td>
+                    <td>[XX:YY-XX:YY PM/AM]</td>
                   </tr>
                   <tr>
-                    <td>Weekly Meeting</td>
-                    <td>10/24/2024</td>
-                    <td>5:00-6:00pm</td>
+                    <td>[Event 4]</td>
+                    <td>[MM/DD/YYYY]</td>
+                    <td>[XX:YY-XX:YY PM/AM]</td>
                   </tr>
                   <tr>
-                    <td>Weekly Meeting</td>
-                    <td>10/29/2024</td>
-                    <td>7:00-8:00pm</td>
+                    <td>[Event 5]</td>
+                    <td>[MM/DD/YYYY]</td>
+                    <td>[XX:YY-XX:YY PM/AM]</td>
                   </tr>
                   
                 </tbody>
@@ -205,7 +213,13 @@
         <!-- Social Media -->
         <div class="col">
           <div class="custom-container col-margin d-flex flex-column">
-            <h2>Social Media</h2>
+            <h2 id="social_media">
+              <span>Social Media</span>
+              <button id="openEditSMForm" class = "news_btn">Edit</button>
+              <button id="openAddSMForm" class = "news_btn">Add</button>
+              <button id="openRemoveSMForm" class = "news_btn">Remove</button>
+            </h2>
+            
             <div class="d-flex">
                 <table class="table table-primary table-striped-columns ">
                 <thead>

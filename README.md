@@ -8,6 +8,6 @@ ClubHub - A website to centralize school clubs and allow easy management and acc
 
 # Layout Design
 
-![Layout](images/layout.png)
+![Layout](/docs/layout.png)
 
 Created by &copy; MM Studios for Elizabethtown College Fall 2024 CS 310
