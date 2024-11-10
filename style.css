@@ -484,7 +484,7 @@ form .form-control {
 
 .edit-button-container {
     position: fixed;
-    top: 80px;
+    bottom: 140px;
     right: 20px;
     z-index: 1000;
 }
@@ -554,9 +554,6 @@ form .form-control {
     background-color: #aa00ff;
     transform: scale(1.1);
   }
-
-
-
 
 
 /* ------------------- Filter sidebar positioning and styling ------------------- */
