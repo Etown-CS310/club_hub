@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etown Clubs</title>
+    <title>Edit My Club</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -34,23 +34,48 @@
             <!-- Announcements -->
             <div class="col col-margin">
                 <div id="annoucementsCarousel" class="carousel slide custom-container" data-bs-ride="carousel">
-                    <h2 id="news_header">
+                    
+                    <!-- Header + Edit/Add Buttons -->
+                    <h2 id="news_header" class="small-header">
                         <span id="club_name">[Club Name]</span> News 
                         <!-- TO DO 1: Pull Club Name Dynamically? -->
-                        <button id="openNameForm" class = "news_btn">Edit Name</button>
-                        <button id="addNewsForm" class = "news_btn">Add News</button>
+                        <button id="openNameForm" class="btn btn-sm btn-warning text-white edit-button">
+                          <i class="bi bi-pencil-square me-1"></i>Edit Name
+                        </button>
+                        <button id="addNewsForm" class="btn btn-sm btn-primary add-button">
+                          <i class="bi bi-plus-lg me-1"></i>Add News
+                        </button>
                     </h2>
                 
                     <!-- Edit Name Form -->
                     <div id="popupNameForm" class="form-popup">
-                        <form class="form-container" id="nameForm">
-                        <h2>Edit Name</h2>
-                
-                        <input type="text" id="clubNameInput" placeholder="Enter new name" name="name" required>
-                
-                        <button type="submit" class="btn save">Save</button>
-                        <button type="button" class="btn cancel" id="closeNameForm">Close</button>
-                        </form>
+                      <div class="modal-content p-4">
+                          <form class="form-container" id="nameForm">
+                              <div class="mb-4">
+                                  <h2 class="text-center mb-4">Edit Name</h2>
+                                  
+                                  <div class="form-group">
+                                      <input 
+                                          type="text" 
+                                          class="form-control form-control-lg mb-3" 
+                                          id="clubNameInput" 
+                                          placeholder="Enter new name" 
+                                          name="name" 
+                                          required
+                                      >
+                                  </div>
+                                  
+                                  <div class="d-grid gap-2">
+                                      <button type="submit" class="btn btn-success btn-lg form-button">
+                                          <i class="bi bi-check-circle me-2"></i>Save
+                                      </button>
+                                      <button type="button" class="btn btn-danger btn-lg form-button" id="closeNameForm">
+                                          <i class="bi bi-x-circle me-2"></i>Close
+                                      </button>
+                                  </div>
+                              </div>
+                          </form>
+                      </div>
                     </div>
 
             <div class="carousel-indicators">
@@ -62,26 +87,64 @@
               <div class="carousel-item active">
                 <img id="newsImage1" src="/images/img_logo.png" class="d-block w-100 mx-auto" alt="Image">
                 <div class="carousel-caption d-none d-md-block">
+                  
+                  <!-- News Title + Edit Button -->
                   <h5>
                       <span id="newsTitle1">[News Title 1]</span> 
-                      <button id="openNewsForm" class = "news_btn">Edit News</button>
+                      <button id="openNewsForm" class="btn btn-sm btn-warning text-white ms-3 edit-button">
+                        <i class="bi bi-pencil-square me-1"></i>Edit News
+                      </button>
                   </h5>
 
-                    <!-- Edit News Form -->
-                    <div id="popupNewsForm" class="form-popup">
+                  <!-- Edit News Form -->
+                  <div id="popupNewsForm" class="form-popup">
+                    <div class="modal-content p-4">
                       <form class="form-container" id="newsForm">
-                      <h2>Edit News</h2>
-              
-                      <input type="text" id="newsTitleInput" placeholder="Enter News Title" name="newsTitleInput">
-                      <input type="file" id="newsImageInput" name="newsImageInput" accept="image/*">
+                          <div class="mb-4">
+                            <h2 class="text-center mb-4">Edit News</h2>
 
-                      <div id="imagePreview" style="margin-top: 10px;">
-                          <img id="previewImg" src="#" alt="Image Preview" style="max-width: 100%; display: none;">
+                            <div class="form-group mb-3">
+                                <input 
+                                    type="text" 
+                                    class="form-control form-control-lg" 
+                                    id="newsTitleInput" 
+                                    placeholder="Enter News Title" 
+                                    name="newsTitleInput"
+                                >
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="newsImageInput" class="form-label">Choose Image</label>
+                                <input 
+                                    type="file" 
+                                    class="form-control form-control-lg" 
+                                    id="newsImageInput" 
+                                    name="newsImageInput" 
+                                    accept="image/*"
+                                >
+                            </div>
+
+                            <div id="imagePreview" class="mt-3 mb-4">
+                                <img 
+                                    id="previewImg" 
+                                    src="#" 
+                                    alt="Image Preview" 
+                                    class="img-fluid rounded shadow-sm" 
+                                    style="max-width: 100%; display: none;"
+                                >
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-check-circle me-2"></i>Save
+                                </button>
+                                <button type="button" class="btn btn-danger btn-lg" id="closeNewsForm">
+                                    <i class="bi bi-x-circle me-2"></i>Close
+                                </button>
+                            </div>
                         </div>
-              
-                      <button type="submit" class="btn save">Save</button>
-                      <button type="button" class="btn cancel" id="closeNewsForm">Close</button>
                       </form>
+                    </div>
                   </div>
 
                 </div>
@@ -111,9 +174,12 @@
           <div class="custom-container col-margin d-flex flex-column">
             <h2 id="upcoming_events">
               <span>Upcoming Events</span>
-              <button id="editEventsForm" class = "news_btn">Edit</button>
-              <button id="addEventsForm" class = "news_btn">Add</button>
-              <button id="removeEventsForm" class = "news_btn">Remove</button>
+              <button id="editEventsForm" class="btn btn-sm btn-warning text-white ms-3 edit-button">
+                <i class="bi bi-pencil-square me-1"></i>Edit
+              </button>
+              <button id="addEventsForm" class="btn btn-sm btn-primary add-button">
+                <i class="bi bi-plus-lg me-1"></i>Add
+              </button>
             </h2>
 
             <div class="d-flex">
@@ -215,9 +281,12 @@
           <div class="custom-container col-margin d-flex flex-column">
             <h2 id="social_media">
               <span>Social Media</span>
-              <button id="openEditSMForm" class = "news_btn">Edit</button>
-              <button id="openAddSMForm" class = "news_btn">Add</button>
-              <button id="openRemoveSMForm" class = "news_btn">Remove</button>
+              <button id="openEditSMForm" class="btn btn-sm btn-warning text-white ms-3 edit-button">
+                <i class="bi bi-pencil-square me-1"></i>Edit
+              </button>
+              <button id="openAddSMForm" class="btn btn-sm btn-primary add-button">
+                <i class="bi bi-plus-lg me-1"></i>Add
+              </button>
             </h2>
             
             <div class="d-flex">
@@ -260,14 +329,18 @@
       </div>
     </div>
 
-    <!-- Goes to the edit page -->
+    <!-- Goes to the regular page -->
     <div class="clubpage-button-container">
-      <a href="myClub.html" class="btn btn-secondary" id="myClubPageButton">Publish Page</a>
+      <a href="myClub.html" class="btn btn-primary text-white add-button">
+        <i class="bi bi-plus-lg me-2"></i>Publish Page
+    </a>
     </div>
 
     <!-- Goes to the Contact Us Form -->
     <div class="contact-button-container">
-        <a href="myClub.html" class="btn btn-secondary" id="contactButton">Contact Us</a>
+      <a href="contact.html" class="btn btn-info text-white contact-button">
+        <i class="bi bi-chat me-2"></i>Contact Us
+      </a>
     </div>
 
     </main>
