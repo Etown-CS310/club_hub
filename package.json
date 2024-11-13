@@ -1,0 +1,16 @@
+{
+  "name": "club_hub",
+  "version": "1.0.0",
+  "description": "ClubHub - A website to centralize school clubs and allow easy management and access for different organizations with their own webpage.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.1",
+    "nodemon": "^3.1.7"
+  }
+}

@@ -2,3 +2,4 @@
 .DS_Store
 app.yaml
 .gcloudignore
+node_modules/
