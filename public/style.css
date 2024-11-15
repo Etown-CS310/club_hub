@@ -7,6 +7,16 @@ body {
     font-family: "Lato", sans-serif;
     font-weight: 400;
     font-style: normal;
+    margin: 0;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+    width: 100%;
 }
 
 .center-container {

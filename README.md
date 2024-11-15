@@ -10,10 +10,10 @@ ClubHub - A website to centralize school clubs and allow easy management and acc
 
     - clone repo to your local machine
     - run "npm install" in the project directory to install the dependencies
-    - run "nodemon server.js" to run project on local server
+    - run "npx nodemon server.js" to run project on local server
 
 # Layout Design
 
-![Layout](/docs/layout.png)
+![Layout](/public/docs/layout.png)
 
 Created by &copy; MM Studios for Elizabethtown College Fall 2024 CS 310
