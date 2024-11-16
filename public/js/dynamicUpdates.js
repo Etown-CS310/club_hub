@@ -153,7 +153,6 @@
           // Where: Filter for future events
           // Limit: only show 10 events
           const querySnapshot = await db.collection('events')
-              .where('clubName', '==', user.displayName)
               .where('date', '>=', currentDate.toISOString().split('T')[0])
               .orderBy('date')
               .orderBy('startTime')
@@ -176,7 +175,6 @@
               const eventLink = `<a href="/pages/eventDetails.html?id=${doc.id}" class="text-decoration-none text-primary">${data.title}</a>`;
 
               row.innerHTML = `
-                  <th scope="row">${data.clubName}</th>
                   <td>${eventLink}</td>
                   <td>${formattedDate}</td>
                   <td>${formattedTime}</td>
@@ -217,45 +215,6 @@
       });
     }
   
-  // Modify populateClubEventsTable to receive user as parameter
-  async function populateClubEventsTable() {
-      console.log("Populating club events table");
-      const clubEventsTable = document.getElementById('club-events');
-      if (!clubEventsTable) {
-          console.log("No club events table found");
-          return;
-      }
-      
-      // Get current user
-      const user = firebase.auth().currentUser;
-      console.log("Current user:", user);
-      if (!user) {
-          console.log('User not logged in.');
-          return;
-      }
-  
-      const currentDate = new Date();
-  
-      try {
-          // Rest of your existing code...
-          const querySnapshot = await db.collection('events')
-              .where('clubName', '==', user.displayName)
-              .where('date', '>=', currentDate.toISOString().split('T')[0])
-              .orderBy('date')
-              .orderBy('startTime')
-              .limit(10)
-              .get();
-  
-          // Clear existing rows
-          clubEventsTable.innerHTML = '';
-  
-          querySnapshot.forEach((doc) => {
-              // ... rest of your existing code
-          });
-      } catch (error) {
-          console.error("Error fetching events: ", error);
-      }
-  }
   
     // Call initDynamicUpdates when the DOM is fully loaded
     document.addEventListener('DOMContentLoaded', initDynamicUpdates);
