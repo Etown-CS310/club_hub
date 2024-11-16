@@ -38,7 +38,7 @@
                 <div id="annoucementsCarousel" class="carousel slide custom-container" data-bs-ride="carousel">
                     <h2 id="news_header">
                         <span id="club_name">[Club Name]</span> News 
-                        <!-- TO DO 1: Pull Club Name Dynamically? -->
+                        <!-- TO DO 1: Pull Club Name Dynamically -->
                     </h2>
 
             <div class="carousel-indicators">
@@ -86,33 +86,8 @@
                   <th scope="col">Date</th>
                   <th scope="col">Time</th>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>Weekly Meeting</td>
-                    <td>10/08/2024</td>
-                    <td>7:00-8:00pm</td>
-                  </tr>
-                  <tr>
-                    <td>Weekly Meeting</td>
-                    <td>10/15/2024</td>
-                    <td>7:00-8:00pm</td>
-                  </tr>
-                  <tr>
-                    <td>Weekly Meeting</td>
-                    <td>10/22/2024</td>
-                    <td>7:00-8:00pm</td>
-                  </tr>
-                  <tr>
-                    <td>Weekly Meeting</td>
-                    <td>10/24/2024</td>
-                    <td>5:00-6:00pm</td>
-                  </tr>
-                  <tr>
-                    <td>Weekly Meeting</td>
-                    <td>10/29/2024</td>
-                    <td>7:00-8:00pm</td>
-                  </tr>
-                  
+                <tbody id="club-events">
+                  <!-- Events will be dynamically inserted here -->
                 </tbody>
               </table>
             </div>
@@ -242,6 +217,7 @@
 
     <!-- Custom JS -->
     <script src="/js/global.js"></script>
+    <script src="/js/dynamicUpdates.js"></script>
     
   </body>
 </html>

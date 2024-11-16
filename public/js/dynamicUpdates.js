@@ -2,23 +2,27 @@
     // dynamicUpdates.js
     "use strict";
     
-    // Function to populate the events table on the index page
+    // Page: index.html
+    // Functionality: populate the events table (top right)
     async function populateEventsTable() {
-      const eventsTable = document.querySelector('.table tbody');
+      const eventsTable = document.getElementById('home-events');
       if (!eventsTable) return; // Exit if table doesn't exist on the page
 
       const currentDate = new Date();
 
       try {
-          // Fetch events from Firestore
+          // Fetch events from Firestore:
+          // Where: Filter for future events
+          // Limit: only show 10 events
           const querySnapshot = await db.collection('events')
-              .where('date', '>=', currentDate.toISOString().split('T')[0]) // Filter for future events
+              .where('date', '>=', currentDate.toISOString().split('T')[0])
               .orderBy('date')
               .orderBy('startTime')
-              .limit(10) // Limit to 10 events
+              .limit(10)
               .get();
 
-          eventsTable.innerHTML = ''; // Clear existing rows
+          // Clear existing rows
+          eventsTable.innerHTML = '';
 
           querySnapshot.forEach((doc) => {
               const data = doc.data();
@@ -50,7 +54,8 @@
       }
     }
     
-    // Function to populate the featured clubs carousel
+    // Page: index.html
+    // Functionality: populate the featured clubs carousel
     async function populateFeaturedClubs() {
       const featuredClubsContainer = document.getElementById('featuredClubs');
       if (!featuredClubsContainer) {
@@ -123,18 +128,136 @@
       }
     }
 
-  // Function to initialize dynamic updates
-  function initDynamicUpdates() {
-    // Check if we're on the index page
-    if (document.querySelector('.table')) {
-      populateEventsTable();
-      populateFeaturedClubs();
+    // Page: myClub.html
+    // Functionality: populate the events table (top right)
+    async function populateClubEventsTable() {
+      console.log("Populating club events table");
+      const clubEventsTable = document.getElementById('club-events');
+      if (!clubEventsTable) {
+          console.log("No club events table found");
+          return;
+      }
+      
+      // Get current user
+      const user = firebase.auth().currentUser;
+      console.log("Current user:", user);
+      if (!user) {
+          console.log('User not logged in.');
+          return;
+      }
+
+      const currentDate = new Date();
+
+      try {
+          // Fetch events from Firestore:
+          // Where: Filter for future events
+          // Limit: only show 10 events
+          const querySnapshot = await db.collection('events')
+              .where('clubName', '==', user.displayName)
+              .where('date', '>=', currentDate.toISOString().split('T')[0])
+              .orderBy('date')
+              .orderBy('startTime')
+              .limit(10)
+              .get();
+
+          // Clear existing rows
+          clubEventsTable.innerHTML = '';
+
+          querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              const row = document.createElement('tr');
+
+              // Format date and time
+              const eventDate = new Date(data.date + 'T' + data.startTime);
+              const formattedDate = eventDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+              const formattedTime = eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+              // Create the event link
+              const eventLink = `<a href="/pages/eventDetails.html?id=${doc.id}" class="text-decoration-none text-primary">${data.title}</a>`;
+
+              row.innerHTML = `
+                  <th scope="row">${data.clubName}</th>
+                  <td>${eventLink}</td>
+                  <td>${formattedDate}</td>
+                  <td>${formattedTime}</td>
+                  <td>${data.location}</td>
+              `;
+
+              clubEventsTable.appendChild(row);
+          });
+      } catch (error) {
+          console.error("Error fetching events: ", error);
+      }
+    }
+
+    // Function to initialize dynamic updates
+    // Function to initialize dynamic updates
+    function initDynamicUpdates() {
+      const currentPath = window.location.pathname;
+      console.log("Current path:", currentPath);
+  
+      // Wait for auth to be ready
+      firebase.auth().onAuthStateChanged((user) => {
+          if (currentPath === '/' || currentPath === '/index.html') {
+              console.log("On home page");
+              const homeEventsTable = document.getElementById('home-events');
+              if (homeEventsTable) {
+                  populateEventsTable();
+                  populateFeaturedClubs();
+              }
+          }
+          
+          if (currentPath.includes('myClub.html')) {
+              console.log("On myClub page, user:", user);
+              const clubEventsTable = document.getElementById('club-events');
+              if (clubEventsTable && user) {  // Only proceed if we have both table and user
+                  populateClubEventsTable();
+              }
+          }
+      });
     }
   
-    // Add more functions here for other dynamic updates on different pages
+  // Modify populateClubEventsTable to receive user as parameter
+  async function populateClubEventsTable() {
+      console.log("Populating club events table");
+      const clubEventsTable = document.getElementById('club-events');
+      if (!clubEventsTable) {
+          console.log("No club events table found");
+          return;
+      }
+      
+      // Get current user
+      const user = firebase.auth().currentUser;
+      console.log("Current user:", user);
+      if (!user) {
+          console.log('User not logged in.');
+          return;
+      }
+  
+      const currentDate = new Date();
+  
+      try {
+          // Rest of your existing code...
+          const querySnapshot = await db.collection('events')
+              .where('clubName', '==', user.displayName)
+              .where('date', '>=', currentDate.toISOString().split('T')[0])
+              .orderBy('date')
+              .orderBy('startTime')
+              .limit(10)
+              .get();
+  
+          // Clear existing rows
+          clubEventsTable.innerHTML = '';
+  
+          querySnapshot.forEach((doc) => {
+              // ... rest of your existing code
+          });
+      } catch (error) {
+          console.error("Error fetching events: ", error);
+      }
   }
   
-  // Call initDynamicUpdates when the DOM is fully loaded
-  document.addEventListener('DOMContentLoaded', initDynamicUpdates);
+    // Call initDynamicUpdates when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', initDynamicUpdates);
 
 })();
