@@ -10,23 +10,33 @@
       await loadComponent('/components/footer.html', 'footer');
       initEventListeners();
 
-      auth.onAuthStateChanged((user) => {
+      auth.onAuthStateChanged(async (user) => {
         if (user && user.emailVerified) {
-            // User is signed in and email is verified
-            // Show authenticated UI
-            // Show My Club page if user is a club admin
             console.log('User is signed in:', user);
-            displayUserUI(user);
-            displayMyClubPage(user);
+            
+            try {
+                // Check if user profile exists
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (!userDoc.exists) {
+                    console.log('Creating new user profile for verified user');
+                    await createUserProfile(user);
+                }
+                
+                // Update UI
+                displayUserUI(user);
+                displayMyClubPage(user);
+            } catch (error) {
+                console.error('Error in auth state change:', error);
+                // Handle error appropriately
+            }
         } else {
             // User is signed out or email not verified
-            // Show guest UI
-            // Hide My Club page
             console.log('No user is signed in or email not verified');
             displayGuestUI();
             displayMyClubPage(null);
         }
-        });
+      });
     } catch (error) {
       console.error('Error loading components:', error);
     }

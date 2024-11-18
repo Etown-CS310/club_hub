@@ -115,11 +115,7 @@
             `;
     
             innerCarousel.appendChild(carouselItem);
-    
-            // Update the lastFeatured timestamp
-            db.collection('publicClubProfiles').doc(doc.id).update({
-              lastFeatured: firebase.firestore.FieldValue.serverTimestamp()
-            });
+  
           });
         }
     
