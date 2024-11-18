@@ -128,6 +128,8 @@
       }
     }
 
+// --------------------------------------------------------------------------------
+
     // Page: myClub.html
     // Functionality: populate the events table (top right)
     async function populateClubEventsTable() {
@@ -150,9 +152,11 @@
 
       try {
           // Fetch events from Firestore:
-          // Where: Filter for future events
+          // 1st Where: Only show for relevant club
+          // 2nd Where: Filter for future events
           // Limit: only show 10 events
           const querySnapshot = await db.collection('events')
+              .where('clubName', '==', user.displayName)
               .where('date', '>=', currentDate.toISOString().split('T')[0])
               .orderBy('date')
               .orderBy('startTime')
@@ -188,7 +192,45 @@
       }
     }
 
-    // Function to initialize dynamic updates
+    // Page: myClub.html
+    // Functionality: populate the club news table (top left)
+    async function populateClubNews() {
+      console.log("Populating club news table");
+      const clubNewsTitle = document.getElementById('club_name');
+      if (!clubNewsTitle) {
+          console.log("No club news title found");
+          return;
+      }
+
+      // Get current user
+      const user = firebase.auth().currentUser;
+      console.log("Current user:", user);
+      if (!user) {
+          console.log('User not logged in.');
+          return;
+      }
+
+      try {
+        // Fetch user's data from Firestore
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            
+            // Check if user is a club admin
+            if (userData.role === "clubAdmin") {
+                clubNewsTitle.innerHTML = user.displayName;
+            }
+        } else {
+            console.log("No user document found!");
+        }
+      } catch (error) {
+          console.error("Error fetching user data:", error);
+      }
+    }
+
+// --------------------------------------------------------------------------------
+
     // Function to initialize dynamic updates
     function initDynamicUpdates() {
       const currentPath = window.location.pathname;
@@ -209,7 +251,8 @@
               console.log("On myClub page, user:", user);
               const clubEventsTable = document.getElementById('club-events');
               if (clubEventsTable && user) {  // Only proceed if we have both table and user
-                  populateClubEventsTable();
+                populateClubNews();
+                populateClubEventsTable();
               }
           }
       });
