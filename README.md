@@ -1,3 +1,5 @@
+![firebase](https://img.shields.io/badge/firebase-ffca28?style=for-the-badge&logo=firebase&logoColor=black)
+
 # ClubHub
 
 ClubHub - A website to centralize school clubs and allow easy management and access for different organizations with their own webpage.
