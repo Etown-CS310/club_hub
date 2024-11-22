@@ -269,11 +269,24 @@
 
   }
 
+  function toggleInboxVisibility(show) {
+    const inboxNav = document.querySelector('.nav-item a[href="/pages/inbox.html"]')?.parentElement;
+    if (inboxNav) {
+        if (show) {
+            inboxNav.classList.remove('d-none');
+        } else {
+            inboxNav.classList.add('d-none');
+        }
+    }
+  }
   // Move displayUserUI and displayGuestUI functions here
   function displayUserUI(user) {
 
     const DEFAULT_PROFILE_PICTURE = 'https://firebasestorage.googleapis.com/v0/b/etown-clubhub.appspot.com/o/default_bluejay.jpg?alt=media';
     const authSection = document.getElementById('authSection');
+
+    toggleInboxVisibility(true);
+
     authSection.innerHTML = `
       <div class="dropdown">
         <button class="btn btn-clubhub dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -299,6 +312,9 @@
 
   function displayGuestUI() {
     const authSection = document.getElementById('authSection');
+    
+    toggleInboxVisibility(false);
+    
     authSection.innerHTML = `
       <!-- Button trigger login modal -->
       <button type="button" class="btn btn-clubhub" data-bs-toggle="modal" data-bs-target="#loginModal">
