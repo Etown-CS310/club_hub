@@ -307,24 +307,24 @@
     }
 
     async function handleSearch(event) {
-        const searchTerm = event.target.value.toLowerCase().trim();
+        const searchTerm = event.target.value.trim();
         const searchResults = document.getElementById('searchResults');
-        
+    
         if (!searchTerm) {
             searchResults.innerHTML = '';
             return;
         }
-
+    
         try {
-            // Search for users and clubs
-            const usersQuery = await db.collection('users')
-                .where('role', 'in', ['user', 'clubAdmin'])
+            // Fetch a set of users (limit to 50 or any number you see fit)
+            const usersSnapshot = await db.collection('users')
                 .get();
-
+    
             let html = '';
-            usersQuery.forEach(doc => {
+            usersSnapshot.forEach(doc => {
                 const userData = doc.data();
-                if (userData.displayName.toLowerCase().includes(searchTerm)) {
+                // Perform case-insensitive search on the client side
+                if (userData.displayName && userData.displayName.toLowerCase().includes(searchTerm.toLowerCase()) && doc.id !== firebase.auth().currentUser.uid) {
                     html += `
                         <div class="p-2 border-bottom" style="cursor: pointer" 
                              onclick="startConversation('${doc.id}')">
@@ -338,48 +338,41 @@
                     `;
                 }
             });
-
+    
             searchResults.innerHTML = html || '<div class="p-2">No results found</div>';
-
+    
         } catch (error) {
             console.error('Error searching:', error);
             searchResults.innerHTML = '<div class="p-2 text-danger">Error searching</div>';
         }
     }
-
+    
     async function startConversation(userId) {
         try {
             const currentUser = firebase.auth().currentUser;
-            
-            // Get current user's role
+    
+            // Get current user's data
             const currentUserDoc = await db.collection('users').doc(currentUser.uid).get();
             const currentUserData = currentUserDoc.data();
-            
-            // Get other user's details
+    
+            // Get other user's data
             const otherUserDoc = await db.collection('users').doc(userId).get();
             const otherUserData = otherUserDoc.data();
-            
-            // Check permissions
-            if (currentUserData.role !== 'superadmin' && 
-                currentUserData.role !== 'clubAdmin' && 
-                otherUserData.role !== 'clubAdmin') {
-                throw new Error('Regular users can only message clubs');
-            }
-            
+    
             // Check if conversation already exists
-            const existingConversation = await db.collection('conversations')
+            const existingConversationSnapshot = await db.collection('conversations')
                 .where('participants', 'array-contains', currentUser.uid)
                 .get();
     
             let conversationId;
     
-            if (!existingConversation.empty) {
+            if (!existingConversationSnapshot.empty) {
                 // Find the conversation with the target user
-                const conversation = existingConversation.docs.find(doc => 
+                const conversationDoc = existingConversationSnapshot.docs.find(doc => 
                     doc.data().participants.includes(userId)
                 );
-                if (conversation) {
-                    conversationId = conversation.id;
+                if (conversationDoc) {
+                    conversationId = conversationDoc.id;
                 }
             }
     
@@ -402,15 +395,17 @@
                             name: otherUserData.displayName,
                             role: otherUserData.role
                         }
-                    }
+                    },
+                    unreadBy: [userId] // Mark the conversation as unread for the other user
                 });
-                
+    
                 conversationId = conversationRef.id;
-                
-                // Add initial system message
+    
+                // Optional: Add initial system message
                 await conversationRef.collection('messages').add({
-                    message: `Chat started between ${currentUserData.displayName} and ${otherUserData.displayName}`,
+                    message: `${currentUserData.displayName} started the conversation.`,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    senderId: currentUser.uid,
                     type: 'system'
                 });
             }
@@ -418,10 +413,10 @@
             // Close modal and select conversation
             const modal = bootstrap.Modal.getInstance(document.getElementById('newMessageModal'));
             if (modal) modal.hide();
-            
+    
             // Select and show the conversation
             await selectConversation(conversationId);
-            
+    
             // Update conversations list
             await loadConversations();
     
@@ -429,7 +424,7 @@
             console.error('Error starting conversation:', error.message);
             alert(`Error starting conversation: ${error.message}`);
         }
-    }
+    }    
 
     async function markConversationAsRead(conversationId) {
         try {
