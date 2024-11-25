@@ -272,7 +272,7 @@
         db.collection('users').doc(user.uid).get().then((doc) => {
           if (doc.exists) {
             const userData = doc.data();
-            if (userData.role === 'clubAdmin') {
+            if (userData.role === 'clubAdmin' || userData.role === 'superadmin') {
               // Proceed to save the event
               saveEvent();
             } else {
