@@ -188,7 +188,7 @@
         let isFirst = true;
 
         if (querySnapshot.empty) {
-          console.log("No club events found");
+          console.log("No club news found, displaying default data.");
           
           // Add a default carousel item
           const defaultItem = document.createElement('div');
@@ -337,7 +337,7 @@
           clubEventsTable.innerHTML = '';
 
           if (querySnapshot.empty) {
-            console.log("No club events found");
+            console.log("No club events found, displaying default data.");
             
             // Add a default row to the table
             const row = document.createElement('tr');
@@ -379,6 +379,229 @@
       }
     }
 
+    // Page: myClub.html
+    // Functionality: populate the cabinet table (bottom left)
+    async function populateClubCabinetTable() {
+      console.log("Populating club cabinet table");
+      const clubCabinetTable = document.querySelector("#clubCabinet tbody");
+      if (!clubCabinetTable) {
+          console.log("No club cabinet table found");
+          return;
+      }
+      
+      // Get current user
+      const user = firebase.auth().currentUser;
+      console.log("Current user:", user);
+      if (!user) {
+          console.log('User not logged in.');
+          return;
+      }
+
+      try {
+        // Fetch events from Firestore:
+        // Where: Only show for relevant club
+        const querySnapshot = await db.collection('clubs')
+          .where('name', '==', user.displayName)
+          .get();
+
+        clubCabinetTable.innerHTML = '';
+
+        if (querySnapshot.empty) {
+          console.log("No matching club found");
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const cabinetMembers = data.cabinetMembers;
+    
+          if (!cabinetMembers) {
+            console.log("No cabinet members found, displaying default data.");
+            const defaultMembers = [
+              { name: "Default Name", position: "President", major: "Default Major", year: "XXXX" },
+              { name: "Default Name", position: "Vice-President", major: "Default Major", year: "XXXX" },
+              { name: "Default Name", position: "Treasurer", major: "Default Major", year: "XXXX" },
+              { name: "Default Name", position: "Secretary", major: "Default Major", year: "XXXX" },
+            ];
+    
+            defaultMembers.forEach(member => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${member.name}</td>
+                <td>${member.position}</td>
+                <td>${member.major}</td>
+                <td>${member.year}</td>
+              `;
+              clubCabinetTable.appendChild(row);
+            });
+          } else {
+            console.log("Cabinet members found, populating table.");
+
+            // Define the desired order of positions
+            const positionOrder = ["President", "Vice-President", "Treasurer", "Secretary"];
+            
+            // Sort the cabinet members array based on the positionOrder
+            const sortedCabinetMembers = Object.values(cabinetMembers).sort((a, b) => {
+              return positionOrder.indexOf(a.position) - positionOrder.indexOf(b.position);
+            });
+            
+            // Loop through the sorted cabinet members
+            sortedCabinetMembers.forEach(member => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${member.name}</td>
+                <td>${member.position}</td>
+                <td>${member.major}</td>
+                <td>${member.grade}</td>
+              `;
+              clubCabinetTable.appendChild(row);
+            });
+          }
+        });
+      } catch (error) {
+          console.error("Error fetching events: ", error);
+          return;
+      }
+    }
+
+    // Page: myClub.html
+    // Functionality: populate the social media table (bottom right)
+    async function populateSocialMediaTable() {
+      console.log("Populating social media table");
+      const socialMediaTable = document.querySelector("#socialMedia tbody");
+      if (!socialMediaTable) {
+          console.log("No social media table found");
+          return;
+      }
+      
+      // Get current user
+      const user = firebase.auth().currentUser;
+      console.log("Current user:", user);
+      if (!user) {
+          console.log('User not logged in.');
+          return;
+      }
+
+      try {
+        // Fetch events from Firestore:
+        // Where: Only show for relevant club
+        const querySnapshot = await db.collection('publicClubProfiles')
+          .where('clubName', '==', user.displayName)
+          .get();
+
+        socialMediaTable.innerHTML = '';
+
+        if (querySnapshot.empty) {
+          console.log("No matching club found");
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const socialMedia = data.socialMedia;
+    
+          if (!socialMedia) {
+            console.log("No social media found, displaying default data.");
+            const defaultSocialMedia = [
+              { social: "Default Name", tag: "Default Tag"},
+              { social: "Default Name", tag: "Default Tag"},
+              { social: "Default Name", tag: "Default Tag"},
+              { social: "Default Name", tag: "Default Tag"},
+            ];
+    
+            defaultSocialMedia.forEach(site => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${site.social}</td>
+                <td>${site.tag}</td>
+              `;
+              socialMediaTable.appendChild(row);
+            });
+          } else {
+             // Social media found, populating table.
+             const positionOrder = ["Website", "Insta", "TikTok", "Discord", "GitHub", "LinkedIn"];
+            
+             // Convert socialMedia into an array if needed
+             const socialMediaArray = Array.isArray(socialMedia) ? socialMedia : Object.values(socialMedia);
+             
+             // Sort the social media array based on positionOrder
+             const sortedSocialMedia = socialMediaArray.sort((a, b) => {
+               const indexA = positionOrder.indexOf(a.social);
+               const indexB = positionOrder.indexOf(b.social);
+               
+               // Treat items not in positionOrder as lowest priority
+               return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+             });
+             
+             // Populate the table
+             sortedSocialMedia.forEach(site => {
+               const row = document.createElement('tr');
+               row.innerHTML = `
+                 <td>${site.social}</td>
+                 <td> <a href="${site.link}" target="_blank" rel="noopener noreferrer">${site.tag}</a> </td>
+               `;
+               socialMediaTable.appendChild(row);
+             });
+          }
+        });
+      } catch (error) {
+          console.error("Error fetching events: ", error);
+          return;
+      }
+    }
+
+    // Page: myClub.html
+    // Functionality: populate the email (bottom)
+    async function populateEmail() {
+      console.log("Populating email");
+      const email = document.getElementById("email");
+      if (!email) {
+          console.log("No email found");
+          return;
+      }
+      
+      // Get current user
+      const user = firebase.auth().currentUser;
+      console.log("Current user:", user);
+      if (!user) {
+          console.log('User not logged in.');
+          return;
+      }
+
+      try {
+        // Fetch events from Firestore:
+        // Where: Only show for relevant club
+        const querySnapshot = await db.collection('clubs')
+          .where('name', '==', user.displayName)
+          .get();
+
+        email.innerHTML = '';
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          
+          // Create an anchor element for the email
+          const anchor = document.createElement('a');
+        
+          // Set the anchor's attributes and content
+          anchor.href = `mailto:${data.email}`;
+          anchor.className = "text-primary fs-6 text-decoration-underline";
+          anchor.textContent = data.email;
+        
+          // Create a heading element for the email
+          const heading = document.createElement('h6');
+          heading.className = "mb-0";
+          heading.textContent = "Reach out to our Club:";
+
+          // Append the anchor to the email container
+          email.appendChild(heading);
+          email.appendChild(anchor);
+        });
+      } catch (error) {
+          console.error("Error fetching events: ", error);
+          return;
+      }
+    }
+
 // --------------------------------------------------------------------------------
 
     // Function to initialize dynamic updates
@@ -403,6 +626,9 @@
               if (clubEventsTable && user) {  // Only proceed if we have both table and user
                 populateClubNews();
                 populateClubEventsTable();
+                populateClubCabinetTable();
+                populateSocialMediaTable();
+                populateEmail()
               }
           }
       });
