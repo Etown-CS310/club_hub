@@ -337,7 +337,7 @@ footer {
     cursor: pointer !important;
 }
 
-/* ------------------- Custom Styles for Calendar Buttons ------------------- */
+/* ------------- Custom Styles for Calendar Buttons ------------------- */
 .custom-calendar .fc-button-active {
     background-color: var(--bs-primary-dark, #0056b3) !important;
     border-color: var(--bs-primary-dark, #0056b3) !important;
@@ -369,7 +369,7 @@ footer {
 }
 
 
-/* ------------------- Filter sidebar positioning and styling ------------------- */
+/* ------------- Filter sidebar positioning and styling --------------- */
 .filter-sidebar {
     width: 300px;  
     flex-shrink: 0;
@@ -390,7 +390,7 @@ footer {
 }
 
 
-/* ------------------- Custom Styles for Modal Close Buttons ------------------- */
+/* -------------- Custom Styles for Modal Close Buttons --------------- */
 #createEventModal .btn-close,
 #eventDetailsModal .btn-close,
 #editEventModal .btn-close {
@@ -515,7 +515,7 @@ form .form-control {
     opacity: 0.8;
 }
 
-/* ------------------- editMyClub.html -- Edit/Add Buttons ------------------- */
+/* -------------- editMyClub.html -- Edit/Add Buttons ----------------- */
 
 .edit-button:hover{
     background-color: #c43e1f;
@@ -531,7 +531,7 @@ form .form-control {
     font-size: 1.75rem;
   }
 
-/* ------------------- editMyClub.html & myClub.html Corners Button ------------------- */
+/* ---------- editMyClub.html & myClub.html Corners Button ------------ */
 
 /* editMyClub HTML */
 .edit-button-container {
@@ -716,7 +716,7 @@ textarea.form-control.contact {
     transform: translateY(-1px);
 }
 
-/* ------------------- About Us Page Enhanced Styles ------------------- */
+/* ------------------- About Us Page ------------------- */
 body#aboutUsBody {
     font-family: 'Lato', sans-serif;
     background: var(--gradient-bg);
@@ -762,14 +762,6 @@ body#aboutUsBody {
     height: 4px;
     background: var(--accent-color);
     border-radius: 2px;
-}
-
-.subtitle {
-    color: var(--text-color);
-    font-size: 1.3rem;
-    font-weight: 300;
-    margin-top: 1.5rem;
-    opacity: 0.9;
 }
 
 .team-grid {
@@ -937,6 +929,68 @@ body#aboutUsBody {
     .member-bio {
         font-size: 1rem;
     }
+}
+
+
+/* ---------------- About Us Section Home Page ------------------------ */
+
+#aboutUs{
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.home-about-section .team-grid {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 0;
+}
+  
+.home-about-section .team-member {
+    background-color: #3e6fa8;
+    border-radius: 15px;
+    padding: 1rem;
+    color: white;
+    text-align: center;
+    flex: 1;
+    max-width: 280px;
+}
+  
+.home-about-section .member-name {
+    color: #ffc107;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+  
+.home-about-section .member-role {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+  
+.home-about-section .member-bio {
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+  
+.home-about-section .aboutBtn {
+    background-color: #ffc107;
+    color: #000;
+    text-transform: uppercase;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: bold;
+    border: none;
+    transition: background-color 0.3s ease;
+    font-size: 0.9rem;
+}
+  
+.home-about-section .aboutBtn:hover {
+    background-color: #ffcd39;
+    color: #000;
 }
 
 /*--------------------- Messaging System CSS ---------------------------*/
