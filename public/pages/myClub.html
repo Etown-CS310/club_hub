@@ -20,13 +20,18 @@
 
     <!-- Custom CSS -->
     <link href="/style.css" rel="stylesheet">
-    
+
   </head>
 
   <body>
     <header>
       <nav id="navbar"></nav>
     </header>
+
+    <!-- Edit Mode Toggle Button -->
+    <button id="editModeToggle" class="btn btn-warning text-white">
+      <i class="bi bi-pencil-square me-2"></i>Toggle Edit Mode
+    </button>
 
     <main>
       <div class="center-container">
@@ -40,6 +45,16 @@
               <span id="club_name">
                 <!-- Club Name will be dynamically inserted here -->
               </span> News 
+              
+              <button id="openNameForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
+                <i class="bi bi-pencil-square me-1"></i>Edit Name
+              </button>
+              <button id="editNewsForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
+                <i class="bi bi-pencil-square me-1"></i>Edit News
+              </button>
+              <button id="addNewsForm" class="btn btn-sm btn-primary add-button edit-mode-only">
+                <i class="bi bi-plus-lg me-1"></i>Add News
+              </button>
           </h2>
 
           <div class="carousel-indicators">
@@ -53,13 +68,104 @@
           <div class="carousel-button-indicators">
             <!-- News Button indicators will be dynamically inserted here -->
           </div>
+
+          <!-- Edit forms will be dynamically shown in edit mode -->
+          <!-- Edit Name Form -->
+          <div id="popupNameForm" class="form-popup">
+            <div class="modal-content p-4">
+                <form class="form-container" id="nameForm">
+                    <div class="mb-4">
+                        <h2 class="text-center mb-4">Edit Name</h2>
+                        
+                        <div class="form-group">
+                            <input 
+                                type="text" 
+                                class="form-control form-control-lg mb-3" 
+                                id="clubNameInput" 
+                                placeholder="Enter new name" 
+                                name="name" 
+                                required
+                            >
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg form-button">
+                                <i class="bi bi-check-circle me-2"></i>Save
+                            </button>
+                            <button type="button" class="btn btn-danger btn-lg form-button" id="closeNameForm">
+                                <i class="bi bi-x-circle me-2"></i>Close
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+          </div>
+
+          <!-- Edit News Form -->
+          <div id="popupNewsForm" class="form-popup">
+            <div class="modal-content p-4">
+              <form class="form-container" id="newsForm">
+                  <div class="mb-4">
+                    <h2 class="text-center mb-4">Edit News</h2>
+
+                    <div class="form-group mb-3">
+                        <input 
+                            type="text" 
+                            class="form-control form-control-lg" 
+                            id="newsTitleInput" 
+                            placeholder="Enter News Title" 
+                            name="newsTitleInput"
+                        >
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="newsImageInput" class="form-label">Choose Image</label>
+                        <input 
+                            type="file" 
+                            class="form-control form-control-lg" 
+                            id="newsImageInput" 
+                            name="newsImageInput" 
+                            accept="image/*"
+                        >
+                    </div>
+
+                    <div id="imagePreview" class="mt-3 mb-4">
+                        <img 
+                            id="previewImg" 
+                            src="#" 
+                            alt="Image Preview" 
+                            class="img-fluid rounded shadow-sm" 
+                            style="max-width: 100%; display: none;"
+                        >
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle me-2"></i>Save
+                        </button>
+                        <button type="button" class="btn btn-danger btn-lg" id="closeNewsForm">
+                            <i class="bi bi-x-circle me-2"></i>Close
+                        </button>
+                    </div>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
         </div>
 
         <!-- Club Events -->
         <div class="col">
         <div class="custom-container col-margin d-flex flex-column">
-          <h2>Upcoming Events</h2>
+          <h2>
+            Upcoming Events
+            <button class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
+              <i class="bi bi-pencil-square me-1"></i>Edit
+            </button>
+            <button class="btn btn-sm btn-primary add-button edit-mode-only">
+              <i class="bi bi-plus-lg me-1"></i>Add
+            </button>
+          </h2>
           <div class="d-flex">
               <table class="table table-primary table-striped-columns ">
               <thead>
@@ -79,7 +185,15 @@
         <!-- Club Cabinet -->
         <div class="col col-margin">
         <div class="custom-container">
-          <h2>Club Cabinet</h2>
+          <h2>
+            Club Cabinet
+            <button id="editCabinetForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
+              <i class="bi bi-pencil-square me-1"></i>Edit Cabinet
+            </button>
+            <button id="addCabinetForm" class="btn btn-sm btn-primary add-button edit-mode-only">
+              <i class="bi bi-plus-lg me-1"></i>Add Cabinet
+            </button>
+          </h2>
           <div class="d-flex">
             <table class="table table-primary table-striped-columns" id="clubCabinet">
               <thead>
@@ -99,7 +213,15 @@
         <!-- Social Media -->
         <div class="col">
         <div class="custom-container col-margin d-flex flex-column">
-          <h2>Social Media</h2>
+          <h2>
+            Social Media
+            <button id="editSMForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
+              <i class="bi bi-pencil-square me-1"></i>Edit SM
+            </button>
+            <button id="addSMForm" class="btn btn-sm btn-primary add-button edit-mode-only">
+              <i class="bi bi-plus-lg me-1"></i>Add SM
+            </button>
+          </h2>
           <div class="d-flex">
             <table class="table table-primary table-striped-columns" id="socialMedia">
               <thead>
@@ -127,17 +249,55 @@
         </div>
       </div>
 
-      <!-- Goes to the Edit Page -->
-      <div class="edit-button-container">
-        <a href="editMyClub.html" class="btn btn-warning text-white edit-button">
-            <i class="bi bi-pencil-square me-2"></i>Edit Page
+      <!-- Goes to the Contact Us Form -->
+      <div class="contact-button-container">
+        <a href="contact.html" class="btn btn-info text-white contact-button edit-mode-only">
+          <i class="bi bi-chat me-2"></i>Contact Us
         </a>
       </div>
-
     </main>
 
     <footer id="footer"></footer>
     
+<!-- Replace the existing script with this one, just before the closing </body> tag -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get the toggle button
+    const toggleButton = document.getElementById('editModeToggle');
+    
+    // Function to enter edit mode
+    function enterEditMode() {
+      document.body.classList.add('edit-mode');
+      toggleButton.innerHTML = '<i class="bi bi-eye me-2"></i>View Mode';
+      toggleButton.classList.remove('btn-warning');
+      toggleButton.classList.add('btn-success');
+    }
+    
+    // Function to exit edit mode
+    function exitEditMode() {
+      document.body.classList.remove('edit-mode');
+      toggleButton.innerHTML = '<i class="bi bi-pencil-square me-2"></i>Edit Mode';
+      toggleButton.classList.remove('btn-success');
+      toggleButton.classList.add('btn-warning');
+    }
+    
+    // Toggle button click handler
+    toggleButton.addEventListener('click', function() {
+      if (document.body.classList.contains('edit-mode')) {
+        exitEditMode();
+      } else {
+        enterEditMode();
+      }
+    });
+    
+    // Check URL parameters for edit mode
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('edit') === 'true') {
+      enterEditMode();
+    }
+  });
+</script>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>  
 
@@ -153,6 +313,7 @@
     <!-- Custom JS -->
     <script src="/js/global.js"></script>
     <script src="/js/dynamicUpdates.js"></script>
+    <script src="/js/editMyClub.js"></script>
     
   </body>
 </html>

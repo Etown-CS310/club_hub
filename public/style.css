@@ -480,8 +480,7 @@ form .form-control {
     width: 100%;
 }
 
-
-/* ------------------- editMyClub.html Pop-Up Forms ------------------- */
+/* ------------------- MyClub Pop-Up Forms ------------------- */
 
 .form-popup {
     display: none;
@@ -515,7 +514,7 @@ form .form-control {
     opacity: 0.8;
 }
 
-/* -------------- editMyClub.html -- Edit/Add Buttons ----------------- */
+/* ------------------- myClub.html Corner Buttons (Edit My Club) ------------------- */
 
 .edit-button:hover{
     background-color: #c43e1f;
@@ -529,27 +528,25 @@ form .form-control {
 
 .small-header {
     font-size: 1.75rem;
-  }
-
-/* ---------- editMyClub.html & myClub.html Corners Button ------------ */
-
-/* editMyClub HTML */
-.edit-button-container {
-    position: fixed;
-    bottom: 140px;
-    right: 20px;
-    z-index: 1000;
 }
 
-/* My Club HTML */
-.clubpage-button-container {
+.edit-mode-only {
+    display: none !important;
+}
+  
+body.edit-mode .edit-mode-only {
+    display: inline-flex !important;
+}
+
+/* Button that turns on/off Edit Mode */
+#editModeToggle {
     position: fixed;
     bottom: 80px;
     right: 20px;
     z-index: 1000;
 }
 
-/* Contact Us Page */
+/* Button that goes to Contact Us Page */
 .contact-button-container {
     position: fixed;
     bottom: 80px;
