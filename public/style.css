@@ -538,14 +538,6 @@ body.edit-mode .edit-mode-only {
     display: inline-flex !important;
 }
 
-/* Button that turns on/off Edit Mode */
-#editModeToggle {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    z-index: 1000;
-}
-
 /* Button that goes to Contact Us Page */
 .contact-button-container {
     position: fixed;

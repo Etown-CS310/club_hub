@@ -29,13 +29,13 @@
     </header>
 
     <!-- Edit Mode Toggle Button -->
-    <button id="editModeToggle" class="btn btn-warning text-white">
+    <button id="editModeToggle" class="btn btn-warning text-white position-fixed bottom-0 end-0 mb-5 me-3 shadow">
       <i class="bi bi-pencil-square me-2"></i>Toggle Edit Mode
     </button>
 
     <main>
       <div class="center-container">
-      <div class="container text-center">
+      <div class="container-fluid text-center">
       <div class="row row-cols-2">
 
         <!-- Club News -->
@@ -166,7 +166,7 @@
               <i class="bi bi-plus-lg me-1"></i>Add
             </button>
           </h2>
-          <div class="d-flex">
+          <div class="d-flex overflow-auto">
               <table class="table table-primary table-striped-columns ">
               <thead>
                 <th scope="col">Event</th>
@@ -184,7 +184,7 @@
 
         <!-- Club Cabinet -->
         <div class="col col-margin">
-        <div class="custom-container">
+        <div class="custom-container d-flex flex-column">
           <h2>
             Club Cabinet
             <button id="editCabinetForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
@@ -194,7 +194,7 @@
               <i class="bi bi-plus-lg me-1"></i>Add Cabinet
             </button>
           </h2>
-          <div class="d-flex">
+          <div class="d-flex overflow-auto">
             <table class="table table-primary table-striped-columns" id="clubCabinet">
               <thead>
                 <th scope="col">Name</th>
@@ -222,7 +222,7 @@
               <i class="bi bi-plus-lg me-1"></i>Add SM
             </button>
           </h2>
-          <div class="d-flex">
+          <div class="d-flex overflow-auto">
             <table class="table table-primary table-striped-columns" id="socialMedia">
               <thead>
                 <th scope="col">Social</th>
@@ -242,7 +242,7 @@
       <!-- Club Email Contact (bottom card) -->
       <div class="container d-flex justify-content-center mb-1">
         <div class="card shadow-sm" style="width: fit-content;">
-          <div class="card-body d-flex align-items-center gap-1 px-4" id="email">
+          <div class="card-body d-flex align-items-center gap-1 px-4 " id="email">
             <h6 class="mb-0">Reach out to our Club:</h6>
             <!-- Email will be dynamically inserted here -->
           </div>
