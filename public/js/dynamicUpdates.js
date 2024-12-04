@@ -1,7 +1,9 @@
 (function () {
-    // dynamicUpdates.js
+  // dynamicUpdates.js
     "use strict";
     
+    // Page: index.html
+    // Functionality: populate the featured clubs carousel (top left)
     async function populateFeaturedClubs() {
       console.log("Populating featured clubs carousel");
       
@@ -168,6 +170,8 @@
       }
     }
 
+    // Page: index.html
+    // Functionality: populate the club news carousel (bottom left)
     async function populateMainClubNews() {
       console.log("Populating main page's club news table");
       
@@ -749,6 +753,100 @@
           console.error("Error fetching events: ", error);
           return;
       }
+    }
+
+    // Page: myClub.html
+    // Functionality: populate the social media table (bottom right)
+    async function updateMyClubNewsDB() {
+
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add button click handler to open modal
+      const addButton = document.getElementById('addEventForm');
+      addButton.addEventListener('click', () => {
+        const createEventModal = new bootstrap.Modal(document.getElementById('createEventModal'));
+        createEventModal.show();
+      });
+    
+      // Add form submit handler
+      const createEventForm = document.getElementById('createEventForm');
+      createEventForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await updateMyClubEventsDB();
+      });
+    });
+    
+    async function updateMyClubEventsDB() {
+      // Get form values
+      const eventTitle = document.getElementById('eventTitle').value;
+      const eventDate = document.getElementById('eventDate').value;
+      const startTime = document.getElementById('startTime').value;
+      const endTime = document.getElementById('endTime').value;
+      const location = document.getElementById('location').value;
+    
+      // Form validation
+      if (!eventTitle || !eventDate || !startTime || !endTime || !location) {
+        console.error('All fields are required');
+        return;
+      }
+    
+      // Get current user
+      const user = firebase.auth().currentUser;
+      console.log("Current user:", user);
+      if (!user) {
+        console.log('User not logged in.');
+        return;
+      }
+    
+      try {
+        // Get club name from user document
+        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+          console.error('User document not found');
+          return;
+        }
+        
+        const userData = userDoc.data();
+        const clubName = userData.displayName;
+    
+        // Create the event document
+        const newEvent = {
+          clubName: clubName,
+          createdBy: user.uid,
+          date: eventDate,
+          endTime: endTime,
+          location: location,
+          startTime: startTime,
+          title: eventTitle,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+    
+        // Add the document to Firestore
+        await firebase.firestore().collection('events').add(newEvent);
+    
+        // Clear the form
+        document.getElementById('createEventForm').reset();
+        
+        // Close the modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('createEventModal'));
+        modal.hide();
+    
+        // Optional: Show success message
+        alert('Event created successfully!');
+    
+      } catch (error) {
+        console.error('Error adding event: ', error);
+        alert('Error creating event. Please try again.');
+      }
+    }
+
+    async function updateMyClubCabinetDB() {
+
+    }
+
+    async function updateMySocialMediaDB() {
+
     }
 
 // --------------------------------------------------------------------------------

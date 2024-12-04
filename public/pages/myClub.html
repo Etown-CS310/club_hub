@@ -46,12 +46,9 @@
                 <!-- Club Name will be dynamically inserted here -->
               </span> News 
               
-              <button id="openNameForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
-                <i class="bi bi-pencil-square me-1"></i>Edit Name
-              </button>
-              <button id="editNewsForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
+              <!-- <button id="editNewsForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
                 <i class="bi bi-pencil-square me-1"></i>Edit News
-              </button>
+              </button> -->
               <button id="addNewsForm" class="btn btn-sm btn-primary add-button edit-mode-only">
                 <i class="bi bi-plus-lg me-1"></i>Add News
               </button>
@@ -71,88 +68,6 @@
             </div>
           </div>
 
-          <!-- Edit forms will be dynamically shown in edit mode -->
-          <!-- Edit Name Form -->
-          <div id="popupNameForm" class="form-popup">
-            <div class="modal-content p-4">
-                <form class="form-container" id="nameForm">
-                    <div class="mb-4">
-                        <h2 class="text-center mb-4">Edit Name</h2>
-                        
-                        <div class="form-group">
-                            <input 
-                                type="text" 
-                                class="form-control form-control-lg mb-3" 
-                                id="clubNameInput" 
-                                placeholder="Enter new name" 
-                                name="name" 
-                                required
-                            >
-                        </div>
-                        
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg form-button">
-                                <i class="bi bi-check-circle me-2"></i>Save
-                            </button>
-                            <button type="button" class="btn btn-danger btn-lg form-button" id="closeNameForm">
-                                <i class="bi bi-x-circle me-2"></i>Close
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-          </div>
-
-          <!-- Edit News Form -->
-          <div id="popupNewsForm" class="form-popup">
-            <div class="modal-content p-4">
-              <form class="form-container" id="newsForm">
-                  <div class="mb-4">
-                    <h2 class="text-center mb-4">Edit News</h2>
-
-                    <div class="form-group mb-3">
-                        <input 
-                            type="text" 
-                            class="form-control form-control-lg" 
-                            id="newsTitleInput" 
-                            placeholder="Enter News Title" 
-                            name="newsTitleInput"
-                        >
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label for="newsImageInput" class="form-label">Choose Image</label>
-                        <input 
-                            type="file" 
-                            class="form-control form-control-lg" 
-                            id="newsImageInput" 
-                            name="newsImageInput" 
-                            accept="image/*"
-                        >
-                    </div>
-
-                    <div id="imagePreview" class="mt-3 mb-4">
-                        <img 
-                            id="previewImg" 
-                            src="#" 
-                            alt="Image Preview" 
-                            class="img-fluid rounded shadow-sm" 
-                            style="max-width: 100%; display: none;"
-                        >
-                    </div>
-
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="bi bi-check-circle me-2"></i>Save
-                        </button>
-                        <button type="button" class="btn btn-danger btn-lg" id="closeNewsForm">
-                            <i class="bi bi-x-circle me-2"></i>Close
-                        </button>
-                    </div>
-                </div>
-              </form>
-            </div>
-          </div>
         </div>
         </div>
 
@@ -161,11 +76,11 @@
         <div class="custom-container col-margin d-flex flex-column">
           <h2>
             Upcoming Events
-            <button class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
+            <!-- <button class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
               <i class="bi bi-pencil-square me-1"></i>Edit
-            </button>
-            <button class="btn btn-sm btn-primary add-button edit-mode-only">
-              <i class="bi bi-plus-lg me-1"></i>Add
+            </button> -->
+            <button class="btn btn-sm btn-primary add-button edit-mode-only" id="addEventForm">
+              <i class="bi bi-plus-lg me-1"></i>Add Events
             </button>
           </h2>
           <div class="d-flex overflow-auto">
@@ -181,6 +96,51 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Create Event Modal -->
+          <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="createEventModalLabel">Create New Calendar Event</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <!-- Event Submission Form -->
+                  <form id="createEventForm" novalidate>
+                  <div class="mb-3">
+                    <label for="eventTitle" class="form-label">Event Title</label>
+                    <input type="text" class="form-control bg-dark text-white" id="eventTitle" required>
+                    <div class="invalid-feedback">Please enter an event title.</div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="eventDate" class="form-label">Event Date</label>
+                    <input type="date" class="form-control bg-dark text-white" id="eventDate" required>
+                    <div class="invalid-feedback">Please select a valid date.</div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="startTime" class="form-label">Start Time</label>
+                    <input type="time" class="form-control bg-dark text-white" id="startTime" required>
+                    <div class="invalid-feedback">Please enter a start time.</div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="endTime" class="form-label">End Time</label>
+                    <input type="time" class="form-control bg-dark text-white" id="endTime" required>
+                    <div class="invalid-feedback">Please enter an end time.</div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control bg-dark text-white" id="location" required>
+                    <div class="invalid-feedback">Please enter a location.</div>
+                  </div>
+                  <button type="submit" class="btn btn-outline-light">Submit Event</button>
+                </form>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
         </div>
 
@@ -189,9 +149,9 @@
         <div class="custom-container d-flex flex-column">
           <h2>
             Club Cabinet
-            <button id="editCabinetForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
+            <!-- <button id="editCabinetForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
               <i class="bi bi-pencil-square me-1"></i>Edit Cabinet
-            </button>
+            </button> -->
             <button id="addCabinetForm" class="btn btn-sm btn-primary add-button edit-mode-only">
               <i class="bi bi-plus-lg me-1"></i>Add Cabinet
             </button>
@@ -217,11 +177,11 @@
         <div class="custom-container col-margin d-flex flex-column">
           <h2>
             Social Media
-            <button id="editSMForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
+            <!-- <button id="editSMForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
               <i class="bi bi-pencil-square me-1"></i>Edit SM
-            </button>
+            </button> -->
             <button id="addSMForm" class="btn btn-sm btn-primary add-button edit-mode-only">
-              <i class="bi bi-plus-lg me-1"></i>Add SM
+              <i class="bi bi-plus-lg me-1"></i>Add Social Media
             </button>
           </h2>
           <div class="d-flex overflow-auto">
@@ -261,7 +221,6 @@
 
     <footer id="footer"></footer>
     
-<!-- Replace the existing script with this one, just before the closing </body> tag -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // Get the toggle button
@@ -315,7 +274,6 @@
     <!-- Custom JS -->
     <script src="/js/global.js"></script>
     <script src="/js/dynamicUpdates.js"></script>
-    <script src="/js/editMyClub.js"></script>
     
   </body>
 </html>
