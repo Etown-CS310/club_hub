@@ -35,43 +35,45 @@
 
         <!-- Featured Clubs -->
         <div class="col col-margin">
-          <div id="clubCarousel" class="carousel slide custom-container" data-bs-ride="carousel">
+          <div class="custom-container">
             <h2>Featured Clubs</h2>
-            <div class="carousel-inner" id="featuredClubs">
-              <!-- Clubs will be dynamically inserted here -->
+            <div id="clubCarousel" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-indicators">
+                <!-- Featured Club indicators will be dynamically inserted here -->
+              </div>
+            
+              <div class="carousel-inner">
+                <!-- Featured Clubs will be dynamically inserted here -->
+              </div>
+            
+              <div class="carousel-button-indicators">
+                <!-- Featured Clubs Button indicators will be dynamically inserted here -->
+              </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#clubCarousel" data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#clubCarousel" data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
-            </button>
           </div>
         </div>
 
         <!-- Club Events Section -->
         <div class="col ">
-          <div class="custom-container col-margin d-flex flex-column">
-            <h2>Upcoming Events</h2>
-            <div class=" d-flex table-responsive">
-                <table class="table table-primary table-striped-columns ">
-                <thead>
-                  <tr>
-                    <th scope="col">Club</th>
-                    <th scope="col">Event</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Location</th>
-                  </tr>
-                </thead>
-                <tbody id = "home-events">
-                  <!-- Events will be dynamically inserted here -->
-                </tbody>
-              </table>
-            </div>
+        <div class="custom-container col-margin d-flex flex-column">
+          <h2>Upcoming Events</h2>
+          <div class=" d-flex table-responsive">
+              <table class="table table-primary table-striped-columns ">
+              <thead>
+                <tr>
+                  <th scope="col">Club</th>
+                  <th scope="col">Event</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Time</th>
+                  <th scope="col">Location</th>
+                </tr>
+              </thead>
+              <tbody id = "home-events">
+                <!-- Events will be dynamically inserted here -->
+              </tbody>
+            </table>
           </div>
+        </div>
         </div>
 
         <!-- Club News & Announcements Section with Carousel -->
@@ -95,33 +97,32 @@
         </div>
         </div>
 
-
         <!-- About Us Section -->
         <div class="col home-about-section">
-          <div class="custom-container col-margin d-flex flex-column">
-            <h2>
-              <a href="/pages/aboutUs.html" id="aboutUs">About Us</a>
-            </h2>
-            <div class="team-grid">
-              <div class="team-member">
-                <h3 class="member-name">Muz Islam</h3>
-                <p class="member-role">Programmer</p>
-                <p class="member-bio">Senior IS major seeking full-time opportunities post-graduation.</p>
-                <div class="btn-container">
-                  <a href="https://muzzy3k.github.io/" class="btn aboutBtn" target="_blank">Portfolio</a>
-                </div>
+        <div class="custom-container col-margin d-flex flex-column">
+          <h2>
+            <a href="/pages/aboutUs.html" id="aboutUs">About Us</a>
+          </h2>
+          <div class="team-grid">
+            <div class="team-member">
+              <h3 class="member-name">Muz Islam</h3>
+              <p class="member-role">Programmer</p>
+              <p class="member-bio">Senior IS major seeking full-time opportunities post-graduation.</p>
+              <div class="btn-container">
+                <a href="https://muzzy3k.github.io/" class="btn aboutBtn" target="_blank">Portfolio</a>
               </div>
-              
-              <div class="team-member">
-                <h3 class="member-name">Matt Smith</h3>
-                <p class="member-role">Programmer</p>
-                <p class="member-bio">Junior CS major seeking summer internship opportunities.</p>
-                <div class="btn-container">
-                  <a href="https://msmit99.github.io/" class="btn aboutBtn" target="_blank">Portfolio</a>
-                </div>
+            </div>
+            
+            <div class="team-member">
+              <h3 class="member-name">Matt Smith</h3>
+              <p class="member-role">Programmer</p>
+              <p class="member-bio">Junior CS major seeking summer internship opportunities.</p>
+              <div class="btn-container">
+                <a href="https://msmit99.github.io/" class="btn aboutBtn" target="_blank">Portfolio</a>
               </div>
             </div>
           </div>
+        </div>
         </div>
 
       </div>
