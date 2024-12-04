@@ -33,7 +33,7 @@
           const defaultItem = document.createElement('div');
           defaultItem.className = 'carousel-item active';
           defaultItem.innerHTML = `
-            <img src="path/to/default/image.jpg" class="d-block w-100 mx-auto" alt="Default Club" style="width: 200px; height: 200px; object-fit: cover;">
+            <img src="path/to/default/image.jpg" class="d-block w-100 mx-auto" alt="Default Club">
             <div class="carousel-caption d-none d-md-block">
               <h5>Join a Club!</h5>
             </div>
@@ -56,7 +56,7 @@
             carouselItem.className = `carousel-item ${index === 0 ? 'active' : ''}`;
     
             carouselItem.innerHTML = `
-              <img src="${data.profilePicture}" class="d-block w-100 mx-auto" alt="${data.clubName}" style="width: 200px; height: 200px; object-fit: cover;">
+              <img src="${data.profilePicture}" class="d-block w-100 mx-auto" alt="${data.clubName}">
               <div class="carousel-caption d-none d-md-block">
                 <h5>${data.clubName}</h5>
               </div>
@@ -124,6 +124,114 @@
       } catch (error) {
           console.error("Error fetching events: ", error);
           return;
+      }
+    }
+
+    async function populateMainClubNews() {
+      console.log("Populating main page's club news table");
+      
+      // Get carousel elements
+      const newsCarousel = document.getElementById('newsCarousel');
+      const carouselInner = newsCarousel?.querySelector('.carousel-inner');
+      const carouselIndicators = newsCarousel?.querySelector('.carousel-indicators');
+      const carouselButtonIndicators = newsCarousel?.querySelector('.carousel-button-indicators');
+    
+      if (!carouselInner || !newsCarousel) {
+        console.error("Required carousel elements not found");
+        return;
+      }
+    
+      try {
+        console.log("Fetching news from Firestore...");
+        const querySnapshot = await db.collection('news')
+          .orderBy('createdAt', 'desc')
+          .limit(10)
+          .get();
+    
+        // Clear existing content
+        carouselInner.innerHTML = '';
+        if (carouselIndicators) carouselIndicators.innerHTML = '';
+        if (carouselButtonIndicators) carouselButtonIndicators.innerHTML = '';
+    
+        if (querySnapshot.empty) {
+          console.log("No news found, displaying default item");
+          const defaultItem = document.createElement('div');
+          defaultItem.className = 'carousel-item active';
+          defaultItem.innerHTML = `
+            <img src="/images/img_logo.png" class="d-block w-100 mx-auto" alt="Default news image">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>No News Available</h5>
+            </div>
+          `;
+          carouselInner.appendChild(defaultItem);
+          
+          // Hide indicators if only one item
+          if (carouselIndicators) carouselIndicators.style.display = 'none';
+          if (carouselButtonIndicators) carouselButtonIndicators.style.display = 'none';
+        } else {
+          const newsItems = querySnapshot.docs.map(doc => doc.data());
+          console.log(`Found ${newsItems.length} news items`);
+    
+          // Create carousel items
+          newsItems.forEach((data, index) => {
+            const carouselItem = document.createElement('div');
+            carouselItem.className = `carousel-item${index === 0 ? ' active' : ''}`;
+            
+            carouselItem.innerHTML = `
+              <img src="${data.picture || '/images/img_logo.png'}" 
+                   class="d-block w-100 mx-auto" 
+                   alt="${data.newsTitle || 'News image'}"
+                   onerror="this.src='/images/img_logo.png'">
+              <div class="carousel-caption d-none d-md-block">
+                <h5>${data.newsTitle || 'Untitled News'}</h5>
+              </div>
+            `;
+            
+            carouselInner.appendChild(carouselItem);
+    
+            // Create indicator if we have multiple items
+            if (newsItems.length > 1 && carouselIndicators) {
+              const indicator = document.createElement('button');
+              indicator.type = 'button';
+              indicator.dataset.bsTarget = '#newsCarousel';
+              indicator.dataset.bsSlideTo = index.toString();
+              if (index === 0) {
+                indicator.classList.add('active');
+                indicator.setAttribute('aria-current', 'true');
+              }
+              indicator.setAttribute('aria-label', `Slide ${index + 1}`);
+              carouselIndicators.appendChild(indicator);
+            }
+          });
+    
+          // Add navigation buttons if multiple items
+          if (newsItems.length > 1 && carouselButtonIndicators) {
+            carouselButtonIndicators.innerHTML = `
+              <button class="carousel-control-prev" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#newsCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            `;
+          } else {
+            if (carouselIndicators) carouselIndicators.style.display = 'none';
+            if (carouselButtonIndicators) carouselButtonIndicators.style.display = 'none';
+          }
+        }
+    
+        // Initialize the Bootstrap carousel
+        new bootstrap.Carousel(newsCarousel);
+    
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        console.error("Error details:", {
+          code: error.code,
+          message: error.message,
+          stack: error.stack
+        });
       }
     }
 
@@ -615,8 +723,9 @@
               console.log("On home page");
               const homeEventsTable = document.getElementById('home-events');
               if (homeEventsTable) {
-                  populateEventsTable();
                   populateFeaturedClubs();
+                  populateEventsTable();
+                  populateMainClubNews()
               }
           }
           
