@@ -514,7 +514,7 @@ form .form-control {
     opacity: 0.8;
 }
 
-/* ------------------- myClub.html Corner Buttons (Edit My Club) ------------------- */
+/* ------------------- myClub.html Corner/Page Buttons (Edit My Club) ------------------- */
 
 .edit-button:hover{
     background-color: #c43e1f;
@@ -523,6 +523,11 @@ form .form-control {
 
 .add-button:hover{
     background-color: #004085;
+    transform: scale(1.1);
+}
+
+.delete-button:hover{
+    background-color: #a71d2a;
     transform: scale(1.1);
 }
 
