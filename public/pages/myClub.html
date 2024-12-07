@@ -76,12 +76,15 @@
         <div class="custom-container col-margin d-flex flex-column">
           <h2>
             Upcoming Events
+            <!-- <button class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
+              <i class="bi bi-pencil-square me-1"></i>Edit
+            </button> -->
             <button class="btn btn-sm btn-primary add-button edit-mode-only" id="addEventForm">
               <i class="bi bi-plus-lg me-1"></i>Add Events
             </button>
           </h2>
           <div class="d-flex overflow-auto">
-              <table class="table table-primary table-striped-columns" id="eventTable">
+              <table class="table table-primary table-striped-columns ">
               <thead>
                 <th scope="col">Event</th>
                 <th scope="col">Date</th>
@@ -133,49 +136,6 @@
                   <button type="submit" class="btn btn-outline-light">Submit Event</button>
                 </form>
 
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Edit Event Modal -->
-          <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content bg-dark text-white">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form id="editEventForm" novalidate>
-                    <div class="mb-3">
-                      <label for="editEventTitle" class="form-label">Event Title</label>
-                      <input type="text" class="form-control bg-dark text-white" id="editEventTitle" required>
-                      <div class="invalid-feedback">Please enter an event title.</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="editEventDate" class="form-label">Event Date</label>
-                      <input type="date" class="form-control bg-dark text-white" id="editEventDate" required>
-                      <div class="invalid-feedback">Please select a valid date.</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="editStartTime" class="form-label">Start Time</label>
-                      <input type="time" class="form-control bg-dark text-white" id="editStartTime" required>
-                      <div class="invalid-feedback">Please enter a start time.</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="editEndTime" class="form-label">End Time</label>
-                      <input type="time" class="form-control bg-dark text-white" id="editEndTime" required>
-                      <div class="invalid-feedback">Please enter an end time.</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="editLocation" class="form-label">Location</label>
-                      <input type="text" class="form-control bg-dark text-white" id="editLocation" required>
-                      <div class="invalid-feedback">Please enter a location.</div>
-                    </div>
-                    <input type="hidden" id="editEventId">
-                    <button type="submit" class="btn btn-outline-light">Save Changes</button>
-                  </form>
                 </div>
               </div>
             </div>
