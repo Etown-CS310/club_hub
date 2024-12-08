@@ -68,6 +68,45 @@
             </div>
           </div>
 
+          <!-- Create News Modal -->
+          <div class="modal fade" id="createNewsModal" tabindex="-1" aria-labelledby="createNewsModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+          <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+              <h5 class="modal-title" id="createNewsModalLabel">Create News Story</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+              <!-- News Submission Form -->
+              <form id="createNewsForm" novalidate>
+              
+                <div class="mb-3">
+                  <label for="newsTitle" class="form-label">Title</label>
+                  <input type="text" class="form-control bg-dark text-white" id="newsTitle" required>
+                  <div class="invalid-feedback">Please enter a title.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="description" class="form-label">Description</label>
+                  <input type="text" class="form-control bg-dark text-white" id="description" required>
+                  <div class="invalid-feedback">Please enter a description.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="picture" class="form-label">Profile Picture</label>
+                  <input type="file" class="form-control bg-dark text-white" id="picture" accept="image/*" required>
+                  <div id="imagePreview" class="mt-2" style="display: none;">
+                    <img id="preview" src="#" alt="Preview" class="border rounded">
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-outline-light">Submit News</button>
+              </form>
+
+            </div>
+          </div>
+          </div>
+          </div>
+
         </div>
         </div>
 

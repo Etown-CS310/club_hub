@@ -514,6 +514,11 @@ form .form-control {
     opacity: 0.8;
 }
 
+#preview{
+    max-width: 200px; 
+    max-height: 200px;
+}
+
 /* ------------------- myClub.html Corner/Page Buttons (Edit My Club) ------------------- */
 
 .edit-button:hover{
