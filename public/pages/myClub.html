@@ -46,9 +46,6 @@
                 <!-- Club Name will be dynamically inserted here -->
               </span> News 
               
-              <!-- <button id="editNewsForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
-                <i class="bi bi-pencil-square me-1"></i>Edit News
-              </button> -->
               <button id="addNewsForm" class="btn btn-sm btn-primary add-button edit-mode-only">
                 <i class="bi bi-plus-lg me-1"></i>Add News
               </button>
@@ -68,6 +65,86 @@
             </div>
           </div>
 
+          <!-- Create News Modal -->
+          <div class="modal fade" id="createNewsModal" tabindex="-1" aria-labelledby="createNewsModalLabel">
+          <div class="modal-dialog">
+          <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+              <h5 class="modal-title" id="createNewsModalLabel">Create News Story</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+              <!-- News Submission Form -->
+              <form id="createNewsForm" novalidate>
+                <div class="mb-3">
+                  <label for="newsTitle" class="form-label">News Title</label>
+                  <input type="text" class="form-control bg-dark text-white" id="newsTitle" required>
+                  <div class="invalid-feedback">Please enter a title.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="description" class="form-label">News Description</label>
+                  <input type="text" class="form-control bg-dark text-white" id="description" required>
+                  <div class="invalid-feedback">Please enter a description.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="picture" class="form-label">News Picture</label>
+                  <input type="file" class="form-control bg-dark text-white" id="picture" accept="image/*" required>
+                  <div id="imagePreview" class="mt-2" style="display: none;">
+                    <img id="preview" src="#" alt="Preview" class="border rounded img-fluid">
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-outline-light">Submit News</button>
+              </form>
+
+            </div>
+          </div>
+          </div>
+          </div>
+
+          <!-- Edit News Modal -->
+          <div class="modal fade" id="editNewsModal" tabindex="-1" aria-labelledby="editNewsModalLabel">
+          <div class="modal-dialog">
+          <div class="modal-content bg-dark text-white">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="editNewsModalLabel">Edit News</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              
+              <div class="modal-body">
+                  <form id="editNewsForm" novalidate>
+                      <div class="mb-3">
+                          <label for="editNewsTitle" class="form-label">News Title</label>
+                          <input type="text" class="form-control bg-dark text-white" id="editNewsTitle" required>
+                          <div class="invalid-feedback">Please enter a title.</div>
+                      </div>
+                      
+                      <div class="mb-3">
+                          <label for="editDescription" class="form-label">News Description</label>
+                          <textarea class="form-control bg-dark text-white" id="editDescription" required rows="3"></textarea>
+                          <div class="invalid-feedback">Please enter a description.</div>
+                      </div>
+                      
+                      <div class="mb-3">
+                          <label for="editPicture" class="form-label">News Picture</label>
+                          <input type="file" class="form-control bg-dark text-white" id="editPicture" accept="image/*" required>
+                          <div id="imagePreview" class="mt-2" style="display: none;">
+                            <img id="preview" src="#" alt="Preview" class="border rounded img-fluid">
+                          </div>
+                      </div>
+                      
+                      <input type="hidden" id="editNewsId">
+                      
+                      <div class="mt-4">
+                          <button type="submit" class="btn btn-outline-light">Save Changes</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+          </div>
+          </div>
+
         </div>
         </div>
 
@@ -80,6 +157,7 @@
               <i class="bi bi-plus-lg me-1"></i>Add Events
             </button>
           </h2>
+
           <div class="d-flex overflow-auto">
               <table class="table table-primary table-striped-columns" id="eventTable">
               <thead>
@@ -88,6 +166,7 @@
                 <th scope="col">Time</th>
                 <th scope="col">Location</th>
               </thead>
+              
               <tbody id="club-events">
                 <!-- Events will be dynamically inserted here -->
               </tbody>
@@ -95,90 +174,92 @@
           </div>
 
           <!-- Create Event Modal -->
-          <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content bg-dark text-white">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="createEventModalLabel">Create New Calendar Event</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <!-- Event Submission Form -->
-                  <form id="createEventForm" novalidate>
-                  <div class="mb-3">
-                    <label for="eventTitle" class="form-label">Event Title</label>
-                    <input type="text" class="form-control bg-dark text-white" id="eventTitle" required>
-                    <div class="invalid-feedback">Please enter an event title.</div>
-                  </div>
-                  <div class="mb-3">
-                    <label for="eventDate" class="form-label">Event Date</label>
-                    <input type="date" class="form-control bg-dark text-white" id="eventDate" required>
-                    <div class="invalid-feedback">Please select a valid date.</div>
-                  </div>
-                  <div class="mb-3">
-                    <label for="startTime" class="form-label">Start Time</label>
-                    <input type="time" class="form-control bg-dark text-white" id="startTime" required>
-                    <div class="invalid-feedback">Please enter a start time.</div>
-                  </div>
-                  <div class="mb-3">
-                    <label for="endTime" class="form-label">End Time</label>
-                    <input type="time" class="form-control bg-dark text-white" id="endTime" required>
-                    <div class="invalid-feedback">Please enter an end time.</div>
-                  </div>
-                  <div class="mb-3">
-                    <label for="location" class="form-label">Location</label>
-                    <input type="text" class="form-control bg-dark text-white" id="location" required>
-                    <div class="invalid-feedback">Please enter a location.</div>
-                  </div>
-                  <button type="submit" class="btn btn-outline-light">Submit Event</button>
-                </form>
-
-                </div>
-              </div>
+          <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel">
+          <div class="modal-dialog">
+          <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+              <h5 class="modal-title" id="createEventModalLabel">Create New Calendar Event</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            <div class="modal-body">
+              <!-- Event Submission Form -->
+              <form id="createEventForm" novalidate>
+                <div class="mb-3">
+                  <label for="eventTitle" class="form-label">Event Title</label>
+                  <input type="text" class="form-control bg-dark text-white" id="eventTitle" required>
+                  <div class="invalid-feedback">Please enter an event title.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="eventDate" class="form-label">Event Date</label>
+                  <input type="date" class="form-control bg-dark text-white" id="eventDate" required>
+                  <div class="invalid-feedback">Please select a valid date.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="startTime" class="form-label">Start Time</label>
+                  <input type="time" class="form-control bg-dark text-white" id="startTime" required>
+                  <div class="invalid-feedback">Please enter a start time.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="endTime" class="form-label">End Time</label>
+                  <input type="time" class="form-control bg-dark text-white" id="endTime" required>
+                  <div class="invalid-feedback">Please enter an end time.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="location" class="form-label">Location</label>
+                  <input type="text" class="form-control bg-dark text-white" id="location" required>
+                  <div class="invalid-feedback">Please enter a location.</div>
+                </div>
+                <button type="submit" class="btn btn-outline-light">Submit Event</button>
+              </form>
+            </div>
+          </div>
+          </div>
           </div>
 
           <!-- Edit Event Modal -->
-          <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content bg-dark text-white">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <form id="editEventForm" novalidate>
-                    <div class="mb-3">
-                      <label for="editEventTitle" class="form-label">Event Title</label>
-                      <input type="text" class="form-control bg-dark text-white" id="editEventTitle" required>
-                      <div class="invalid-feedback">Please enter an event title.</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="editEventDate" class="form-label">Event Date</label>
-                      <input type="date" class="form-control bg-dark text-white" id="editEventDate" required>
-                      <div class="invalid-feedback">Please select a valid date.</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="editStartTime" class="form-label">Start Time</label>
-                      <input type="time" class="form-control bg-dark text-white" id="editStartTime" required>
-                      <div class="invalid-feedback">Please enter a start time.</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="editEndTime" class="form-label">End Time</label>
-                      <input type="time" class="form-control bg-dark text-white" id="editEndTime" required>
-                      <div class="invalid-feedback">Please enter an end time.</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="editLocation" class="form-label">Location</label>
-                      <input type="text" class="form-control bg-dark text-white" id="editLocation" required>
-                      <div class="invalid-feedback">Please enter a location.</div>
-                    </div>
-                    <input type="hidden" id="editEventId">
-                    <button type="submit" class="btn btn-outline-light">Save Changes</button>
-                  </form>
-                </div>
-              </div>
+          <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel">
+          <div class="modal-dialog">
+          <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            <div class="modal-body">
+              <form id="editEventForm" novalidate>
+                <div class="mb-3">
+                  <label for="editEventTitle" class="form-label">Event Title</label>
+                  <input type="text" class="form-control bg-dark text-white" id="editEventTitle" required>
+                  <div class="invalid-feedback">Please enter an event title.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editEventDate" class="form-label">Event Date</label>
+                  <input type="date" class="form-control bg-dark text-white" id="editEventDate" required>
+                  <div class="invalid-feedback">Please select a valid date.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editStartTime" class="form-label">Start Time</label>
+                  <input type="time" class="form-control bg-dark text-white" id="editStartTime" required>
+                  <div class="invalid-feedback">Please enter a start time.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editEndTime" class="form-label">End Time</label>
+                  <input type="time" class="form-control bg-dark text-white" id="editEndTime" required>
+                  <div class="invalid-feedback">Please enter an end time.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editLocation" class="form-label">Location</label>
+                  <input type="text" class="form-control bg-dark text-white" id="editLocation" required>
+                  <div class="invalid-feedback">Please enter a location.</div>
+                </div>
+
+                <input type="hidden" id="editEventId">
+                <button type="submit" class="btn btn-outline-light">Save Changes</button>
+              </form>
+            </div>
+          </div>
+          </div>
           </div>
 
         </div>
@@ -189,9 +270,6 @@
         <div class="custom-container d-flex flex-column">
           <h2>
             Club Cabinet
-            <!-- <button id="editCabinetForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
-              <i class="bi bi-pencil-square me-1"></i>Edit Cabinet
-            </button> -->
             <button id="addCabinetForm" class="btn btn-sm btn-primary add-button edit-mode-only">
               <i class="bi bi-plus-lg me-1"></i>Add Cabinet
             </button>
@@ -217,9 +295,6 @@
         <div class="custom-container col-margin d-flex flex-column">
           <h2>
             Social Media
-            <!-- <button id="editSMForm" class="btn btn-sm btn-warning text-white edit-button edit-mode-only">
-              <i class="bi bi-pencil-square me-1"></i>Edit SM
-            </button> -->
             <button id="addSMForm" class="btn btn-sm btn-primary add-button edit-mode-only">
               <i class="bi bi-plus-lg me-1"></i>Add Social Media
             </button>

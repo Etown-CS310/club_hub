@@ -393,14 +393,18 @@ footer {
 /* -------------- Custom Styles for Modal Close Buttons --------------- */
 #createEventModal .btn-close,
 #eventDetailsModal .btn-close,
-#editEventModal .btn-close {
+#editEventModal .btn-close,
+#createNewsModal .btn-close,
+#editNewsModal .btn-close {
   filter: invert(1);
   opacity: 0.5;
 }
 
 #createEventModal .btn-close:hover,
 #eventDetailsModal .btn-close:hover,
-#editEventModal .btn-close:hover {
+#editEventModal .btn-close:hover,
+#createNewsModal .btn-close:hover,
+#editNewsModal .btn-close:hover {
   opacity: 0.75;
 }
 
@@ -512,6 +516,11 @@ form .form-control {
   
 .form-button:hover{
     opacity: 0.8;
+}
+
+#preview{
+    max-width: 200px; 
+    max-height: 200px;
 }
 
 /* ------------------- myClub.html Corner/Page Buttons (Edit My Club) ------------------- */

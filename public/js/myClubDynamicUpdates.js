@@ -46,11 +46,11 @@
   
           // Fetch events from Firestore:
           // 1st Where: Only show for relevant club
-          // Limit: only show 5 news
+          // Limit: only show 10 news
           const querySnapshot = await db.collection('news')
               .where('clubName', '==', user.displayName)
               .orderBy('createdAt')
-              .limit(5)
+              .limit(10)
               .get();
   
           // Clear existing rows
@@ -111,7 +111,7 @@
               prevButton.dataset.bsTarget = '#newsCarousel';
               prevButton.dataset.bsSlide = 'prev';
               prevButton.innerHTML = `
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="carousel-control-prev-icon"></span>
                 <span class="visually-hidden">Previous</span>
               `;
           
@@ -122,7 +122,7 @@
               nextButton.dataset.bsTarget = '#newsCarousel';
               nextButton.dataset.bsSlide = 'next';
               nextButton.innerHTML = `
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="carousel-control-next-icon"></span>
                 <span class="visually-hidden">Next</span>
               `;
           
@@ -156,12 +156,14 @@
   
                 // Create the edit button
                 const editbtn = document.createElement('button');
-                editbtn.className = 'btn btn-sm btn-warning text-white edit-button edit-mode-only';
+                editbtn.className = 'btn btn-sm btn-warning text-white edit-button news edit-mode-only';
+                editbtn.setAttribute('data-news-id', doc.id);
                 editbtn.innerHTML = '<i class="bi bi-pencil-square me-1"></i>';
   
                 // Create the delete button
                 const deletebtn = document.createElement('button');
-                deletebtn.className = 'btn btn-sm btn-danger text-white delete-button edit-mode-only';
+                deletebtn.className = 'btn btn-sm btn-danger text-white delete-button news edit-mode-only';
+                deletebtn.setAttribute('data-news-id', doc.id);
                 deletebtn.innerHTML = '<i class="bi bi-trash me-1"></i>';
   
                 // Assemble the elements
@@ -177,9 +179,48 @@
                 // Update first item flag
                 isFirst = false;
             });
+
+            // Add event listeners to all delete buttons
+            const deleteNewsButtons = document.querySelectorAll('.delete-button.news');
+            deleteNewsButtons.forEach(button => {
+              button.addEventListener('click', () => {
+                const newsId = button.getAttribute('data-news-id');
+                if (newsId) {
+                  deleteClubNews(newsId);
+                } else {
+                  console.error('News ID not found for this button');
+                }
+              });
+            });
+
+            // Add event listeners to all edit buttons
+            const editNewsButtons = document.querySelectorAll('.edit-button.news');
+            editNewsButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    const newsId = button.getAttribute('data-news-id');
+                    if (newsId) {
+                        try {
+                            const docRef = firebase.firestore().collection('news').doc(newsId);
+                            const docSnap = await docRef.get();
+                            
+                            if (docSnap.exists) {
+                                const newsData = docSnap.data();
+                                newsData.id = newsId;
+                                showEditNewsModal(newsData);
+                            } else {
+                                console.error('No such document!');
+                            }
+                        } catch (error) {
+                            console.error('Error getting document:', error);
+                        }
+                    } else {
+                        console.error('News ID not found for this button');
+                    }
+                });
+            });
           }
         } catch (error) {
-            console.error("Error fetching events: ", error);
+            console.error("Error fetching news: ", error);
             return;
         }
       }
@@ -549,260 +590,514 @@
       }
 
   // --------------------------------------------------------------------------------
-
-    // Page: myClub.html
-    // Functionality: populate the social media table (bottom right)
-    async function updateMyClubNewsDB() {
-
+  function previewImage(input) {
+    const preview = document.getElementById('preview');
+    const previewDiv = document.getElementById('imagePreview');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            previewDiv.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '#';
+        previewDiv.style.display = 'none';
     }
+  }
+
+
+  // Bind the function to the file input
+  document.getElementById('picture').addEventListener('change', function () {
+      previewImage(this);
+  });
+
+  // Bind the function to the file input
+    document.getElementById('editPicture').addEventListener('change', function () {
+      previewImage(this);
+  });
+
+
+  // Upload image function
+  function uploadImage(imageFile) {
+    return new Promise((resolve, reject) => {
+      const user = firebase.auth().currentUser;
+
+      if (user) {
+        // Refresh the token to ensure it is up-to-date
+        user.getIdToken(true).then((idToken) => {
+          console.log("Token refreshed:", idToken);
+
+          // Ensure the file exists before proceeding
+          if (imageFile) {
+            const storageRef = firebase.storage().ref();
+            const timestamp = Date.now();
+            const fileRef = storageRef.child(`news_pictures/${timestamp}_${imageFile.name}`);
+
+            // Start the upload task
+            const uploadTask = fileRef.put(imageFile);
+
+            // Monitor the upload progress
+            uploadTask.on('state_changed',
+              (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log("Upload is " + progress + "% done");
+              },
+              (error) => {
+                // Handle upload errors
+                console.error("Error during upload:", error);
+                reject(error); // Reject the promise on error
+              },
+              () => {
+                // Upload complete, get the download URL
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                  console.log("File available at", downloadURL);
+                  resolve(downloadURL); // Resolve the promise with the download URL
+                }).catch((error) => {
+                  console.error("Error getting download URL:", error);
+                  reject(error); // Reject the promise if fetching the download URL fails
+                });
+              }
+            );
+          } else {
+            reject("No file selected");
+          }
+        }).catch((error) => {
+          console.error("Error refreshing token:", error);
+          reject(error); // Reject the promise if token refresh fails
+        });
+      } else {
+        console.error("User is not authenticated");
+        reject("User is not authenticated");
+      }
+    });
+  }
+
+  async function createClubNews() {
+    try {
+        // Form validation
+        const newsTitle = document.getElementById('newsTitle').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const imageInput = document.getElementById('picture');
+        const imageFile = imageInput?.files?.[0];
+
+        // Validate all required fields
+        const validationErrors = [];
+        if (!newsTitle) validationErrors.push('News title is required');
+        if (!description) validationErrors.push('Description is required');
+        if (!imageFile) validationErrors.push('Image is required');
+        
+        if (validationErrors.length > 0) {
+            throw new Error(validationErrors.join('\n'));
+        }
+
+        // Get current user
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            throw new Error('Please log in to create news');
+        }
+
+        // Show loading state
+        const submitButton = document.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Creating news...';
+
+        // Get user data
+        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+            throw new Error('User profile not found');
+        }
+
+        const userData = userDoc.data();
+        
+        // Upload image and get the URL
+        console.log('Starting image upload...');
+        const imageUrl = await uploadImage(imageFile);
+        console.log('Image upload complete:', imageUrl);
+
+        // Create news document
+        const newNews = {
+            clubName: userData.displayName,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            description,
+            newsTitle,
+            picture: imageUrl,
+            createdBy: user.uid,
+            lastModified: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        // Add to Firestore
+        await firebase.firestore().collection('news').add(newNews);
+
+        // Reset form
+        document.getElementById('createNewsForm').reset();
+        document.getElementById('imagePreview').style.display = 'none';
+
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('createNewsModal'));
+        modal.hide();
+
+        // Show success message
+        alert('News created successfully!');
+
+    } catch (error) {
+        console.error('Error in createClubNews:', error);
+        alert(error.message || 'Failed to create news. Please try again.');
+    } finally {
+        // Reset button state
+        const submitButton = document.querySelector('button[type="submit"]');
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Create News';
+    }
+  }
+
+  // Function to handle event deletion
+  async function deleteClubNews(newsId) {
+    console.log(`Deleting event with ID: ${newsId}`);
+    if (!newsId) {
+      console.error('No event ID provided');
+      return;
+    }
+  
+    try {
+      // Get current user
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        throw new Error('User not logged in');
+      }
+  
+      // Simple confirmation
+      if (confirm('Are you sure you want to delete this news?')) {
+        // Get event data to verify ownership
+        const newsDoc = await db.collection('news').doc(newsId).get();
+        
+        if (!newsDoc.exists) {
+          throw new Error('News not found');
+        }
+  
+        const newsData = newsDoc.data();
+        
+        // Verify user has permission to delete
+        if (newsData.clubName !== user.displayName) {
+          throw new Error('You do not have permission to delete this news');
+        }
+  
+        // Delete the event
+        await db.collection('news').doc(newsId).delete();
+  
+        // Refresh tables if they exist
+        if (typeof populateClubNews === 'function') {
+          await populateClubNews();
+        }
+  
+        alert('News deleted successfully!');
+      }
+    } catch (error) {
+      console.error('Error deleting news:', error);
+      alert('Error deleting news: ' + error.message);
+    }
+  }
+
+  function showEditNewsModal(newsData) {
+    // Populate the form fields
+    document.getElementById('editNewsTitle').value = newsData.newsTitle || '';
+    document.getElementById('editDescription').value = newsData.description || '';
+    document.getElementById('editNewsId').value = newsData.id || '';
+
+    // Show the modal
+    const editNewsModal = new bootstrap.Modal(document.getElementById('editNewsModal'));
+    editNewsModal.show();
+  }
 
   // -------------------------------------------------------------------------------- 
 
-    async function createClubEvent() {
-      // Get form values
-      const eventTitle = document.getElementById('eventTitle').value;
-      const eventDate = document.getElementById('eventDate').value;
-      const startTime = document.getElementById('startTime').value;
-      const endTime = document.getElementById('endTime').value;
-      const location = document.getElementById('location').value;
-    
-      // Form validation
-      if (!eventTitle || !eventDate || !startTime || !endTime || !location) {
-        console.error('All fields are required');
+  async function createClubEvent() {
+    // Get form values
+    const eventTitle = document.getElementById('eventTitle').value;
+    const eventDate = document.getElementById('eventDate').value;
+    const startTime = document.getElementById('startTime').value;
+    const endTime = document.getElementById('endTime').value;
+    const location = document.getElementById('location').value;
+  
+    // Form validation
+    if (!eventTitle || !eventDate || !startTime || !endTime || !location) {
+      console.error('All fields are required');
+      return;
+    }
+  
+    // Get current user
+    const user = firebase.auth().currentUser;
+    console.log("Current user:", user);
+    if (!user) {
+      console.log('User not logged in.');
+      return;
+    }
+  
+    try {
+      // Get club name from user document
+      const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        console.error('User document not found');
         return;
       }
-    
+      
+      const userData = userDoc.data();
+      const clubName = userData.displayName;
+  
+      // Create the event document
+      const newEvent = {
+        clubName: clubName,
+        createdBy: user.uid,
+        date: eventDate,
+        endTime: endTime,
+        location: location,
+        startTime: startTime,
+        title: eventTitle,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+  
+      // Add the document to Firestore
+      await firebase.firestore().collection('events').add(newEvent);
+  
+      // Clear the form
+      document.getElementById('createEventForm').reset();
+      
+      // Close the modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('createEventModal'));
+      modal.hide();
+  
+      // Show success message
+      alert('Event created successfully!');
+  
+      // Refresh tables if they exist
+      if (typeof populateClubEventsTable === 'function') {
+        await populateClubEventsTable();
+      }
+
+    } catch (error) {
+      console.error('Error adding event: ', error);
+      alert('Error creating event. Please try again.');
+    }
+  }
+
+  // Function to handle event deletion
+  async function deleteClubEvent(eventId) {
+    console.log(`Deleting event with ID: ${eventId}`);
+    if (!eventId) {
+      console.error('No event ID provided');
+      return;
+    }
+  
+    try {
       // Get current user
       const user = firebase.auth().currentUser;
-      console.log("Current user:", user);
       if (!user) {
-        console.log('User not logged in.');
-        return;
+        throw new Error('User not logged in');
       }
-    
-      try {
-        // Get club name from user document
-        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
-        if (!userDoc.exists) {
-          console.error('User document not found');
-          return;
+  
+      // Simple confirmation
+      if (confirm('Are you sure you want to delete this event?')) {
+        // Get event data to verify ownership
+        const eventDoc = await db.collection('events').doc(eventId).get();
+        
+        if (!eventDoc.exists) {
+          throw new Error('Event not found');
         }
+  
+        const eventData = eventDoc.data();
         
-        const userData = userDoc.data();
-        const clubName = userData.displayName;
-    
-        // Create the event document
-        const newEvent = {
-          clubName: clubName,
-          createdBy: user.uid,
-          date: eventDate,
-          endTime: endTime,
-          location: location,
-          startTime: startTime,
-          title: eventTitle,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-    
-        // Add the document to Firestore
-        await firebase.firestore().collection('events').add(newEvent);
-    
-        // Clear the form
-        document.getElementById('createEventForm').reset();
-        
-        // Close the modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('createEventModal'));
-        modal.hide();
-    
-        // Show success message
-        alert('Event created successfully!');
-    
+        // Verify user has permission to delete
+        if (eventData.clubName !== user.displayName) {
+          throw new Error('You do not have permission to delete this event');
+        }
+  
+        // Delete the event
+        await db.collection('events').doc(eventId).delete();
+  
         // Refresh tables if they exist
         if (typeof populateClubEventsTable === 'function') {
           await populateClubEventsTable();
         }
-        if (typeof populateEventsTable === 'function') {
-          await populateEventsTable();
-        }
-
-      } catch (error) {
-        console.error('Error adding event: ', error);
-        alert('Error creating event. Please try again.');
-      }
-    }
-
-    // Function to handle event deletion
-    async function deleteClubEvent(eventId) {
-      console.log(`Deleting event with ID: ${eventId}`);
-      if (!eventId) {
-        console.error('No event ID provided');
-        return;
-      }
-    
-      try {
-        // Get current user
-        const user = firebase.auth().currentUser;
-        if (!user) {
-          throw new Error('User not logged in');
-        }
-    
-        // Simple confirmation
-        if (confirm('Are you sure you want to delete this event?')) {
-          // Get event data to verify ownership
-          const eventDoc = await db.collection('events').doc(eventId).get();
-          
-          if (!eventDoc.exists) {
-            throw new Error('Event not found');
-          }
-    
-          const eventData = eventDoc.data();
-          
-          // Verify user has permission to delete
-          if (eventData.clubName !== user.displayName) {
-            throw new Error('You do not have permission to delete this event');
-          }
-    
-          // Delete the event
-          await db.collection('events').doc(eventId).delete();
-    
-          // Refresh tables if they exist
-          if (typeof populateClubEventsTable === 'function') {
-            await populateClubEventsTable();
-          }
-          if (typeof populateEventsTable === 'function') {
-            await populateEventsTable();
-          }
-    
-          alert('Event deleted successfully!');
-        }
-      } catch (error) {
-        console.error('Error deleting event:', error);
-        alert('Error deleting event: ' + error.message);
-      }
-    }
-
-    function showEditEventModal(eventData) {
-      // Only try to close the details modal if it exists
-      const eventDetailsModalEl = document.getElementById('eventDetailsModal');
-      if (eventDetailsModalEl) {
-          const eventDetailsModal = bootstrap.Modal.getInstance(eventDetailsModalEl);
-          if (eventDetailsModal) {
-              eventDetailsModal.hide();
-          }
-      }
-      
-      // Populate the edit form with current event data
-      document.getElementById('editEventTitle').value = eventData.title || '';
-      document.getElementById('editEventDate').value = eventData.date || '';
-      document.getElementById('editStartTime').value = eventData.startTime || '';
-      document.getElementById('editEndTime').value = eventData.endTime || '';
-      document.getElementById('editLocation').value = eventData.location || '';
-      document.getElementById('editEventId').value = eventData.id || '';
   
-      // Show the edit modal
-      const editEventModal = new bootstrap.Modal(document.getElementById('editEventModal'));
-      editEventModal.show();
+        alert('Event deleted successfully!');
+      }
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      alert('Error deleting event: ' + error.message);
     }
+  }
 
-    function initializeMyClubPage() {
-        // Check if we're on the correct page
-        if (!window.location.pathname.endsWith('myClub.html')) {
-          return; // Exit if not on myClub.html
-        }
-      
-        // Handle create event modal and form
-        const addButton = document.getElementById('addEventForm');
-        if (addButton) {
-          addButton.addEventListener('click', () => {
-            const createEventModal = new bootstrap.Modal(document.getElementById('createEventModal'));
-            createEventModal.show();
-          });
-        }
-      
-        const createEventForm = document.getElementById('createEventForm');
-        if (createEventForm) {
-          createEventForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await createClubEvent();
-          });
-        }
-      
-        // Handle edit event form
-        const editEventForm = document.getElementById('editEventForm');
-        if (editEventForm) {
-          editEventForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const form = e.target;
-            if (!form.checkValidity()) {
-              e.stopPropagation();
-              form.classList.add('was-validated');
-              return;
-            }
-            
-            form.classList.add('was-validated');
-            
-            const eventId = document.getElementById('editEventId').value;
-            if (!eventId) {
-              alert('Error: Could not find event ID');
-              return;
-            }
-            
-            const title = document.getElementById('editEventTitle').value.trim();
-            const date = document.getElementById('editEventDate').value;
-            const startTime = document.getElementById('editStartTime').value;
-            const endTime = document.getElementById('editEndTime').value;
-            const location = document.getElementById('editLocation').value.trim();
-            
-            if (endTime <= startTime) {
-              alert('End time must be after start time.');
-              return;
-            }
-            
-            db.collection('events').doc(eventId).update({
-              title: title,
-              date: date,
-              startTime: startTime,
-              endTime: endTime,
-              location: location
-            })
-            .then(() => {
-              document.activeElement.blur();
-              
-              const editEventModalEl = document.getElementById('editEventModal');
-              const editEventModal = bootstrap.Modal.getInstance(editEventModalEl);
-              editEventModal.hide();
-              
-              form.classList.remove('was-validated');
-              alert('Event updated successfully!');
-              
-              if (typeof populateClubEventsTable === 'function') {
-                populateClubEventsTable();
-              }
-              if (typeof populateEventsTable === 'function') {
-                populateEventsTable();
-              }
-            })
-            .catch((error) => {
-              console.error('Error updating event: ', error);
-              alert('Error updating event: ' + error.message);
-            });
-          });
-        }
-      
-        // Initialize dynamic updates
-        if (typeof initDynamicUpdates === 'function') {
-          initDynamicUpdates();
-        }
+  function showEditEventModal(eventData) { 
+    // Populate the edit form with current event data
+    document.getElementById('editEventTitle').value = eventData.title || '';
+    document.getElementById('editEventDate').value = eventData.date || '';
+    document.getElementById('editStartTime').value = eventData.startTime || '';
+    document.getElementById('editEndTime').value = eventData.endTime || '';
+    document.getElementById('editLocation').value = eventData.location || '';
+    document.getElementById('editEventId').value = eventData.id || '';
+
+    // Show the edit modal
+    const editEventModal = new bootstrap.Modal(document.getElementById('editEventModal'));
+    editEventModal.show();
+  }
+
+  // --------------------------------------------------------------------------------
+
+  function initializeMyClubPage() {
+    
+      // Handle create event modal and form
+      const addEventButton = document.getElementById('addEventForm');
+      if (addEventButton) {
+        addEventButton.addEventListener('click', () => {
+          const createEventModal = new bootstrap.Modal(document.getElementById('createEventModal'));
+          createEventModal.show();
+        });
+      }
+
+      // Handle create news modal and form
+      const addNewsButton = document.getElementById('addNewsForm');
+      if (addNewsButton) {
+        addNewsButton.addEventListener('click', () => {
+          const createNewsModal = new bootstrap.Modal(document.getElementById('createNewsModal'));
+          createNewsModal.show();
+        });
       }
     
-    // --------------------------------------------------------------------------------
+      const createEventForm = document.getElementById('createEventForm');
+      if (createEventForm) {
+        createEventForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          await createClubEvent();
+        });
+      }
 
-    async function updateMyClubCabinetDB() {
+      const createNewsForm = document.getElementById('createNewsForm');
+      if (createNewsForm) {
+        createNewsForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          await createClubNews();
+        });
+      }
+    
+      // Handle create event modal and form for editing
+      const editEventForm = document.getElementById('editEventForm');
+      if (editEventForm) {
+        editEventForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const form = e.target;
+          if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+          }
+          
+          form.classList.add('was-validated');
+          
+          const eventId = document.getElementById('editEventId').value;
+          if (!eventId) {
+            alert('Error: Could not find event ID');
+            return;
+          }
+          
+          const title = document.getElementById('editEventTitle').value.trim();
+          const date = document.getElementById('editEventDate').value;
+          const startTime = document.getElementById('editStartTime').value;
+          const endTime = document.getElementById('editEndTime').value;
+          const location = document.getElementById('editLocation').value.trim();
+          
+          if (endTime <= startTime) {
+            alert('End time must be after start time.');
+            return;
+          }
+          
+          db.collection('events').doc(eventId).update({
+            title: title,
+            date: date,
+            startTime: startTime,
+            endTime: endTime,
+            location: location
+          })
+          .then(() => {
+            document.activeElement.blur();
+            
+            const editEventModalEl = document.getElementById('editEventModal');
+            const editEventModal = bootstrap.Modal.getInstance(editEventModalEl);
+            editEventModal.hide();
+            
+            form.classList.remove('was-validated');
+            alert('Event updated successfully!');
+            
+            if (typeof populateClubEventsTable === 'function') {
+              populateClubEventsTable();
+            }
+          })
+          .catch((error) => {
+            console.error('Error updating event: ', error);
+            alert('Error updating event: ' + error.message);
+          });
+        });
+      }
 
-    }
+      // Handle create news modal and form for editing
+      const editNewsForm = document.getElementById('editNewsForm');
+      if (editNewsForm) {
+        editNewsForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const form = e.target;
+          if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+          }
+          
+          form.classList.add('was-validated');
+          
+          const newsId = document.getElementById('editNewsId').value;
+          if (!newsId) {
+            alert('Error: Could not find news ID');
+            return;
+          }
+          
+          const newsTitle = document.getElementById('editNewsTitle').value.trim();
+          const description = document.getElementById('editDescription').value.trim();
+          const imageInput = document.getElementById('editPicture');
+          const imageFile = imageInput?.files?.[0];
+          const imageUrl = await uploadImage(imageFile);
 
-    async function updateMySocialMediaDB() {
-
+          db.collection('news').doc(newsId).update({
+            newsTitle: newsTitle,
+            description: description,
+            picture: imageUrl
+          })
+          .then(() => {
+            document.activeElement.blur();
+            
+            const editNewsModalEl = document.getElementById('editNewsModal');
+            const editNewsModal = bootstrap.Modal.getInstance(editNewsModalEl);
+            editNewsModal.hide();
+            
+            form.classList.remove('was-validated');
+            alert('News updated successfully!');
+            
+            if (typeof populateClubNews === 'function') {
+              populateClubNews();
+            }
+          })
+          .catch((error) => {
+            console.error('Error updating news: ', error);
+            alert('Error updating news: ' + error.message);
+          });
+        });
+      }
+    
+      // Initialize dynamic updates
+      if (typeof initDynamicUpdates === 'function') {
+        initDynamicUpdates();
+      }
     }
 
     // --------------------------------------------------------------------------------
