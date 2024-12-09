@@ -12,7 +12,7 @@
 
       auth.onAuthStateChanged(async (user) => {
         if (user && user.emailVerified) {
-            console.log('User is signed in:', user);
+            // console.log('User is signed in:', user);
             
             try {
                 // Check if user profile exists

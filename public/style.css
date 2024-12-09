@@ -395,7 +395,9 @@ footer {
 #eventDetailsModal .btn-close,
 #editEventModal .btn-close,
 #createNewsModal .btn-close,
-#editNewsModal .btn-close {
+#editNewsModal .btn-close,
+#createCabinetModal .btn-close,
+#createSocialModal .btn-close {
   filter: invert(1);
   opacity: 0.5;
 }
@@ -404,7 +406,9 @@ footer {
 #eventDetailsModal .btn-close:hover,
 #editEventModal .btn-close:hover,
 #createNewsModal .btn-close:hover,
-#editNewsModal .btn-close:hover {
+#editNewsModal .btn-close:hover,
+#createCabinetModal .btn-close:hover,
+#createSocialModal .btn-close:hover {
   opacity: 0.75;
 }
 

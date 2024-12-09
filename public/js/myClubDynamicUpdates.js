@@ -571,41 +571,114 @@
             socialMediaTable.appendChild(row);
           });
         } else {
-            // Social media found, populating table.
-            const positionOrder = ["Website", "Insta", "TikTok", "Discord", "GitHub", "LinkedIn"];
+          // Social media found, populating table.
+          const positionOrder = ["Website", "Insta", "TikTok", "Discord", "GitHub", "LinkedIn"];
+        
+          // Convert socialMedia into an array if needed
+          const socialMediaArray = Array.isArray(socialMedia) ? socialMedia : Object.values(socialMedia);
           
-            // Convert socialMedia into an array if needed
-            const socialMediaArray = Array.isArray(socialMedia) ? socialMedia : Object.values(socialMedia);
+          // Sort the social media array based on positionOrder
+          const sortedSocialMedia = socialMediaArray.sort((a, b) => {
+            const indexA = positionOrder.indexOf(a.social);
+            const indexB = positionOrder.indexOf(b.social);
             
-            // Sort the social media array based on positionOrder
-            const sortedSocialMedia = socialMediaArray.sort((a, b) => {
-              const indexA = positionOrder.indexOf(a.social);
-              const indexB = positionOrder.indexOf(b.social);
-              
-              // Treat items not in positionOrder as lowest priority
-              return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
-            });
-            
-            // Populate the table
-            sortedSocialMedia.forEach(site => {
-              const row = document.createElement('tr');
-              row.innerHTML = `
-                <td>${site.social}</td>
-                <td> <a href="${site.link}" target="_blank" rel="noopener noreferrer">${site.tag}</a> </td>
-                <td class="edit-mode-only">
-                  <button class="btn btn-sm btn-warning text-white edit-button">
-                    <i class="bi bi-pencil-square me-1"></i>
-                  </button>
+            // Treat items not in positionOrder as lowest priority
+            return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+          });
+          
+          // Populate the table
+          sortedSocialMedia.forEach(site => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${site.social}</td>
+              <td> <a href="${site.link}" target="_blank" rel="noopener noreferrer">${site.tag}</a> </td>
+              <td class="edit-mode-only">
+                <button class="btn btn-sm btn-warning text-white edit-button social" data-social-id="${site.social}">
+                  <i class="bi bi-pencil-square me-1"></i>
+                </button>
 
-                  <button class="btn btn-sm btn-danger text-white delete-button">
-                    <i class="bi bi-trash me-1"></i>
-                  </button>
-                </td>
-              `;
-              socialMediaTable.appendChild(row);
-            });
+                <button class="btn btn-sm btn-danger text-white delete-button social" data-social-id="${site.social}">
+                  <i class="bi bi-trash me-1"></i>
+                </button>
+              </td>
+            `;
+            socialMediaTable.appendChild(row);
+          });
         }
       });
+
+      // Add event listeners to all delete buttons
+      const deleteSocialButtons = document.querySelectorAll('.delete-button.social');
+      deleteSocialButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const socialId = button.getAttribute('data-social-id');
+          if (socialId) {
+            deleteClubSocial(socialId);
+          } else {
+            console.error('Social Media ID not found for this button');
+          }
+        });
+      });
+
+      // Add event listeners to all edit buttons
+      const editSocialButtons = document.querySelectorAll('.edit-button.social');
+      editSocialButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+          // Get the social (socialId) from the data attribute of the button
+          const socialId = button.getAttribute('data-social-id');
+
+          if (socialId) {
+            try {
+              // Get current user
+              const user = firebase.auth().currentUser;
+              if (!user) {
+                throw new Error('User not logged in');
+              }
+
+              // Get club name from the current user
+              const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+              if (!userDoc.exists) {
+                throw new Error('User document not found');
+              }
+
+              const userData = userDoc.data();
+              const clubName = userData.displayName;
+
+              // Query the clubs collection to find the club by name
+              const clubQuerySnapshot = await firebase.firestore().collection('publicClubProfiles').where('clubName', '==', clubName).get();
+
+              if (clubQuerySnapshot.empty) {
+                throw new Error(`No club found for ${clubName}`);
+              }
+
+              // Get the club document reference
+              const clubDocRef = clubQuerySnapshot.docs[0].ref;
+
+              // Get the current cabinet members
+              const clubDoc = await clubDocRef.get();
+              const socialMedias = clubDoc.data().socialMedia;
+
+              if (!socialMedias || !socialMedias[socialId]) {
+                throw new Error(`Social media with ID ${socialId} not found`);
+              }
+
+              // Fetch the social media to be edited
+              const socialMedia = socialMedias[socialId];
+              socialMedia.id = socialId;
+              
+              // Open modal to edit cabinet member details
+              showEditSocialModal(socialMedia);
+
+            } catch (error) {
+              console.error('Error editing social media:', error);
+              alert('Error editing social media: ' + error.message);
+            }
+          } else {
+            console.error('Social ID or social not found for this button');
+          }
+        });
+      });
+
     } catch (error) {
         console.error("Error fetching social media: ", error);
         return;
@@ -1161,7 +1234,6 @@
     }
   }
 
-
   function showEditCabinetModal(cabinetData) { 
     // Populate the edit form with current event data
     document.getElementById('editGrade').value = cabinetData.grade || '';
@@ -1178,7 +1250,163 @@
   // ----------------------------------------------------------------------------------------- //
   // Functionality: Update the social media table (bottom right)
 
+  async function createClubSocial() {
+    // Get form values
+    const link = document.getElementById('link').value;
+    const social = document.getElementById('social').value;
+    const tag = document.getElementById('tag').value;
+  
+    // Form validation
+    if (!link || !social || !tag) {
+      console.error('All fields are required');
+      return;
+    }
+  
+    // Get current user
+    const user = firebase.auth().currentUser;
+    if (!user) {
+      console.log('User not logged in.');
+      return;
+    }
+  
+    try {
+      // Get club name from user document
+      const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        console.error('User document not found');
+        return;
+      }
+    
+      const userData = userDoc.data();
+      const clubName = userData.displayName;
+    
+      // Ensure that the clubName exists
+      if (!clubName) {
+        console.error('Club name is missing');
+        return;
+      }
 
+      // Query for the club document based on the clubName field
+      const clubQuerySnapshot = await firebase.firestore().collection('publicClubProfiles').where('clubName', '==', clubName).get();
+
+      // Check if the club document exists
+      if (clubQuerySnapshot.empty) {
+        console.error(`No club document found for ${clubName}`);
+        alert('No club found for this name. Please check and try again.');
+        return;
+      }
+
+      // Get the first document (there should be only one matching document)
+      const clubDocRef = clubQuerySnapshot.docs[0].ref;
+    
+      // Create the cabinet member object
+      const newSocial = {
+        social: social,
+        link: link,
+        tag: tag
+      };
+    
+      // Update the socialMedia map inside the specific club document
+      await clubDocRef.update({
+        [`socialMedia.${social}`]: newSocial // Social as the key for the new social media
+      });
+    
+      // Clear the form
+      document.getElementById('createSocialForm').reset();
+      
+      // Close the modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('createSocialModal'));
+      modal.hide();
+    
+      // Show success message
+      alert('Social media added successfully!');
+    
+      // Refresh tables if they exist
+      if (typeof populateSocialMediaTable === 'function') {
+        await populateSocialMediaTable();
+      }
+    
+    } catch (error) {
+      console.error('Error adding social media: ', error);
+      alert('Error creating social media. Please try again.');
+    }
+  }
+
+  // Function to handle social media deletion
+  async function deleteClubSocial(socialId) {
+    // Ensure a valid socialId is provided
+    if (!socialId) {
+      console.error('No social ID provided');
+      alert('No social ID provided');
+      return;
+    }
+
+    try {
+      // Get current user
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        throw new Error('User not logged in');
+      }
+
+      // Simple confirmation
+      if (confirm('Are you sure you want to delete this member?')) {
+        // Get club name from the current user
+        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+          throw new Error('User document not found');
+        }
+
+        const userData = userDoc.data();
+        const clubName = userData.displayName;
+
+        // Query the clubs collection to find the club by name
+        const clubQuerySnapshot = await firebase.firestore().collection('publicClubProfiles').where('clubName', '==', clubName).get();
+
+        if (clubQuerySnapshot.empty) {
+          throw new Error(`No club found for ${clubName}`);
+        }
+
+        // Get the club document reference
+        const clubDocRef = clubQuerySnapshot.docs[0].ref;
+
+        // Get the current cabinet members
+        const clubDoc = await clubDocRef.get();
+        const cabinetMembers = clubDoc.data().socialMedia;
+
+        if (!cabinetMembers || !cabinetMembers[socialId]) {
+          throw new Error(`Social media with ID ${socialId} not found`);
+        }
+
+        // Delete the cabinet member
+        await clubDocRef.update({
+          [`socialMedia.${socialId}`]: firebase.firestore.FieldValue.delete()
+        });
+
+        // Refresh tables if they exist
+        if (typeof populateSocialMediaTable === 'function') {
+          await populateSocialMediaTable();
+        }
+
+        // Show success message
+        alert('Social media deleted successfully!');
+      }
+    } catch (error) {
+      console.error('Error deleting social media:', error);
+      alert('Error deleting social media: ' + error.message);
+    }
+  }
+
+  function showEditSocialModal(socialData) { 
+    // Populate the edit form with current event data
+    document.getElementById('editSocial').value = socialData.social || '';
+    document.getElementById('editTag').value = socialData.tag || '';
+    document.getElementById('editLink').value = socialData.link || '';
+    document.getElementById('editSocialId').value = socialData.id || '';
+
+    // Show the edit modal
+    const editSocialModal = new bootstrap.Modal(document.getElementById('editSocialModal'));
+    editSocialModal.show();
+  }
 
   // ***************************** Dynamically Initialize Page ********************************* //
   function initializeMyClubPage() {
@@ -1213,6 +1441,14 @@
         });
       }
 
+      const addSocialButton = document.getElementById('addSocialForm');
+      if (addSocialButton) {
+        addSocialButton.addEventListener('click', () => {
+          const createSocialModal = new bootstrap.Modal(document.getElementById('createSocialModal'));
+          createSocialModal.show();
+        });
+      }
+
       //----------------------------------------------------------//
       // Handle create form to submit:
       /* 1) Event
@@ -1241,6 +1477,14 @@
         createCabinetForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           await createClubCabinet();
+        });
+      }
+
+      const createSocialForm = document.getElementById('createSocialForm');
+      if (createSocialForm) {
+        createSocialForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          await createClubSocial();
         });
       }
 
@@ -1444,6 +1688,85 @@
         });
       }
 
+      const editSocialForm = document.getElementById('editSocialForm');
+      if (editSocialForm) {
+        editSocialForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          
+          const form = e.target;
+
+          // Validate form input
+          if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+          }
+          
+          form.classList.add('was-validated');
+          
+          const socialId = document.getElementById('editSocialId').value;
+          if (!socialId) {
+            alert('Error: Could not find social ID');
+            return;
+          }
+
+          const link = document.getElementById('editLink').value;
+          const social = document.getElementById('editSocial').value;
+          const tag = document.getElementById('editTag').value;
+
+          try {
+            const user = firebase.auth().currentUser;
+            if (!user) throw new Error('User not logged in');
+            
+            // Confirm the update action
+            if (!confirm('Are you sure you want to update this cabinet member?')) return;
+
+            // Get the user's club name
+            const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+            if (!userDoc.exists) throw new Error('User document not found');
+            const clubName = userDoc.data().displayName;
+
+            // Find the club document by name
+            const clubQuerySnapshot = await firebase.firestore().collection('publicClubProfiles').where('clubName', '==', clubName).get();
+            if (clubQuerySnapshot.empty) throw new Error(`No club found for ${clubName}`);
+            
+            const clubDocRef = clubQuerySnapshot.docs[0].ref;
+            const clubDoc = await clubDocRef.get();
+            const socialMedia = clubDoc.data().socialMedia;
+
+            if (!socialMedia || !socialMedia[socialId]) {
+              throw new Error(`Social media with ID ${socialId} not found`);
+            }
+
+            // Update the cabinet member's details
+            await clubDocRef.update({
+              [`socialMedia.${socialId}`]: {
+                link,
+                social,
+                tag
+              }
+            });
+
+            // Hide modal and reset form
+            document.activeElement.blur();
+            const editSocialModalEl = document.getElementById('editSocialModal');
+            const editSocialModal = bootstrap.Modal.getInstance(editSocialModalEl);
+            editSocialModal.hide();
+            form.classList.remove('was-validated');
+
+            // Show success message
+            alert('Social media updated successfully!');
+
+            // Refresh table if function exists
+            if (typeof populateSocialMediaTable === 'function') {
+              populateSocialMediaTable();
+            }
+          } catch (error) {
+            console.error('Error updating social media:', error);
+            alert('Error updating social media: ' + error.message);
+          }
+        });
+      }
 
       // ----------------------------------------------------------------------------------------- //
 

@@ -298,7 +298,7 @@
             </div>
 
             <div class="modal-body">
-              <!-- Event Submission Form -->
+              <!-- Cabinet Submission Form -->
               <form id="createCabinetForm" novalidate>
                 <div class="mb-3">
                   <label for="grade" class="form-label">Grade</label>
@@ -375,7 +375,7 @@
         <div class="custom-container col-margin d-flex flex-column">
           <h2>
             Social Media
-            <button id="addSMForm" class="btn btn-sm btn-primary add-button edit-mode-only">
+            <button id="addSocialForm" class="btn btn-sm btn-primary add-button edit-mode-only">
               <i class="bi bi-plus-lg me-1"></i>Add Social Media
             </button>
           </h2>
@@ -386,12 +386,83 @@
                 <th scope="col">Tag</th>
               </thead>
               <tbody>
-                <!-- Cabinet will be dynamically inserted here -->
+                <!-- Social Media will be dynamically inserted here -->
               </tbody>
             </table>
           </div>
+
+          <!-- Create Social Media Modal -->
+          <div class="modal fade" id="createSocialModal" tabindex="-1" aria-labelledby="createSocialModalLabel">
+            <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+              <div class="modal-header">
+                <h5 class="modal-title" id="createSocialModalLabel">Add New Social Media</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+  
+              <div class="modal-body">
+                <!-- Social Media Submission Form -->
+                <form id="createSocialForm" novalidate>
+                  <div class="mb-3">
+                    <label for="link" class="form-label">Link</label>
+                    <input type="text" class="form-control bg-dark text-white" id="link" required>
+                    <div class="invalid-feedback">Please enter a link.</div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="social" class="form-label">Social</label>
+                    <input type="text" class="form-control bg-dark text-white" id="social" required>
+                    <div class="invalid-feedback">Please enter a social.</div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="tag" class="form-label">Tag</label>
+                    <input type="text" class="form-control bg-dark text-white" id="tag" required>
+                    <div class="invalid-feedback">Please enter a Tag.</div>
+                  </div>
+  
+                  <button type="submit" class="btn btn-outline-light">Submit</button>
+                </form>
+              </div>
+            </div>
+            </div>
+            </div>
+
+            <!-- Edit Social Media Modal -->
+            <div class="modal fade" id="editSocialModal" tabindex="-1" aria-labelledby="editSocialModalLabel">
+              <div class="modal-dialog">
+              <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editSocialModalLabel">Edit Social Media</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+    
+                <div class="modal-body">
+                  <form id="editSocialForm" novalidate>
+                    <div class="mb-3">
+                      <label for="editLink" class="form-label">Link</label>
+                      <input type="text" class="form-control bg-dark text-white" id="editLink" required>
+                      <div class="invalid-feedback">Please enter a Link.</div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="editTag" class="form-label">Tag</label>
+                      <input type="text" class="form-control bg-dark text-white" id="editTag" required>
+                      <div class="invalid-feedback">Please enter a Tag.</div>
+                    </div>
+                    <div class="mb-3">
+                      <label for="editSocial" class="form-label">Social (Not Editable)</label>
+                      <input type="text" class="form-control bg-dark text-white" id="editSocial" readonly required>
+                    </div>
+      
+                    <input type="hidden" id="editSocialId">
+                    <button type="submit" class="btn btn-outline-light">Save Changes</button>
+                  </form>
+                </div>
+              </div>
+              </div>
+              </div>
+
         </div>
         </div>
+
       </div>
       </div>
       </div>
