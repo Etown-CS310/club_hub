@@ -70,7 +70,7 @@
           <div class="modal-dialog">
           <div class="modal-content bg-dark text-white">
             <div class="modal-header">
-              <h5 class="modal-title" id="createNewsModalLabel">Create News Story</h5>
+              <h5 class="modal-title" id="createNewsModalLabel">Create News</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
@@ -287,6 +287,86 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Create Cabinet Modal -->
+          <div class="modal fade" id="createCabinetModal" tabindex="-1" aria-labelledby="createCabinetModalLabel">
+          <div class="modal-dialog">
+          <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+              <h5 class="modal-title" id="createCabinetModalLabel">Add New Cabinet Member</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              <!-- Event Submission Form -->
+              <form id="createCabinetForm" novalidate>
+                <div class="mb-3">
+                  <label for="grade" class="form-label">Grade</label>
+                  <input type="text" class="form-control bg-dark text-white" id="grade" required>
+                  <div class="invalid-feedback">Please enter a Grade.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="major" class="form-label">Major</label>
+                  <input type="text" class="form-control bg-dark text-white" id="major" required>
+                  <div class="invalid-feedback">Please enter a major.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="name" class="form-label">Name</label>
+                  <input type="text" class="form-control bg-dark text-white" id="name" required>
+                  <div class="invalid-feedback">Please enter a Name.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="position" class="form-label">Position</label>
+                  <input type="text" class="form-control bg-dark text-white" id="position" required>
+                  <div class="invalid-feedback">Please enter a Position.</div>
+                </div>
+
+                <button type="submit" class="btn btn-outline-light">Submit</button>
+              </form>
+            </div>
+          </div>
+          </div>
+          </div>
+
+          <!-- Edit Cabinet Modal -->
+          <div class="modal fade" id="editCabinetModal" tabindex="-1" aria-labelledby="editCabinetModalLabel">
+          <div class="modal-dialog">
+          <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editCabinetModalLabel">Edit Cabinet Member</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              <form id="editCabinetForm" novalidate>
+                <div class="mb-3">
+                  <label for="editGrade" class="form-label">Grade</label>
+                  <input type="text" class="form-control bg-dark text-white" id="editGrade" required>
+                  <div class="invalid-feedback">Please enter a Grade.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editMajor" class="form-label">Major</label>
+                  <input type="text" class="form-control bg-dark text-white" id="editMajor" required>
+                  <div class="invalid-feedback">Please enter a major.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editName" class="form-label">Name</label>
+                  <input type="text" class="form-control bg-dark text-white" id="editName" required>
+                  <div class="invalid-feedback">Please enter a Name.</div>
+                </div>
+                <div class="mb-3">
+                  <label for="editPosition" class="form-label">Position (Not Editable)</label>
+                  <input type="text" class="form-control bg-dark text-white" id="editPosition" readonly required>
+                </div>
+  
+                <input type="hidden" id="editCabinetId">
+                <button type="submit" class="btn btn-outline-light">Save Changes</button>
+              </form>
+            </div>
+          </div>
+          </div>
+          </div>
+
         </div>
         </div>
 

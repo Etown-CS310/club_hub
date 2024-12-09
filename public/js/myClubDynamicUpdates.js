@@ -1,595 +1,671 @@
 (function () {
-    // myClubDynamicUpdates.js
-    "use strict";
+  // myClubDynamicUpdates.js
+  "use strict";
 
-    // Functionality: populate the club news carousel (top left)
-    async function populateClubNews() {
-        console.log("Populating club news table");
-        const clubName = document.getElementById('club_name');
-        const clubNewsTable = document.querySelector('.carousel-inner');
-        const carouselButtonIndicators = document.querySelector('.carousel-button-indicators');
-        const carouselIndicators = document.querySelector('.carousel-indicators');
-  
-        if (!clubNewsTable) {
-          console.log("No club news table found");
-          return;
-        }
-  
-        if (!clubName) {
-            console.log("No club news title found");
-            return;
-        }
-        
-        // Get current user
-        const user = firebase.auth().currentUser;
-        console.log("Current user:", user);
-        if (!user) {
-            console.log('User not logged in.');
-            return;
-        }
-  
-        try {
-          // Fetch user's data from Firestore
-          const userDoc = await db.collection('users').doc(user.uid).get();
-  
-          if (userDoc.exists) {
-              const userData = userDoc.data();
-              
-              // Check if user is a club admin
-              if (userData.role === "clubAdmin") {
-                clubName.innerHTML = user.displayName;
-              }
-          } else {
-              console.log("No user document found!");
-              return;
+  // ***************************** Populate Tables ******************************************* //
+
+  // ----------------------------------------------------------------------------------------- //
+  // Functionality: populate the club news carousel (top left)
+  async function populateClubNews() {
+    const clubName = document.getElementById('club_name');
+    const clubNewsTable = document.querySelector('.carousel-inner');
+    const carouselButtonIndicators = document.querySelector('.carousel-button-indicators');
+    const carouselIndicators = document.querySelector('.carousel-indicators');
+
+    if (!clubNewsTable) {
+      console.log("No club news table found");
+      return;
+    }
+
+    if (!clubName) {
+        console.log("No club news title found");
+        return;
+    }
+    
+    // Get current user
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.log('User not logged in.');
+        return;
+    }
+
+    try {
+      // Fetch user's data from Firestore
+      const userDoc = await db.collection('users').doc(user.uid).get();
+
+      if (userDoc.exists) {
+          const userData = userDoc.data();
+          
+          // Check if user is a club admin
+          if (userData.role === "clubAdmin") {
+            clubName.innerHTML = user.displayName;
           }
-  
-          // Fetch events from Firestore:
-          // 1st Where: Only show for relevant club
-          // Limit: only show 10 news
-          const querySnapshot = await db.collection('news')
-              .where('clubName', '==', user.displayName)
-              .orderBy('createdAt')
-              .limit(10)
-              .get();
-  
-          // Clear existing rows
-          clubNewsTable.innerHTML = '';
-  
-          // Counter to track the first item (which should be active)
-          let isFirst = true;
-  
-          if (querySnapshot.empty) {
-            console.log("No club news found, displaying default data.");
-            
-            // Add a default carousel item
-            const defaultItem = document.createElement('div');
-            defaultItem.className = 'carousel-item active';
-            defaultItem.innerHTML = `
-              <img id="newsImage1" src="/images/img_logo.png" class="d-block w-100 mx-auto" alt="Image">
-              <div class="carousel-caption d-none d-md-block">
-                <h5>[News Title 1]</h5>
-              </div>
-            `;
-            clubNewsTable.appendChild(defaultItem);
-          } else {
-  
-            // Create array to store all items before rendering
-            const newsItems = [];
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-              newsItems.push(data);
-            });
-  
-            const hasMultipleItems = newsItems.length > 1;
-            // Handle carousel indicators
-            if (hasMultipleItems && carouselIndicators && carouselButtonIndicators) {
-              // Clear existing indicators
-              carouselIndicators.innerHTML = '';
-              carouselButtonIndicators.innerHTML = '';
-              
-              // Create indicators for each item
-              newsItems.forEach((_, index) => {
-                const indicator = document.createElement('button');
-                indicator.type = 'button';
-                indicator.dataset.bsTarget = '#newsCarousel';
-                indicator.dataset.bsSlideTo = index.toString();
-                
-                if (index === 0) {
-                  indicator.classList.add('active');
-                  indicator.setAttribute('aria-current', 'true');
-                }
-                
-                indicator.setAttribute('aria-label', `Slide ${index + 1}`);
-                carouselIndicators.appendChild(indicator);
-              });
-          
-              // Previous button
-              const prevButton = document.createElement('button');
-              prevButton.className = 'carousel-control-prev';
-              prevButton.type = 'button';
-              prevButton.dataset.bsTarget = '#newsCarousel';
-              prevButton.dataset.bsSlide = 'prev';
-              prevButton.innerHTML = `
-                <span class="carousel-control-prev-icon"></span>
-                <span class="visually-hidden">Previous</span>
-              `;
-          
-              // Next button
-              const nextButton = document.createElement('button');
-              nextButton.className = 'carousel-control-next';
-              nextButton.type = 'button';
-              nextButton.dataset.bsTarget = '#newsCarousel';
-              nextButton.dataset.bsSlide = 'next';
-              nextButton.innerHTML = `
-                <span class="carousel-control-next-icon"></span>
-                <span class="visually-hidden">Next</span>
-              `;
-          
-              // Append buttons to container
-              carouselButtonIndicators.appendChild(prevButton);
-              carouselButtonIndicators.appendChild(nextButton);
-  
-            } else {
-              carouselIndicators.style.display = 'none';
-              carouselButtonIndicators.style.display = 'none';
-            }
-  
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const carouselItem = document.createElement('div');
-                carouselItem.className = `carousel-item${isFirst ? ' active' : ''}`;
-  
-                // Create the image element
-                const img = document.createElement('img');
-                img.src = data.picture;
-                img.className = 'd-block w-100 mx-auto';
-                img.alt = data.newsTitle;
-  
-                // Create the caption container
-                const caption = document.createElement('div');
-                caption.className = 'carousel-caption d-none d-md-block';
-  
-                // Create the title element
-                const title = document.createElement('h5');
-                title.textContent = data.newsTitle;
-  
-                // Create the edit button
-                const editbtn = document.createElement('button');
-                editbtn.className = 'btn btn-sm btn-warning text-white edit-button news edit-mode-only';
-                editbtn.setAttribute('data-news-id', doc.id);
-                editbtn.innerHTML = '<i class="bi bi-pencil-square me-1"></i>';
-  
-                // Create the delete button
-                const deletebtn = document.createElement('button');
-                deletebtn.className = 'btn btn-sm btn-danger text-white delete-button news edit-mode-only';
-                deletebtn.setAttribute('data-news-id', doc.id);
-                deletebtn.innerHTML = '<i class="bi bi-trash me-1"></i>';
-  
-                // Assemble the elements
-                caption.appendChild(title);
-                caption.appendChild(editbtn);
-                caption.appendChild(deletebtn);
-                carouselItem.appendChild(img);
-                carouselItem.appendChild(caption);
-  
-                // Add to carousel
-                clubNewsTable.appendChild(carouselItem);
-  
-                // Update first item flag
-                isFirst = false;
-            });
+      } else {
+          console.log("No user document found!");
+          return;
+      }
 
-            // Add event listeners to all delete buttons
-            const deleteNewsButtons = document.querySelectorAll('.delete-button.news');
-            deleteNewsButtons.forEach(button => {
-              button.addEventListener('click', () => {
+      // Fetch events from Firestore:
+      // 1st Where: Only show for relevant club
+      // Limit: only show 10 news
+      const querySnapshot = await db.collection('news')
+          .where('clubName', '==', user.displayName)
+          .orderBy('createdAt')
+          .limit(10)
+          .get();
+
+      // Clear existing rows
+      clubNewsTable.innerHTML = '';
+
+      // Counter to track the first item (which should be active)
+      let isFirst = true;
+
+      if (querySnapshot.empty) {
+        console.log("No club news found, displaying default data.");
+        
+        // Add a default carousel item
+        const defaultItem = document.createElement('div');
+        defaultItem.className = 'carousel-item active';
+        defaultItem.innerHTML = `
+          <img id="newsImage1" src="/images/img_logo.png" class="d-block w-100 mx-auto" alt="Image">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>[News Title 1]</h5>
+          </div>
+        `;
+        clubNewsTable.appendChild(defaultItem);
+      } else {
+
+        // Create array to store all items before rendering
+        const newsItems = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          newsItems.push(data);
+        });
+
+        const hasMultipleItems = newsItems.length > 1;
+        // Handle carousel indicators
+        if (hasMultipleItems && carouselIndicators && carouselButtonIndicators) {
+          // Clear existing indicators
+          carouselIndicators.innerHTML = '';
+          carouselButtonIndicators.innerHTML = '';
+          
+          // Create indicators for each item
+          newsItems.forEach((_, index) => {
+            const indicator = document.createElement('button');
+            indicator.type = 'button';
+            indicator.dataset.bsTarget = '#newsCarousel';
+            indicator.dataset.bsSlideTo = index.toString();
+            
+            if (index === 0) {
+              indicator.classList.add('active');
+              indicator.setAttribute('aria-current', 'true');
+            }
+            
+            indicator.setAttribute('aria-label', `Slide ${index + 1}`);
+            carouselIndicators.appendChild(indicator);
+          });
+      
+          // Previous button
+          const prevButton = document.createElement('button');
+          prevButton.className = 'carousel-control-prev';
+          prevButton.type = 'button';
+          prevButton.dataset.bsTarget = '#newsCarousel';
+          prevButton.dataset.bsSlide = 'prev';
+          prevButton.innerHTML = `
+            <span class="carousel-control-prev-icon"></span>
+            <span class="visually-hidden">Previous</span>
+          `;
+      
+          // Next button
+          const nextButton = document.createElement('button');
+          nextButton.className = 'carousel-control-next';
+          nextButton.type = 'button';
+          nextButton.dataset.bsTarget = '#newsCarousel';
+          nextButton.dataset.bsSlide = 'next';
+          nextButton.innerHTML = `
+            <span class="carousel-control-next-icon"></span>
+            <span class="visually-hidden">Next</span>
+          `;
+      
+          // Append buttons to container
+          carouselButtonIndicators.appendChild(prevButton);
+          carouselButtonIndicators.appendChild(nextButton);
+
+        } else {
+          carouselIndicators.style.display = 'none';
+          carouselButtonIndicators.style.display = 'none';
+        }
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const carouselItem = document.createElement('div');
+            carouselItem.className = `carousel-item${isFirst ? ' active' : ''}`;
+
+            // Create the image element
+            const img = document.createElement('img');
+            img.src = data.picture;
+            img.className = 'd-block w-100 mx-auto';
+            img.alt = data.newsTitle;
+
+            // Create the caption container
+            const caption = document.createElement('div');
+            caption.className = 'carousel-caption d-none d-md-block';
+
+            // Create the title element
+            const title = document.createElement('h5');
+            title.textContent = data.newsTitle;
+
+            // Create the edit button
+            const editbtn = document.createElement('button');
+            editbtn.className = 'btn btn-sm btn-warning text-white edit-button news edit-mode-only';
+            editbtn.setAttribute('data-news-id', doc.id);
+            editbtn.innerHTML = '<i class="bi bi-pencil-square me-1"></i>';
+
+            // Create the delete button
+            const deletebtn = document.createElement('button');
+            deletebtn.className = 'btn btn-sm btn-danger text-white delete-button news edit-mode-only';
+            deletebtn.setAttribute('data-news-id', doc.id);
+            deletebtn.innerHTML = '<i class="bi bi-trash me-1"></i>';
+
+            // Assemble the elements
+            caption.appendChild(title);
+            caption.appendChild(editbtn);
+            caption.appendChild(deletebtn);
+            carouselItem.appendChild(img);
+            carouselItem.appendChild(caption);
+
+            // Add to carousel
+            clubNewsTable.appendChild(carouselItem);
+
+            // Update first item flag
+            isFirst = false;
+        });
+
+        // Add event listeners to all delete buttons
+        const deleteNewsButtons = document.querySelectorAll('.delete-button.news');
+        deleteNewsButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            const newsId = button.getAttribute('data-news-id');
+            if (newsId) {
+              deleteClubNews(newsId);
+            } else {
+              console.error('News ID not found for this button');
+            }
+          });
+        });
+
+        // Add event listeners to all edit buttons
+        const editNewsButtons = document.querySelectorAll('.edit-button.news');
+        editNewsButtons.forEach(button => {
+            button.addEventListener('click', async () => {
                 const newsId = button.getAttribute('data-news-id');
                 if (newsId) {
-                  deleteClubNews(newsId);
-                } else {
-                  console.error('News ID not found for this button');
-                }
-              });
-            });
-
-            // Add event listeners to all edit buttons
-            const editNewsButtons = document.querySelectorAll('.edit-button.news');
-            editNewsButtons.forEach(button => {
-                button.addEventListener('click', async () => {
-                    const newsId = button.getAttribute('data-news-id');
-                    if (newsId) {
-                        try {
-                            const docRef = firebase.firestore().collection('news').doc(newsId);
-                            const docSnap = await docRef.get();
-                            
-                            if (docSnap.exists) {
-                                const newsData = docSnap.data();
-                                newsData.id = newsId;
-                                showEditNewsModal(newsData);
-                            } else {
-                                console.error('No such document!');
-                            }
-                        } catch (error) {
-                            console.error('Error getting document:', error);
+                    try {
+                        const docRef = firebase.firestore().collection('news').doc(newsId);
+                        const docSnap = await docRef.get();
+                        
+                        if (docSnap.exists) {
+                            const newsData = docSnap.data();
+                            newsData.id = newsId;
+                            showEditNewsModal(newsData);
+                        } else {
+                            console.error('No such document!');
                         }
-                    } else {
-                        console.error('News ID not found for this button');
+                    } catch (error) {
+                        console.error('Error getting document:', error);
                     }
-                });
+                } else {
+                    console.error('News ID not found for this button');
+                }
             });
-          }
-        } catch (error) {
-            console.error("Error fetching news: ", error);
-            return;
-        }
+        });
       }
-  
-      // Functionality: populate the events table (top right)
-      async function populateClubEventsTable() {
-        console.log("Populating club events table");
-        const clubEventsTable = document.getElementById('club-events');
-        if (!clubEventsTable) {
-            console.log("No club events table found");
-            return;
-        }
-        
-        // Get current user
-        const user = firebase.auth().currentUser;
-        console.log("Current user:", user);
-        if (!user) {
-            console.log('User not logged in.');
-            return;
-        }
-  
-        const currentDate = new Date();
-  
-        try {
-            // Fetch events from Firestore:
-            // 1st Where: Only show for relevant club
-            // 2nd Where: Filter for future events
-            // Limit: only show 10 events
-            const querySnapshot = await db.collection('events')
-                .where('clubName', '==', user.displayName)
-                .where('date', '>=', currentDate.toISOString().split('T')[0])
-                .orderBy('date')
-                .orderBy('startTime')
-                .limit(10)
-                .get();
-  
-            // Clear existing rows
-            clubEventsTable.innerHTML = '';
-  
-            if (querySnapshot.empty) {
-              console.log("No club events found, displaying default data.");
-              
-              // Add a default row to the table
-              const row = document.createElement('tr');
-  
-              row.innerHTML = `
-                  <td>Event Name</td>
-                  <td>MM/DD/YYYY</td>
-                  <td>XX:YY PM</td>
-                  <td>Room #</td>
-              `;
-  
-              clubEventsTable.appendChild(row);
-            } else {
-              querySnapshot.forEach((doc) => {
-                  const data = doc.data();
-                  const row = document.createElement('tr');
-  
-                  // Format date and time
-                  const eventDate = new Date(data.date + 'T' + data.startTime);
-                  const formattedDate = eventDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-                  const formattedTime = eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  
-                  // Create the event link
-                  const eventLink = `<a href="/pages/eventDetails.html?id=${doc.id}" class="text-decoration-none text-primary">${data.title}</a>`;
-  
-                  row.innerHTML = `
-                      <td>${eventLink}</td>
-                      <td>${formattedDate}</td>
-                      <td>${formattedTime}</td>
-                      <td>${data.location}</td>
-                      <td class="edit-mode-only">
-                        <button class="btn btn-sm btn-warning text-white edit-button event" data-event-id="${doc.id}">
-                          <i class="bi bi-pencil-square me-1"></i>
-                        </button>
-  
-                        <button class="btn btn-sm btn-danger text-white delete-button event" data-event-id="${doc.id}">
-                          <i class="bi bi-trash me-1"></i>
-                        </button>
-                      </td>
-                  `;
-  
-                  clubEventsTable.appendChild(row);
-              });
-              
-              // Add event listeners to all delete buttons
-              const deleteEventButtons = document.querySelectorAll('.delete-button.event');
-              deleteEventButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                  const eventId = button.getAttribute('data-event-id');
-                  if (eventId) {
-                    deleteClubEvent(eventId);
-                  } else {
-                    console.error('Event ID not found for this button');
-                  }
-                });
-              });
-                          
-              // Add event listeners to all edit buttons
-              const editEventButtons = document.querySelectorAll('.edit-button.event');
-              editEventButtons.forEach(button => {
-                  button.addEventListener('click', async () => {
-                      const eventId = button.getAttribute('data-event-id');
-                      if (eventId) {
-                          try {
-                              const docRef = firebase.firestore().collection('events').doc(eventId);
-                              const docSnap = await docRef.get();
-                              
-                              if (docSnap.exists) {
-                                  const eventData = docSnap.data();
-                                  eventData.id = eventId;
-                                  showEditEventModal(eventData);
-                              } else {
-                                  console.error('No such document!');
-                              }
-                          } catch (error) {
-                              console.error('Error getting document:', error);
-                          }
-                      } else {
-                          console.error('Event ID not found for this button');
-                      }
-                  });
-              });
-            }
-        } catch (error) {
-            console.error("Error fetching events: ", error);
-            return;
-        }
-      }
-  
-      // Functionality: populate the cabinet table (bottom left)
-      async function populateClubCabinetTable() {
-        console.log("Populating club cabinet table");
-        const clubCabinetTable = document.querySelector("#clubCabinet tbody");
-        if (!clubCabinetTable) {
-            console.log("No club cabinet table found");
-            return;
-        }
-        
-        // Get current user
-        const user = firebase.auth().currentUser;
-        console.log("Current user:", user);
-        if (!user) {
-            console.log('User not logged in.');
-            return;
-        }
-  
-        try {
-          // Fetch events from Firestore:
-          // Where: Only show for relevant club
-          const querySnapshot = await db.collection('clubs')
-            .where('name', '==', user.displayName)
+    } catch (error) {
+        console.error("Error fetching news: ", error);
+        return;
+    }
+  }
+
+  // ----------------------------------------------------------------------------------------- //
+  // Functionality: populate the events table (top right)
+  async function populateClubEventsTable() {
+    const clubEventsTable = document.getElementById('club-events');
+    if (!clubEventsTable) {
+        console.log("No club events table found");
+        return;
+    }
+    
+    // Get current user
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.log('User not logged in.');
+        return;
+    }
+
+    const currentDate = new Date();
+
+    try {
+        // Fetch events from Firestore:
+        // 1st Where: Only show for relevant club
+        // 2nd Where: Filter for future events
+        // Limit: only show 10 events
+        const querySnapshot = await db.collection('events')
+            .where('clubName', '==', user.displayName)
+            .where('date', '>=', currentDate.toISOString().split('T')[0])
+            .orderBy('date')
+            .orderBy('startTime')
+            .limit(10)
             .get();
-  
-          clubCabinetTable.innerHTML = '';
-  
-          if (querySnapshot.empty) {
-            console.log("No matching club found");
-            return;
-          }
-  
+
+        // Clear existing rows
+        clubEventsTable.innerHTML = '';
+
+        if (querySnapshot.empty) {
+          console.log("No club events found, displaying default data.");
+          
+          // Add a default row to the table
+          const row = document.createElement('tr');
+
+          row.innerHTML = `
+              <td>Event Name</td>
+              <td>MM/DD/YYYY</td>
+              <td>XX:YY PM</td>
+              <td>Room #</td>
+          `;
+
+          clubEventsTable.appendChild(row);
+        } else {
           querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const cabinetMembers = data.cabinetMembers;
-      
-            if (!cabinetMembers) {
-              console.log("No cabinet members found, displaying default data.");
-              const defaultMembers = [
-                { name: "Default Name", position: "President", major: "Default Major", year: "XXXX" },
-                { name: "Default Name", position: "Vice-President", major: "Default Major", year: "XXXX" },
-                { name: "Default Name", position: "Treasurer", major: "Default Major", year: "XXXX" },
-                { name: "Default Name", position: "Secretary", major: "Default Major", year: "XXXX" },
-              ];
-      
-              defaultMembers.forEach(member => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                  <td>${member.name}</td>
-                  <td>${member.position}</td>
-                  <td>${member.major}</td>
-                  <td>${member.year}</td>
-                `;
-                clubCabinetTable.appendChild(row);
-              });
-            } else {
-              console.log("Cabinet members found, populating table.");
-  
-              // Define the desired order of positions
-              const positionOrder = ["President", "Vice-President", "Treasurer", "Secretary"];
-              
-              // Sort the cabinet members array based on the positionOrder
-              const sortedCabinetMembers = Object.values(cabinetMembers).sort((a, b) => {
-                return positionOrder.indexOf(a.position) - positionOrder.indexOf(b.position);
-              });
-              
-              // Loop through the sorted cabinet members
-              sortedCabinetMembers.forEach(member => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                  <td>${member.name}</td>
-                  <td>${member.position}</td>
-                  <td>${member.major}</td>
-                  <td>${member.grade}</td>
+              const data = doc.data();
+              const row = document.createElement('tr');
+
+              // Format date and time
+              const eventDate = new Date(data.date + 'T' + data.startTime);
+              const formattedDate = eventDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+              const formattedTime = eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+              // Create the event link
+              const eventLink = `<a href="/pages/eventDetails.html?id=${doc.id}" class="text-decoration-none text-primary">${data.title}</a>`;
+
+              row.innerHTML = `
+                  <td>${eventLink}</td>
+                  <td>${formattedDate}</td>
+                  <td>${formattedTime}</td>
+                  <td>${data.location}</td>
                   <td class="edit-mode-only">
-                    <button class="btn btn-sm btn-warning text-white edit-button">
+                    <button class="btn btn-sm btn-warning text-white edit-button event" data-event-id="${doc.id}">
                       <i class="bi bi-pencil-square me-1"></i>
                     </button>
-  
-                    <button class="btn btn-sm btn-danger text-white delete-button">
+
+                    <button class="btn btn-sm btn-danger text-white delete-button event" data-event-id="${doc.id}">
                       <i class="bi bi-trash me-1"></i>
                     </button>
                   </td>
-                `;
-                clubCabinetTable.appendChild(row);
-              });
-            }
+              `;
+
+              clubEventsTable.appendChild(row);
           });
-        } catch (error) {
-            console.error("Error fetching events: ", error);
-            return;
-        }
-      }
-  
-      // Functionality: populate the social media table (bottom right)
-      async function populateSocialMediaTable() {
-        console.log("Populating social media table");
-        const socialMediaTable = document.querySelector("#socialMedia tbody");
-        if (!socialMediaTable) {
-            console.log("No social media table found");
-            return;
-        }
-        
-        // Get current user
-        const user = firebase.auth().currentUser;
-        console.log("Current user:", user);
-        if (!user) {
-            console.log('User not logged in.');
-            return;
-        }
-  
-        try {
-          // Fetch events from Firestore:
-          // Where: Only show for relevant club
-          const querySnapshot = await db.collection('publicClubProfiles')
-            .where('clubName', '==', user.displayName)
-            .get();
-  
-          socialMediaTable.innerHTML = '';
-  
-          if (querySnapshot.empty) {
-            console.log("No matching club found");
-            return;
-          }
-  
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const socialMedia = data.socialMedia;
-      
-            if (!socialMedia) {
-              console.log("No social media found, displaying default data.");
-              const defaultSocialMedia = [
-                { social: "Default Name", tag: "Default Tag"},
-                { social: "Default Name", tag: "Default Tag"},
-                { social: "Default Name", tag: "Default Tag"},
-                { social: "Default Name", tag: "Default Tag"},
-              ];
-      
-              defaultSocialMedia.forEach(site => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                  <td>${site.social}</td>
-                  <td>${site.tag}</td>
-                `;
-                socialMediaTable.appendChild(row);
-              });
-            } else {
-               // Social media found, populating table.
-               const positionOrder = ["Website", "Insta", "TikTok", "Discord", "GitHub", "LinkedIn"];
-              
-               // Convert socialMedia into an array if needed
-               const socialMediaArray = Array.isArray(socialMedia) ? socialMedia : Object.values(socialMedia);
-               
-               // Sort the social media array based on positionOrder
-               const sortedSocialMedia = socialMediaArray.sort((a, b) => {
-                 const indexA = positionOrder.indexOf(a.social);
-                 const indexB = positionOrder.indexOf(b.social);
-                 
-                 // Treat items not in positionOrder as lowest priority
-                 return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
-               });
-               
-               // Populate the table
-               sortedSocialMedia.forEach(site => {
-                 const row = document.createElement('tr');
-                 row.innerHTML = `
-                   <td>${site.social}</td>
-                   <td> <a href="${site.link}" target="_blank" rel="noopener noreferrer">${site.tag}</a> </td>
-                   <td class="edit-mode-only">
-                      <button class="btn btn-sm btn-warning text-white edit-button">
-                        <i class="bi bi-pencil-square me-1"></i>
-                      </button>
-  
-                      <button class="btn btn-sm btn-danger text-white delete-button">
-                        <i class="bi bi-trash me-1"></i>
-                      </button>
-                   </td>
-                 `;
-                 socialMediaTable.appendChild(row);
-               });
-            }
-          });
-        } catch (error) {
-            console.error("Error fetching events: ", error);
-            return;
-        }
-      }
-  
-      // Functionality: populate the email (bottom)
-      async function populateEmail() {
-        console.log("Populating email");
-        const email = document.getElementById("email");
-        if (!email) {
-            console.log("No email found");
-            return;
-        }
-        
-        // Get current user
-        const user = firebase.auth().currentUser;
-        console.log("Current user:", user);
-        if (!user) {
-            console.log('User not logged in.');
-            return;
-        }
-  
-        try {
-          // Fetch events from Firestore:
-          // Where: Only show for relevant club
-          const querySnapshot = await db.collection('clubs')
-            .where('name', '==', user.displayName)
-            .get();
-  
-          email.innerHTML = '';
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            
-            // Create an anchor element for the email
-            const anchor = document.createElement('a');
           
-            // Set the anchor's attributes and content
-            anchor.href = `mailto:${data.email}`;
-            anchor.className = "text-primary fs-6 text-decoration-underline";
-            anchor.textContent = data.email;
-          
-            // Create a heading element for the email
-            const heading = document.createElement('h6');
-            heading.className = "mb-0";
-            heading.textContent = "Reach out to our Club:";
-  
-            // Append the anchor to the email container
-            email.appendChild(heading);
-            email.appendChild(anchor);
+          // Add event listeners to all delete buttons
+          const deleteEventButtons = document.querySelectorAll('.delete-button.event');
+          deleteEventButtons.forEach(button => {
+            button.addEventListener('click', () => {
+              const eventId = button.getAttribute('data-event-id');
+              if (eventId) {
+                deleteClubEvent(eventId);
+              } else {
+                console.error('Event ID not found for this button');
+              }
+            });
           });
-        } catch (error) {
-            console.error("Error fetching events: ", error);
-            return;
+                      
+          // Add event listeners to all edit buttons
+          const editEventButtons = document.querySelectorAll('.edit-button.event');
+          editEventButtons.forEach(button => {
+              button.addEventListener('click', async () => {
+                  const eventId = button.getAttribute('data-event-id');
+                  if (eventId) {
+                      try {
+                          const docRef = firebase.firestore().collection('events').doc(eventId);
+                          const docSnap = await docRef.get();
+                          
+                          if (docSnap.exists) {
+                              const eventData = docSnap.data();
+                              eventData.id = eventId;
+                              showEditEventModal(eventData);
+                          } else {
+                              console.error('No such document!');
+                          }
+                      } catch (error) {
+                          console.error('Error getting document:', error);
+                      }
+                  } else {
+                      console.error('Event ID not found for this button');
+                  }
+              });
+          });
         }
+    } catch (error) {
+        console.error("Error fetching events: ", error);
+        return;
+    }
+  }
+
+  // ----------------------------------------------------------------------------------------- //
+  // Functionality: populate the cabinet table (bottom left)
+  async function populateClubCabinetTable() {
+    const clubCabinetTable = document.querySelector("#clubCabinet tbody");
+    if (!clubCabinetTable) {
+        console.log("No club cabinet table found");
+        return;
+    }
+    
+    // Get current user
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.log('User not logged in.');
+        return;
+    }
+
+    try {
+      // Fetch events from Firestore:
+      // Where: Only show for relevant club
+      const querySnapshot = await db.collection('clubs')
+        .where('name', '==', user.displayName)
+        .get();
+
+      clubCabinetTable.innerHTML = '';
+
+      if (querySnapshot.empty) {
+        console.log("No matching club found");
+        return;
       }
 
-  // --------------------------------------------------------------------------------
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const cabinetMembers = data.cabinetMembers;
+  
+        if (!cabinetMembers) {
+          console.log("No cabinet members found, displaying default data.");
+          const defaultMembers = [
+            { name: "Default Name", position: "President", major: "Default Major", year: "XXXX" },
+            { name: "Default Name", position: "Vice-President", major: "Default Major", year: "XXXX" },
+            { name: "Default Name", position: "Treasurer", major: "Default Major", year: "XXXX" },
+            { name: "Default Name", position: "Secretary", major: "Default Major", year: "XXXX" },
+          ];
+  
+          defaultMembers.forEach(member => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${member.name}</td>
+              <td>${member.position}</td>
+              <td>${member.major}</td>
+              <td>${member.year}</td>
+            `;
+            clubCabinetTable.appendChild(row);
+          });
+        } else {
+
+          // Define the desired order of positions
+          const positionOrder = ["President", "Vice-President", "Treasurer", "Secretary"];
+          
+          // Sort the cabinet members array based on the positionOrder
+          const sortedCabinetMembers = Object.values(cabinetMembers).sort((a, b) => {
+            // Get the index of each position in the positionOrder array, or use a large index if the position is not found
+            const indexA = positionOrder.indexOf(a.position) === -1 ? positionOrder.length : positionOrder.indexOf(a.position);
+            const indexB = positionOrder.indexOf(b.position) === -1 ? positionOrder.length : positionOrder.indexOf(b.position);
+
+            return indexA - indexB;
+          });
+          
+          // Loop through the sorted cabinet members
+          sortedCabinetMembers.forEach(member => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${member.name}</td>
+              <td>${member.position}</td>
+              <td>${member.major}</td>
+              <td>${member.grade}</td>
+              <td class="edit-mode-only">
+                <button class="btn btn-sm btn-warning text-white edit-button cabinet" data-cabinet-id="${member.position}">
+                  <i class="bi bi-pencil-square me-1"></i>
+                </button>
+
+                <button class="btn btn-sm btn-danger text-white delete-button cabinet" data-cabinet-id="${member.position}">
+                  <i class="bi bi-trash me-1"></i>
+                </button>
+              </td>
+            `;
+            clubCabinetTable.appendChild(row);
+          });
+        }
+      });
+
+      // Add event listeners to all delete buttons
+      const deleteCabinetButtons = document.querySelectorAll('.delete-button.cabinet');
+      deleteCabinetButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const cabinetId = button.getAttribute('data-cabinet-id');
+          if (cabinetId) {
+            deleteClubCabinet(cabinetId);
+          } else {
+            console.error('Cabinet Member ID not found for this button');
+          }
+        });
+      });
+
+      // Add event listeners to all edit buttons
+      const editCabinetButtons = document.querySelectorAll('.edit-button.cabinet');
+      editCabinetButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+          // Get the position (cabinetId) from the data attribute of the button
+          const cabinetId = button.getAttribute('data-cabinet-id');
+
+          if (cabinetId) {
+            try {
+              // Get current user
+              const user = firebase.auth().currentUser;
+              if (!user) {
+                throw new Error('User not logged in');
+              }
+
+              // Get club name from the current user
+              const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+              if (!userDoc.exists) {
+                throw new Error('User document not found');
+              }
+
+              const userData = userDoc.data();
+              const clubName = userData.displayName;
+
+              // Query the clubs collection to find the club by name
+              const clubQuerySnapshot = await firebase.firestore().collection('clubs').where('name', '==', clubName).get();
+
+              if (clubQuerySnapshot.empty) {
+                throw new Error(`No club found for ${clubName}`);
+              }
+
+              // Get the club document reference
+              const clubDocRef = clubQuerySnapshot.docs[0].ref;
+
+              // Get the current cabinet members
+              const clubDoc = await clubDocRef.get();
+              const cabinetMembers = clubDoc.data().cabinetMembers;
+
+              if (!cabinetMembers || !cabinetMembers[cabinetId]) {
+                throw new Error(`Cabinet member with ID ${cabinetId} not found`);
+              }
+
+              // Fetch the cabinet member to be edited
+              const cabinetMember = cabinetMembers[cabinetId];
+              cabinetMember.id = cabinetId;
+              
+              // Open modal to edit cabinet member details
+              showEditCabinetModal(cabinetMember);
+
+            } catch (error) {
+              console.error('Error editing cabinet member:', error);
+              alert('Error editing cabinet member: ' + error.message);
+            }
+          } else {
+            console.error('Cabinet ID or position not found for this button');
+          }
+        });
+      });
+
+    } catch (error) {
+        console.error("Error fetching cabinet: ", error);
+        return;
+    }
+  }
+
+  // ----------------------------------------------------------------------------------------- //
+  // Functionality: populate the social media table (bottom right)
+  async function populateSocialMediaTable() {
+    const socialMediaTable = document.querySelector("#socialMedia tbody");
+    if (!socialMediaTable) {
+        console.log("No social media table found");
+        return;
+    }
+    
+    // Get current user
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.log('User not logged in.');
+        return;
+    }
+
+    try {
+      // Fetch events from Firestore:
+      // Where: Only show for relevant club
+      const querySnapshot = await db.collection('publicClubProfiles')
+        .where('clubName', '==', user.displayName)
+        .get();
+
+      socialMediaTable.innerHTML = '';
+
+      if (querySnapshot.empty) {
+        console.log("No matching club found");
+        return;
+      }
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const socialMedia = data.socialMedia;
+  
+        if (!socialMedia) {
+          console.log("No social media found, displaying default data.");
+          const defaultSocialMedia = [
+            { social: "Default Name", tag: "Default Tag"},
+            { social: "Default Name", tag: "Default Tag"},
+            { social: "Default Name", tag: "Default Tag"},
+            { social: "Default Name", tag: "Default Tag"},
+          ];
+  
+          defaultSocialMedia.forEach(site => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${site.social}</td>
+              <td>${site.tag}</td>
+            `;
+            socialMediaTable.appendChild(row);
+          });
+        } else {
+            // Social media found, populating table.
+            const positionOrder = ["Website", "Insta", "TikTok", "Discord", "GitHub", "LinkedIn"];
+          
+            // Convert socialMedia into an array if needed
+            const socialMediaArray = Array.isArray(socialMedia) ? socialMedia : Object.values(socialMedia);
+            
+            // Sort the social media array based on positionOrder
+            const sortedSocialMedia = socialMediaArray.sort((a, b) => {
+              const indexA = positionOrder.indexOf(a.social);
+              const indexB = positionOrder.indexOf(b.social);
+              
+              // Treat items not in positionOrder as lowest priority
+              return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+            });
+            
+            // Populate the table
+            sortedSocialMedia.forEach(site => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${site.social}</td>
+                <td> <a href="${site.link}" target="_blank" rel="noopener noreferrer">${site.tag}</a> </td>
+                <td class="edit-mode-only">
+                  <button class="btn btn-sm btn-warning text-white edit-button">
+                    <i class="bi bi-pencil-square me-1"></i>
+                  </button>
+
+                  <button class="btn btn-sm btn-danger text-white delete-button">
+                    <i class="bi bi-trash me-1"></i>
+                  </button>
+                </td>
+              `;
+              socialMediaTable.appendChild(row);
+            });
+        }
+      });
+    } catch (error) {
+        console.error("Error fetching social media: ", error);
+        return;
+    }
+  }
+
+  // ----------------------------------------------------------------------------------------- //
+  // Functionality: populate the email (bottom)
+  async function populateEmail() {
+    const email = document.getElementById("email");
+    if (!email) {
+        console.log("No email found");
+        return;
+    }
+    
+    // Get current user
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.log('User not logged in.');
+        return;
+    }
+
+    try {
+      // Fetch events from Firestore:
+      // Where: Only show for relevant club
+      const querySnapshot = await db.collection('clubs')
+        .where('name', '==', user.displayName)
+        .get();
+
+      email.innerHTML = '';
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        
+        // Create an anchor element for the email
+        const anchor = document.createElement('a');
+      
+        // Set the anchor's attributes and content
+        anchor.href = `mailto:${data.email}`;
+        anchor.className = "text-primary fs-6 text-decoration-underline";
+        anchor.textContent = data.email;
+      
+        // Create a heading element for the email
+        const heading = document.createElement('h6');
+        heading.className = "mb-0";
+        heading.textContent = "Reach out to our Club:";
+
+        // Append the anchor to the email container
+        email.appendChild(heading);
+        email.appendChild(anchor);
+      });
+    } catch (error) {
+        console.error("Error fetching events: ", error);
+        return;
+    }
+  }
+
+  // ***************************** Create, Read, Delete Tables ********************************* //
+
+  // ----------------------------------------------------------------------------------------- //
+  // Functionality: Update the club news carousel (top left)
   function previewImage(input) {
     const preview = document.getElementById('preview');
     const previewDiv = document.getElementById('imagePreview');
@@ -607,7 +683,6 @@
     }
   }
 
-
   // Bind the function to the file input
   document.getElementById('picture').addEventListener('change', function () {
       previewImage(this);
@@ -618,7 +693,6 @@
       previewImage(this);
   });
 
-
   // Upload image function
   function uploadImage(imageFile) {
     return new Promise((resolve, reject) => {
@@ -627,7 +701,6 @@
       if (user) {
         // Refresh the token to ensure it is up-to-date
         user.getIdToken(true).then((idToken) => {
-          console.log("Token refreshed:", idToken);
 
           // Ensure the file exists before proceeding
           if (imageFile) {
@@ -642,7 +715,6 @@
             uploadTask.on('state_changed',
               (snapshot) => {
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log("Upload is " + progress + "% done");
               },
               (error) => {
                 // Handle upload errors
@@ -652,7 +724,6 @@
               () => {
                 // Upload complete, get the download URL
                 uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                  console.log("File available at", downloadURL);
                   resolve(downloadURL); // Resolve the promise with the download URL
                 }).catch((error) => {
                   console.error("Error getting download URL:", error);
@@ -713,9 +784,7 @@
         const userData = userDoc.data();
         
         // Upload image and get the URL
-        console.log('Starting image upload...');
         const imageUrl = await uploadImage(imageFile);
-        console.log('Image upload complete:', imageUrl);
 
         // Create news document
         const newNews = {
@@ -755,7 +824,6 @@
 
   // Function to handle event deletion
   async function deleteClubNews(newsId) {
-    console.log(`Deleting event with ID: ${newsId}`);
     if (!newsId) {
       console.error('No event ID provided');
       return;
@@ -811,7 +879,8 @@
     editNewsModal.show();
   }
 
-  // -------------------------------------------------------------------------------- 
+  // ----------------------------------------------------------------------------------------- //
+  // Functionality: Update the events table (top right)
 
   async function createClubEvent() {
     // Get form values
@@ -829,7 +898,6 @@
   
     // Get current user
     const user = firebase.auth().currentUser;
-    console.log("Current user:", user);
     if (!user) {
       console.log('User not logged in.');
       return;
@@ -884,7 +952,6 @@
 
   // Function to handle event deletion
   async function deleteClubEvent(eventId) {
-    console.log(`Deleting event with ID: ${eventId}`);
     if (!eventId) {
       console.error('No event ID provided');
       return;
@@ -943,11 +1010,185 @@
     editEventModal.show();
   }
 
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------- //
+  // Functionality: Update the cabinet table (bottom left)
 
+  async function createClubCabinet() {
+    // Get form values
+    const grade = document.getElementById('grade').value;
+    const major = document.getElementById('major').value;
+    const name = document.getElementById('name').value;
+    const position = document.getElementById('position').value;
+  
+    // Form validation
+    if (!grade || !major || !name || !position) {
+      console.error('All fields are required');
+      return;
+    }
+  
+    // Get current user
+    const user = firebase.auth().currentUser;
+    if (!user) {
+      console.log('User not logged in.');
+      return;
+    }
+  
+    try {
+      // Get club name from user document
+      const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        console.error('User document not found');
+        return;
+      }
+    
+      const userData = userDoc.data();
+      const clubName = userData.displayName;
+    
+      // Ensure that the clubName exists
+      if (!clubName) {
+        console.error('Club name is missing');
+        return;
+      }
+
+      // Query for the club document based on the clubName field
+      const clubQuerySnapshot = await firebase.firestore().collection('clubs').where('name', '==', clubName).get();
+
+      // Check if the club document exists
+      if (clubQuerySnapshot.empty) {
+        console.error(`No club document found for ${clubName}`);
+        alert('No club found for this name. Please check and try again.');
+        return;
+      }
+
+      // Get the first document (there should be only one matching document)
+      const clubDocRef = clubQuerySnapshot.docs[0].ref;
+    
+      // Create the cabinet member object
+      const newMember = {
+        grade: grade,
+        major: major,
+        name: name,
+        position: position
+      };
+    
+      // Update the cabinetMembers map inside the specific club document
+      await clubDocRef.update({
+        [`cabinetMembers.${position}`]: newMember // Position as the key for the new member
+      });
+    
+      // Clear the form
+      document.getElementById('createCabinetForm').reset();
+      
+      // Close the modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('createCabinetModal'));
+      modal.hide();
+    
+      // Show success message
+      alert('Cabinet member added successfully!');
+    
+      // Refresh tables if they exist
+      if (typeof populateClubCabinetTable === 'function') {
+        await populateClubCabinetTable();
+      }
+    
+    } catch (error) {
+      console.error('Error adding cabinet member: ', error);
+      alert('Error creating cabinet member. Please try again.');
+    }
+  }
+
+  // Function to handle cabinet member deletion
+  async function deleteClubCabinet(cabinetId) {
+    // Ensure a valid cabinetId is provided
+    if (!cabinetId) {
+      console.error('No cabinet ID provided');
+      alert('No cabinet ID provided');
+      return;
+    }
+
+    try {
+      // Get current user
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        throw new Error('User not logged in');
+      }
+
+      // Simple confirmation
+      if (confirm('Are you sure you want to delete this member?')) {
+        // Get club name from the current user
+        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+          throw new Error('User document not found');
+        }
+
+        const userData = userDoc.data();
+        const clubName = userData.displayName;
+
+        // Query the clubs collection to find the club by name
+        const clubQuerySnapshot = await firebase.firestore().collection('clubs').where('name', '==', clubName).get();
+
+        if (clubQuerySnapshot.empty) {
+          throw new Error(`No club found for ${clubName}`);
+        }
+
+        // Get the club document reference
+        const clubDocRef = clubQuerySnapshot.docs[0].ref;
+
+        // Get the current cabinet members
+        const clubDoc = await clubDocRef.get();
+        const cabinetMembers = clubDoc.data().cabinetMembers;
+
+        if (!cabinetMembers || !cabinetMembers[cabinetId]) {
+          throw new Error(`Cabinet member with ID ${cabinetId} not found`);
+        }
+
+        // Delete the cabinet member
+        await clubDocRef.update({
+          [`cabinetMembers.${cabinetId}`]: firebase.firestore.FieldValue.delete()
+        });
+
+        // Refresh tables if they exist
+        if (typeof populateClubCabinetTable === 'function') {
+          await populateClubCabinetTable();
+        }
+
+        // Show success message
+        alert('Cabinet member deleted successfully!');
+      }
+    } catch (error) {
+      console.error('Error deleting cabinet member:', error);
+      alert('Error deleting cabinet member: ' + error.message);
+    }
+  }
+
+
+  function showEditCabinetModal(cabinetData) { 
+    // Populate the edit form with current event data
+    document.getElementById('editGrade').value = cabinetData.grade || '';
+    document.getElementById('editMajor').value = cabinetData.major || '';
+    document.getElementById('editName').value = cabinetData.name || '';
+    document.getElementById('editPosition').value = cabinetData.position || '';
+    document.getElementById('editCabinetId').value = cabinetData.id || '';
+
+    // Show the edit modal
+    const editCabinetModal = new bootstrap.Modal(document.getElementById('editCabinetModal'));
+    editCabinetModal.show();
+  }
+
+  // ----------------------------------------------------------------------------------------- //
+  // Functionality: Update the social media table (bottom right)
+
+
+
+  // ***************************** Dynamically Initialize Page ********************************* //
   function initializeMyClubPage() {
     
-      // Handle create event modal and form
+      // Handle create modal and form:
+      /* 1) Event
+      /* 2) News
+      /* 3) Cabinet Member
+      /* 4) Social Media */
+
       const addEventButton = document.getElementById('addEventForm');
       if (addEventButton) {
         addEventButton.addEventListener('click', () => {
@@ -956,7 +1197,6 @@
         });
       }
 
-      // Handle create news modal and form
       const addNewsButton = document.getElementById('addNewsForm');
       if (addNewsButton) {
         addNewsButton.addEventListener('click', () => {
@@ -964,7 +1204,22 @@
           createNewsModal.show();
         });
       }
-    
+
+      const addCabinetButton = document.getElementById('addCabinetForm');
+      if (addCabinetButton) {
+        addCabinetButton.addEventListener('click', () => {
+          const createCabinetModal = new bootstrap.Modal(document.getElementById('createCabinetModal'));
+          createCabinetModal.show();
+        });
+      }
+
+      //----------------------------------------------------------//
+      // Handle create form to submit:
+      /* 1) Event
+      /* 2) News
+      /* 3) Cabinet Member
+      /* 4) Social Media */
+
       const createEventForm = document.getElementById('createEventForm');
       if (createEventForm) {
         createEventForm.addEventListener('submit', async (e) => {
@@ -980,8 +1235,22 @@
           await createClubNews();
         });
       }
+
+      const createCabinetForm = document.getElementById('createCabinetForm');
+      if (createCabinetForm) {
+        createCabinetForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          await createClubCabinet();
+        });
+      }
+
+      //----------------------------------------------------------//
+      // Handle edit form to submit:
+      /* 1) Event
+      /* 2) News
+      /* 3) Cabinet Member
+      /* 4) Social Media */
     
-      // Handle create event modal and form for editing
       const editEventForm = document.getElementById('editEventForm');
       if (editEventForm) {
         editEventForm.addEventListener('submit', function(e) {
@@ -1041,7 +1310,6 @@
         });
       }
 
-      // Handle create news modal and form for editing
       const editNewsForm = document.getElementById('editNewsForm');
       if (editNewsForm) {
         editNewsForm.addEventListener('submit', async function(e) {
@@ -1093,14 +1361,98 @@
           });
         });
       }
+
+      const editCabinetForm = document.getElementById('editCabinetForm');
+      if (editCabinetForm) {
+        editCabinetForm.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          
+          const form = e.target;
+
+          // Validate form input
+          if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return;
+          }
+          
+          form.classList.add('was-validated');
+          
+          const cabinetId = document.getElementById('editCabinetId').value;
+          if (!cabinetId) {
+            alert('Error: Could not find cabinet ID');
+            return;
+          }
+
+          const grade = document.getElementById('editGrade').value;
+          const major = document.getElementById('editMajor').value;
+          const name = document.getElementById('editName').value;
+          const position = document.getElementById('editPosition').value;
+
+          try {
+            const user = firebase.auth().currentUser;
+            if (!user) throw new Error('User not logged in');
+            
+            // Confirm the update action
+            if (!confirm('Are you sure you want to update this cabinet member?')) return;
+
+            // Get the user's club name
+            const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+            if (!userDoc.exists) throw new Error('User document not found');
+            const clubName = userDoc.data().displayName;
+
+            // Find the club document by name
+            const clubQuerySnapshot = await firebase.firestore().collection('clubs').where('name', '==', clubName).get();
+            if (clubQuerySnapshot.empty) throw new Error(`No club found for ${clubName}`);
+            
+            const clubDocRef = clubQuerySnapshot.docs[0].ref;
+            const clubDoc = await clubDocRef.get();
+            const cabinetMembers = clubDoc.data().cabinetMembers;
+
+            if (!cabinetMembers || !cabinetMembers[cabinetId]) {
+              throw new Error(`Cabinet member with ID ${cabinetId} not found`);
+            }
+
+            // Update the cabinet member's details
+            await clubDocRef.update({
+              [`cabinetMembers.${cabinetId}`]: {
+                grade,
+                major,
+                name,
+                position
+              }
+            });
+
+            // Hide modal and reset form
+            document.activeElement.blur();
+            const editCabinetModalEl = document.getElementById('editCabinetModal');
+            const editCabinetModal = bootstrap.Modal.getInstance(editCabinetModalEl);
+            editCabinetModal.hide();
+            form.classList.remove('was-validated');
+
+            // Show success message
+            alert('Cabinet member updated successfully!');
+
+            // Refresh table if function exists
+            if (typeof populateClubCabinetTable === 'function') {
+              populateClubCabinetTable();
+            }
+          } catch (error) {
+            console.error('Error updating cabinet member:', error);
+            alert('Error updating cabinet member: ' + error.message);
+          }
+        });
+      }
+
+
+      // ----------------------------------------------------------------------------------------- //
+
     
       // Initialize dynamic updates
       if (typeof initDynamicUpdates === 'function') {
         initDynamicUpdates();
       }
     }
-
-    // --------------------------------------------------------------------------------
 
     function initDynamicUpdates() {
         // Wait for auth to be ready
