@@ -3,3 +3,4 @@
 app.yaml
 .gcloudignore
 node_modules/
+.firebasesrc
